@@ -40,4 +40,4 @@ jobs:
                   node-version: 14
                   cache: npm
             - run: npm ci
-            - run: npm test:ci
+            - run: npm run test:ci
