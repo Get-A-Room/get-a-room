@@ -1,44 +1,43 @@
 name: CI
 
 on: push
-    # branches: [ main ]
-  # pull_request:
-    # branches: [ main ]
 
 jobs:
+    check-style:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: 14
+                  cache: npm
+            - run: npm ci
+            - run: npm run check-style
 
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: 14
-        cache: npm
-    - run: npm ci
-    - run: CI=true npm run build
-    - run: CI=true npm test 
-    - uses: actions/upload-artifact@v2
-      with:
-        name: build
-        path: build/
+    build:
+        runs-on: ubuntu-latest
+        needs: check-style
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: 14
+                  cache: npm
+            - run: npm ci
+            - run: npm run build:ci
+            - uses: actions/upload-artifact@v2
+              with:
+                  name: build
+                  path: build/
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: 14
-        cache: npm
-    - run: npm ci
-    - run: CI=true npm test 
-
-  check-build:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/download-artifact@v2
-        with: 
-          name: build
-      - run: ls -R
+    test:
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: 14
+                  cache: npm
+            - run: npm ci
+            - run: npm test:ci
