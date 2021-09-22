@@ -8,22 +8,22 @@ env:
     SERVICE_NAME: medium-react-app
 
 jobs:
-    # check-style:
-    #     name: Check code style
-    #     runs-on: ubuntu-latest
-    #     steps:
-    #         - uses: actions/checkout@v2
-    #         - uses: actions/setup-node@v2
-    #           with:
-    #               node-version: 14
-    #               cache: npm
-    #         - run: npm ci
-    #         - run: npm run check-style
+    check-style:
+        name: Check code style
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: 14
+                  cache: npm
+            - run: npm ci
+            - run: npm run check-style
 
     build:
         name: Build
         runs-on: ubuntu-latest
-        # needs: check-style
+        needs: check-style
         steps:
             - uses: actions/checkout@v2
             - uses: actions/setup-node@v2
@@ -37,23 +37,22 @@ jobs:
                   name: build
                   path: build/
 
-    # test:
-    #     name: Test
-    #     runs-on: ubuntu-latest
-    #     needs: build
-    #     steps:
-    #         - uses: actions/checkout@v2
-    #         - uses: actions/setup-node@v2
-    #           with:
-    #               node-version: 14
-    #               cache: npm
-    #         - run: npm ci
-    #         - run: npm run test:ci
+    test:
+        name: Test
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: 14
+                  cache: npm
+            - run: npm ci
+            - run: npm run test:ci
 
     deploy-gcr:
         name: Deploy to GCR
-        # needs: test
-        needs: build
+        needs: test
         runs-on: ubuntu-latest
 
         steps:
