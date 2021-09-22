@@ -56,15 +56,18 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
+            # Checks out the repository
             - name: Checkout Repo
               uses: actions/checkout@main
 
+            # Downloads the archived build folder into the .docker directory
             - name: Download Artifact
               uses: actions/download-artifact@main
               with:
                   name: build
                   path: .docker/build
 
+            # Prepares the GCloud CLI with your project ID and private key
             - name: Setup gcloud CLI
               uses: google-github-actions/setup-gcloud@master
               with:
@@ -72,7 +75,7 @@ jobs:
                   service_account_key: ${{ secrets.GCR_SA_KEY }}
                   project_id: ${{ secrets.GCR_PROJECT }}
 
-            # Build and push image to Google Container Registry
+            # Pushes the .docker directory to Google Cloud Build to build the Docker image and save it to Google Cloud Registry
             - name: Build & Push
               run: |-
                   gcloud builds submit \
