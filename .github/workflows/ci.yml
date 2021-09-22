@@ -3,9 +3,9 @@ name: CI
 on: push
 
 env:
-  PROJECT_ID: ${{ secrets.GCR_PROJECT }}
-  RUN_REGION: europe-north1
-  SERVICE_NAME: medium-react-app
+    PROJECT_ID: ${{ secrets.GCR_PROJECT }}
+    RUN_REGION: europe-north1
+    SERVICE_NAME: medium-react-app
 
 jobs:
     check-style:
@@ -56,39 +56,36 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-          - name: Checkout Repo
-            uses: actions/checkout@main
+            - name: Checkout Repo
+              uses: actions/checkout@main
 
-          - name: Download Artifact
-            uses: actions/download-artifact@main
-            with:
-              name: build
-              path: .docker/build
+            - name: Download Artifact
+              uses: actions/download-artifact@main
+              with:
+                  name: build
+                  path: .docker/build
 
-          - name: Setup gcloud CLI
-            uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-            with:
-              version: '290.0.1'
-              service_account_key: ${{ secrets.GCR_SA_KEY }}
-              project_id: ${{ secrets.GCR_PROJECT }}
+            - name: Setup gcloud CLI
+              uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+              with:
+                  version: '290.0.1'
+                  service_account_key: ${{ secrets.GCR_SA_KEY }}
+                  project_id: ${{ secrets.GCR_PROJECT }}
 
-          # Build and push image to Google Container Registry
-          - name: Build & Push
-            run: |-
-              gcloud builds submit \
-                --quiet \
-                --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA"
-            working-directory: .docker
+            # Build and push image to Google Container Registry
+            - name: Build & Push
+              run: |-
+                  gcloud builds submit \
+                    --quiet \
+                    --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA"
+              working-directory: .docker
 
-          # Deploy image to Cloud Run
-          - name: Deploy GCR
-            run: |-
-              gcloud run deploy "$SERVICE_NAME" \
-                --quiet \
-                --region "$RUN_REGION" \
-                --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
-                --platform "managed" \
-                --allow-unauthenticated
-        
-
-  
+            # Deploy image to Cloud Run
+            - name: Deploy GCR
+              run: |-
+                  gcloud run deploy "$SERVICE_NAME" \
+                    --quiet \
+                    --region "$RUN_REGION" \
+                    --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
+                    --platform "managed" \
+                    --allow-unauthenticated
