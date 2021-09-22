@@ -57,7 +57,7 @@ jobs:
 
         steps:
             - name: Checkout Repo
-              uses: actions/checkout@github-actions-deploy-to-google-cloud
+              uses: actions/checkout@main
 
             - name: Download Artifact
               uses: actions/download-artifact@main
