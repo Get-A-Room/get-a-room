@@ -5,7 +5,7 @@ on: push
 env:
     PROJECT_ID: ${{ secrets.GCR_PROJECT }}
     RUN_REGION: europe-north1
-    SERVICE_NAME: get-a-room-github-actions
+    SERVICE_NAME: get-a-room
 
 jobs:
     # check-style:
