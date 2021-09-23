@@ -52,6 +52,7 @@ jobs:
 
     deploy-gcr:
         name: Deploy to GCR
+        if: github.ref == 'refs/heads/dev'
         needs: test
         runs-on: ubuntu-latest
 
