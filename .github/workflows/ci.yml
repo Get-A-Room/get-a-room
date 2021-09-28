@@ -70,7 +70,7 @@ jobs:
               uses: actions/download-artifact@main
               with:
                   name: build
-                  path: .docker/build
+                  path: frontend/.docker/build
 
             # Prepares the GCloud CLI with your project ID and private key
             - name: Setup gcloud CLI
@@ -86,7 +86,7 @@ jobs:
                   gcloud builds submit \
                     --quiet \
                     --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA"
-              working-directory: .docker
+              working-directory: frontend/.docker
 
             # Deploy image to Cloud Run
             - name: Deploy GCR
