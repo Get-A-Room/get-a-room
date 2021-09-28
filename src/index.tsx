@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import App from './components/App';
+import reportWebVitals from './create-react-app/reportWebVitals';
 
 // https://mui.com/components/typography/#general
 import '@fontsource/roboto/300.css';
