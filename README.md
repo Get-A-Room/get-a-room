@@ -1,5 +1,9 @@
 # Get A Room!
 
+## Requirements
+
+-   [node 16 & npm 7](https://nodejs.org/)
+
 ## Available Scripts
 
 In the project directory, you can run:
