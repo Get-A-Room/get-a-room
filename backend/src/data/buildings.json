@@ -1,0 +1,46 @@
+{
+    "buildings": [
+        {
+            "kind": "admin#directory#resources#buildings#Building",
+            "buildingId": "Arkadia",
+            "buildingName": "Arkadia",
+            "floorNames": ["4"]
+        },
+        {
+            "kind": "admin#directory#resources#buildings#Building",
+            "buildingId": "Hakaniemi",
+            "buildingName": "Hakaniemi",
+            "floorNames": ["2", "6", "7", "8", "9"]
+        },
+        {
+            "kind": "admin#directory#resources#buildings#Building",
+            "buildingId": "Hermia 5",
+            "buildingName": "Hermia 5",
+            "floorNames": ["1", "2"]
+        },
+        {
+            "kind": "admin#directory#resources#buildings#Building",
+            "buildingId": "Irvine",
+            "buildingName": "Irvine",
+            "floorNames": ["11"]
+        },
+        {
+            "kind": "admin#directory#resources#buildings#Building",
+            "buildingId": "Jyväskylä",
+            "buildingName": "Jyväskylä",
+            "floorNames": ["3"]
+        },
+        {
+            "kind": "admin#directory#resources#buildings#Building",
+            "buildingId": "Mummola",
+            "buildingName": "Mummola",
+            "floorNames": ["4"]
+        },
+        {
+            "kind": "admin#directory#resources#buildings#Building",
+            "buildingId": "Turku",
+            "buildingName": "Turku",
+            "floorNames": ["2"]
+        }
+    ]
+}
