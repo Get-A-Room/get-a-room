@@ -2,9 +2,19 @@
     "name": "get-a-room-backend",
     "version": "0.1.0",
     "description": "",
-    "main": "index.js",
+    "main": "src/app.js",
     "scripts": {
-        "test": "jest"
+        "test": "jest",
+        "start": "node .",
+        "nodemon": "nodemon ."
     },
-    "author": ""
+    "author": "",
+    "dependencies": {
+        "express": "^4.17.1",
+        "helmet": "^4.6.0",
+        "morgan": "^1.10.0"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.13"
+    }
 }
