@@ -1,6 +1,6 @@
-const express = require('express');
-const morgan = require('morgan');
-const helmet = require('helmet');
+import express from 'express';
+import morgan from 'morgan';
+import helmet from 'helmet';
 
 const app = express();
 const port = 8080;
