@@ -1,0 +1,444 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Get a room! API",
+        "description": "This is the API for get a room backend",
+        "contact": {
+            "email": "mikko.m.pirhonen@tuni.fi"
+        },
+        "license": {
+            "name": "MIT License",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "0.2.0"
+    },
+    "servers": [
+        {
+            "url": "https://virtserver.swaggerhub.com/Mikkooo/api/0.2.0",
+            "description": "SwaggerHub API Auto Mocking"
+        },
+        {
+            "url": "oispahuone.com",
+            "description": "The staging environment"
+        }
+    ],
+    "tags": [
+        {
+            "name": "preferences"
+        },
+        {
+            "name": "bookings"
+        }
+    ],
+    "paths": {
+        "/preferences": {
+            "get": {
+                "tags": ["preferences"],
+                "summary": "Get preferences for the user",
+                "description": "The current user is resolved from the request and the corresponding preferences are returned\n",
+                "operationId": "getPreferences",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/preferences"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User was not authenticated"
+                    }
+                }
+            },
+            "put": {
+                "tags": ["preferences"],
+                "summary": "Replace preferences for the user",
+                "description": "The current user is resolved from the request and the corresponding preferences are updated\n",
+                "operationId": "updatePreferences",
+                "requestBody": {
+                    "description": "The new preferences",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/preferences"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "The updated preferences",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/preferences"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "The preference object was malformed"
+                    },
+                    "401": {
+                        "description": "The user was not authenticated"
+                    }
+                }
+            }
+        },
+        "/booking": {
+            "post": {
+                "tags": ["bookings"],
+                "summary": "Make a booking",
+                "description": "The selected resource is booked with the details specified in the request body and  the current user\n",
+                "operationId": "makeBooking",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/bookingDetails"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "The new booking",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/booking"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "The bookingDetails object was malformed"
+                    },
+                    "401": {
+                        "description": "The user was not authenticated"
+                    },
+                    "409": {
+                        "description": "The room was no longer available for the booking"
+                    }
+                }
+            }
+        },
+        "/booking/current": {
+            "get": {
+                "tags": ["bookings"],
+                "summary": "Get the status of the current booking of the user",
+                "description": "Current booking is a booking that is currently ongoing.\n",
+                "operationId": "getCurrentBooking",
+                "responses": {
+                    "200": {
+                        "description": "The current booking",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/booking"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The user was not authenticated"
+                    }
+                }
+            }
+        },
+        "/booking/{bookingId}": {
+            "get": {
+                "tags": ["bookings"],
+                "summary": "Get details for a booking",
+                "description": "Get details of a booking by it's id\n",
+                "operationId": "getBooking",
+                "parameters": [
+                    {
+                        "name": "bookingId",
+                        "in": "path",
+                        "description": "ID of the booking",
+                        "required": true,
+                        "style": "simple",
+                        "explode": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The booking",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/booking"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The user was not authenticated"
+                    },
+                    "404": {
+                        "description": "Booking not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["bookings"],
+                "summary": "Delete a booking",
+                "description": "Delete a booking by it's id\n",
+                "operationId": "deleteBooking",
+                "parameters": [
+                    {
+                        "name": "bookingId",
+                        "in": "path",
+                        "description": "ID of the booking",
+                        "required": true,
+                        "style": "simple",
+                        "explode": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Booking was deleted successfully"
+                    },
+                    "401": {
+                        "description": "The user was not authenticated"
+                    },
+                    "403": {
+                        "description": "The user was not authorized delete this booking"
+                    },
+                    "404": {
+                        "description": "Booking not found"
+                    }
+                }
+            }
+        },
+        "/booking/{bookingId}/addTime": {
+            "patch": {
+                "tags": ["bookings"],
+                "summary": "Add time to a booking",
+                "description": "Adds the specified time to a booking\n",
+                "operationId": "addTimeToBooking",
+                "parameters": [
+                    {
+                        "name": "bookingId",
+                        "in": "path",
+                        "description": "ID of the booking to update",
+                        "required": true,
+                        "style": "simple",
+                        "explode": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/addTimeDetails"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "The modified booking",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/booking"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The user was not authenticated"
+                    },
+                    "403": {
+                        "description": "The user was not authorized to add time for this booking"
+                    }
+                }
+            }
+        },
+        "/availableRooms": {
+            "get": {
+                "tags": ["bookings"],
+                "summary": "Get available rooms",
+                "description": "Available rooms don't currently have a booking\n",
+                "operationId": "getAvailableRooms",
+                "parameters": [
+                    {
+                        "name": "building",
+                        "in": "query",
+                        "description": "Building to filter by",
+                        "required": false,
+                        "style": "form",
+                        "explode": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/availableRoom"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The user was not authenticated"
+                    }
+                }
+            }
+        },
+        "/buildings": {
+            "get": {
+                "tags": ["bookings", "preferences"],
+                "summary": "Get available buildings",
+                "description": "Conference rooms are located in buildings.\nBuildings can be used to group rooms\n",
+                "operationId": "getBuildings",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "The user was not authenticated"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "uuid": {
+                "type": "string",
+                "format": "uuid",
+                "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+            },
+            "room": {
+                "required": ["id", "name"],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "$ref": "#/components/schemas/uuid"
+                    },
+                    "name": {
+                        "type": "string",
+                        "nullable": false,
+                        "example": "Small meeting room 1"
+                    },
+                    "capacity": {
+                        "type": "number",
+                        "example": 12
+                    },
+                    "features": {
+                        "type": "array",
+                        "example": ["Shark tank", "TV"],
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "availableRoom": {
+                "required": ["availableFor", "room"],
+                "type": "object",
+                "properties": {
+                    "room": {
+                        "$ref": "#/components/schemas/room"
+                    },
+                    "availableFor": {
+                        "type": "number",
+                        "description": "Minutes this room is available for",
+                        "example": 120
+                    }
+                }
+            },
+            "building": {
+                "required": ["id", "name"],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "$ref": "#/components/schemas/uuid"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Hermia 5"
+                    }
+                }
+            },
+            "preferences": {
+                "required": ["favouriteBuilding"],
+                "type": "object",
+                "properties": {
+                    "favouriteBuilding": {
+                        "$ref": "#/components/schemas/building"
+                    }
+                }
+            },
+            "bookingDetails": {
+                "required": ["duration", "roomId", "title"],
+                "type": "object",
+                "properties": {
+                    "duration": {
+                        "type": "number",
+                        "description": "Duration of booking in minutes",
+                        "example": 60
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Weekly software meeting"
+                    },
+                    "roomId": {
+                        "$ref": "#/components/schemas/uuid"
+                    }
+                }
+            },
+            "booking": {
+                "required": ["endTime", "id", "room", "startTime"],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "$ref": "#/components/schemas/uuid"
+                    },
+                    "startTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "endTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "room": {
+                        "$ref": "#/components/schemas/room"
+                    }
+                }
+            },
+            "addTimeDetails": {
+                "required": ["timeToAdd"],
+                "type": "object",
+                "properties": {
+                    "timeToAdd": {
+                        "type": "number",
+                        "description": "Time to add to booking",
+                        "example": 15
+                    }
+                }
+            }
+        }
+    }
+}

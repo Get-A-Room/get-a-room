@@ -4,6 +4,7 @@ import helmet from 'helmet';
 
 import { router as indexRouter } from './routes/index';
 import { router as buildingRouter } from './routes/buildings';
+import { router as apiDocsRouter } from './routes/apiDocs';
 
 const app = express();
 const port = 8080;
@@ -18,6 +19,7 @@ app.use(helmet());
 
 app.use('/', indexRouter);
 app.use('/buildings', buildingRouter);
+app.use('/api-docs', apiDocsRouter);
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
