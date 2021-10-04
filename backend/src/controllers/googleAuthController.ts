@@ -6,12 +6,15 @@ import 'dotenv/config';
 
 export const router = express.Router();
 
+const backendUrl = process.env.CALLBACK_URL || 'http://localhost:8080';
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+
 passport.use(
     new GoogleStrategy(
         {
             clientID: process.env.GOOGLE_CLIENT_ID || '',
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-            callbackURL: 'http://localhost:8080/auth/google/callback'
+            callbackURL: `${backendUrl}/auth/google/callback`
         },
         function (accessToken, refreshToken, profile, done) {
             let email = null;
@@ -59,10 +62,10 @@ router.get(
 router.get(
     '/callback',
     passport.authenticate('google', {
-        failureRedirect: '/auth/failure',
+        failureRedirect: `${frontendUrl}/auth/failure`,
         session: false
     }),
     function (req, res) {
-        res.redirect(`/auth/success?token=${req.user}`);
+        res.redirect(`${frontendUrl}/auth/success?token=${req.user}`);
     }
 );

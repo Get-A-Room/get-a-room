@@ -37,6 +37,12 @@ export const jwtValidator = (noAuthPaths: string[]) => {
 
         jwt.verify(bearerToken, jwtSecret, (err, decoded) => {
             if (err) {
+                if (err.name === 'TokenExpiredError') {
+                    return res.status(401).send({
+                        message: 'Token expired'
+                    });
+                }
+
                 return res.status(401).send({
                     message: 'Invalid token'
                 });
@@ -46,6 +52,6 @@ export const jwtValidator = (noAuthPaths: string[]) => {
             next();
         });
     };
-    // const noAuthPaths = ['/auth', '/api-docs'];
+
     return middleware;
 };
