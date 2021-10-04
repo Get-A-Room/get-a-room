@@ -35,12 +35,12 @@ passport.use(
                 exp: expiryTime.getTime()
             };
 
-            const jwt_secret = process.env.JWT_SECRET;
-            if (!jwt_secret) {
+            const jwtSecret = process.env.JWT_SECRET;
+            if (!jwtSecret) {
                 return done(null);
             }
 
-            return done(null, jwt.sign(user, jwt_secret));
+            return done(null, jwt.sign(user, jwtSecret));
         }
     )
 );

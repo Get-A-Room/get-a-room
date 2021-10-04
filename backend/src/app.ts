@@ -1,10 +1,8 @@
 import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
-
 import passport from 'passport';
-
-// import { authenticationMiddleware } from './authMiddleware';
+import { jwtValidator } from './authMiddleware';
 
 import { router as indexRouter } from './routes/index';
 import { router as apiDocsRouter } from './routes/apiDocs';
@@ -23,6 +21,7 @@ app.use(morgan('short'));
 app.use(helmet());
 app.use(express.json());
 app.use(passport.initialize());
+app.use(jwtValidator(['/auth', '/api-docs']));
 
 app.use('/', indexRouter);
 app.use('/api-docs', apiDocsRouter);
