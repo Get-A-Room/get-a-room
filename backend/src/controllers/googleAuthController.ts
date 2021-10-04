@@ -24,15 +24,11 @@ passport.use(
                 return done(null);
             }
 
-            const currentTime = new Date();
-            const expiryTime = new Date(currentTime.getTime() + 60 * 60000);
-
             const user = {
                 googleId: profile.id,
                 email,
                 displayName: profile.displayName,
-                token: accessToken,
-                exp: expiryTime.getTime()
+                token: accessToken
             };
 
             const jwtSecret = process.env.JWT_SECRET;
@@ -40,10 +36,12 @@ passport.use(
                 return done(null);
             }
 
-            return done(null, jwt.sign(user, jwtSecret));
+            return done(null, jwt.sign(user, jwtSecret, { expiresIn: '60m' }));
         }
     )
 );
+
+// TODO: Add support for custom address after the callback
 
 router.get(
     '/',
