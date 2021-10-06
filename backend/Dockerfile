@@ -7,6 +7,7 @@ WORKDIR /usr/src/app
 
 ENV PORT 8080
 ENV HOST 0.0.0.0
+# ENV NODE_ENV=production
 
 EXPOSE 8080
 
@@ -24,7 +25,7 @@ RUN npm install --only=production\
 # Copy local code to the container image.
 COPY . ./
 
-# RUN tsc
+RUN npm run build
 
 # Run the web service on container startup.
-CMD [ "npm", "start" ]
+CMD [ "npm", "start-production" ]
