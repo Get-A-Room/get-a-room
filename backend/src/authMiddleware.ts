@@ -43,6 +43,7 @@ export const accessTokenValidator = (noAuthPaths: string[]) => {
 
                 // Retrieve refresh token and refresh access token with it
                 // Find a way to pass new access token back to frontend
+                // const sub = tokenInfo.sub as string;
                 next();
             })
             .catch(() => {
