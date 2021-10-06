@@ -97,3 +97,12 @@ jobs:
                     --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
                     --platform "managed" \
                     --allow-unauthenticated
+
+            # Pushes the .docker directory to Google Cloud Build to build the Docker image and save it to Google Cloud Registry
+            - name: Build and push Node backend
+              working-directory: backend
+              run: gcloud builds submit --quiet --tag "gcr.io/get-a-room-326217/get-a-room-node-backend:$GITHUB_SHA"
+
+            # Deploy Node backend image to Cloud Run
+            - name: Deploy Node backend GCR
+              run: gcloud run deploy get-a-room-node-backend --quiet --image "gcr.io/get-a-room-326217/get-a-room-node-backend:$GITHUB_SHA" --platform managed --region europe-north1 --allow-unauthenticated
