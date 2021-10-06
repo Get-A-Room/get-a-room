@@ -9,7 +9,7 @@ on: push
 env:
     PROJECT_ID: ${{ secrets.GCR_PROJECT }}
     RUN_REGION: europe-north1
-    SERVICE_NAME: get-a-room
+    REACT_FRONTEND_CLOUD_RUN_SERVICE_NAME: get-a-room
     NODE_BACKEND_CLOUD_RUN_SERVICE_NAME: get-a-room-node-backend
 
 jobs:
@@ -86,16 +86,16 @@ jobs:
               run: |-
                   gcloud builds submit \
                     --quiet \
-                    --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA"
+                    --tag "gcr.io/$PROJECT_ID/$REACT_FRONTEND_CLOUD_RUN_SERVICE_NAME:$GITHUB_SHA"
               working-directory: frontend/.docker
 
             # Deploy image to Cloud Run
             - name: Deploy React frontend to Cloud Run
               run: |-
-                  gcloud run deploy "$SERVICE_NAME" \
+                  gcloud run deploy "$REACT_FRONTEND_CLOUD_RUN_SERVICE_NAME" \
                     --quiet \
                     --region "$RUN_REGION" \
-                    --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
+                    --image "gcr.io/$PROJECT_ID/$REACT_FRONTEND_CLOUD_RUN_SERVICE_NAME:$GITHUB_SHA" \
                     --platform "managed" \
                     --allow-unauthenticated
 
