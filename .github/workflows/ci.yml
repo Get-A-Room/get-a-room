@@ -10,6 +10,7 @@ env:
     PROJECT_ID: ${{ secrets.GCR_PROJECT }}
     RUN_REGION: europe-north1
     SERVICE_NAME: get-a-room
+    NODE_BACKEND_CLOUD_RUN_SERVICE_NAME: get-a-room-node-backend
 
 jobs:
     # check-style:
@@ -101,8 +102,17 @@ jobs:
             # Pushes the .docker directory to Google Cloud Build to build the Docker image and save it to Google Cloud Registry
             - name: Build and push Node backend
               working-directory: backend
-              run: gcloud builds submit --quiet --tag "gcr.io/get-a-room-326217/get-a-room-node-backend:$GITHUB_SHA"
+              run: |-
+                  gcloud builds submit \
+                    --quiet \
+                    --tag "gcr.io/$PROJECT_ID/$NODE_BACKEND_CLOUD_RUN_SERVICE_NAME:$GITHUB_SHA"
 
             # Deploy Node backend image to Cloud Run
             - name: Deploy Node backend GCR
-              run: gcloud run deploy get-a-room-node-backend --quiet --image "gcr.io/get-a-room-326217/get-a-room-node-backend:$GITHUB_SHA" --platform managed --region europe-north1 --allow-unauthenticated
+              run: |-
+                  gcloud run deploy $NODE_BACKEND_CLOUD_RUN_SERVICE_NAME \
+                    --quiet \
+                    --region "$RUN_REGION" \
+                    --image "gcr.io/$PROJECT_ID/$NODE_BACKEND_CLOUD_RUN_SERVICE_NAME:$GITHUB_SHA" \
+                    --platform "managed" \
+                    --allow-unauthenticated
