@@ -1,5 +1,4 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 import 'dotenv/config';
@@ -17,10 +16,10 @@ const scopes = [
 ];
 
 /**
- * Returns a OAuthClient to use for authentication
- * @returns
+ * Returns a OAuth2Client to use for authentication
+ * @returns OAuth2Client
  */
-const getOAuthClient = () => {
+export const getOAuthClient = () => {
     return new google.auth.OAuth2(
         process.env.GOOGLE_CLIENT_ID || '',
         process.env.GOOGLE_CLIENT_SECRET || '',
@@ -42,6 +41,7 @@ router.get('/', async (req: express.Request, res: express.Response) => {
 router.get('/callback', async (req: express.Request, res: express.Response) => {
     if (!req.query.code) {
         res.status(500).send({
+            code: 500,
             message: 'Internal Server Error'
         });
     }
