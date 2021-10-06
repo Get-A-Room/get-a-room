@@ -1,7 +1,5 @@
 import express from 'express';
-import passport from 'passport';
 import jwt from 'jsonwebtoken';
-import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
 import 'dotenv/config';
 
 export const router = express.Router();
@@ -9,6 +7,7 @@ export const router = express.Router();
 const backendUrl = process.env.CALLBACK_URL || 'http://localhost:8080';
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
 
+/*
 passport.use(
     new GoogleStrategy(
         {
@@ -69,3 +68,5 @@ router.get(
         res.redirect(`${frontendUrl}/auth/success?token=${req.user}`);
     }
 );
+
+*/
