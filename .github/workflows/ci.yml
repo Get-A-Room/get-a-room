@@ -9,7 +9,8 @@ on: push
 env:
     PROJECT_ID: ${{ secrets.GCR_PROJECT }}
     RUN_REGION: europe-north1
-    SERVICE_NAME: get-a-room
+    REACT_FRONTEND_CLOUD_RUN_SERVICE_NAME: get-a-room
+    NODE_BACKEND_CLOUD_RUN_SERVICE_NAME: get-a-room-node-backend
 
 jobs:
     check-style:
@@ -54,8 +55,8 @@ jobs:
             - run: npm ci
             - run: npm run test:ci
 
-    deploy-gcr:
-        name: Deploy to GCR
+    deploy-react-frontend:
+        name: Deploy React frontend
         if: github.ref == 'refs/heads/dev'
         needs: test
         runs-on: ubuntu-latest
@@ -81,19 +82,56 @@ jobs:
                   project_id: ${{ secrets.GCR_PROJECT }}
 
             # Pushes the .docker directory to Google Cloud Build to build the Docker image and save it to Google Cloud Registry
-            - name: Build & Push
+            - name: Build & Push React frontend to Container registry
               run: |-
                   gcloud builds submit \
                     --quiet \
-                    --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA"
+                    --tag "gcr.io/$PROJECT_ID/$REACT_FRONTEND_CLOUD_RUN_SERVICE_NAME:$GITHUB_SHA"
               working-directory: frontend/.docker
 
             # Deploy image to Cloud Run
-            - name: Deploy GCR
+            - name: Deploy React frontend to Cloud Run
               run: |-
-                  gcloud run deploy "$SERVICE_NAME" \
+                  gcloud run deploy "$REACT_FRONTEND_CLOUD_RUN_SERVICE_NAME" \
                     --quiet \
                     --region "$RUN_REGION" \
-                    --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
+                    --image "gcr.io/$PROJECT_ID/$REACT_FRONTEND_CLOUD_RUN_SERVICE_NAME:$GITHUB_SHA" \
+                    --platform "managed" \
+                    --allow-unauthenticated
+
+    deploy-node-backend:
+        name: Deploy Node backend
+        if: github.ref == 'refs/heads/dev'
+        needs: test
+        runs-on: ubuntu-latest
+
+        steps:
+            # Checks out the repository
+            - name: Checkout Repo
+              uses: actions/checkout@main
+
+            # Prepares the GCloud CLI with your project ID and private key
+            - name: Setup gcloud CLI
+              uses: google-github-actions/setup-gcloud@master
+              with:
+                  version: '290.0.1'
+                  service_account_key: ${{ secrets.GCR_SA_KEY }}
+                  project_id: ${{ secrets.GCR_PROJECT }}
+
+            # Pushes the .docker directory to Google Cloud Build to build the Docker image and save it to Google Cloud Registry
+            - name: Build and push Node backend to Container registry
+              working-directory: backend
+              run: |-
+                  gcloud builds submit \
+                    --quiet \
+                    --tag "gcr.io/$PROJECT_ID/$NODE_BACKEND_CLOUD_RUN_SERVICE_NAME:$GITHUB_SHA"
+
+            # Deploy Node backend image to Cloud Run
+            - name: Deploy Node backend to Cloud Run
+              run: |-
+                  gcloud run deploy $NODE_BACKEND_CLOUD_RUN_SERVICE_NAME \
+                    --quiet \
+                    --region "$RUN_REGION" \
+                    --image "gcr.io/$PROJECT_ID/$NODE_BACKEND_CLOUD_RUN_SERVICE_NAME:$GITHUB_SHA" \
                     --platform "managed" \
                     --allow-unauthenticated
