@@ -48,7 +48,7 @@ export const jwtValidator = (noAuthPaths: string[]) => {
                 });
             }
 
-            req.user = decoded;
+            // req.user = decoded;
             next();
         });
     };

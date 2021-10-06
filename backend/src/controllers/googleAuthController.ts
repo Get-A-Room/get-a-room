@@ -1,5 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import { google } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
 import 'dotenv/config';
 
 export const router = express.Router();
@@ -7,66 +9,75 @@ export const router = express.Router();
 const backendUrl = process.env.CALLBACK_URL || 'http://localhost:8080';
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
 
-/*
-passport.use(
-    new GoogleStrategy(
-        {
-            clientID: process.env.GOOGLE_CLIENT_ID || '',
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-            callbackURL: `${backendUrl}/auth/google/callback`
-        },
-        function (accessToken, refreshToken, profile, done) {
-            let email = null;
+const scopes = [
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/calendar',
+    'https://www.googleapis.com/auth/admin.directory.resource.calendar.readonly'
+];
 
-            if (profile.emails && profile.emails[0]) {
-                email = profile.emails[0].value;
-            }
+/**
+ * Returns a OAuthClient to use for authentication
+ * @returns
+ */
+const getOAuthClient = () => {
+    return new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID || '',
+        process.env.GOOGLE_CLIENT_SECRET || '',
+        `${backendUrl}/auth/google/callback`
+    );
+};
 
-            if (profile._json.hd !== 'oispahuone.com') {
-                return done(null);
-            }
+router.get('/', async (req: express.Request, res: express.Response) => {
+    const client = getOAuthClient();
+    const url = client.generateAuthUrl({
+        access_type: 'online', // When we are ready to receive
+        scope: scopes,
+        hd: 'oispahuone.com'
+    });
 
-            const user = {
-                googleId: profile.id,
-                email,
-                displayName: profile.displayName,
-                token: accessToken
-            };
+    res.redirect(url);
+});
 
-            const jwtSecret = process.env.JWT_SECRET;
-            if (!jwtSecret) {
-                return done(null);
-            }
-
-            return done(null, jwt.sign(user, jwtSecret, { expiresIn: '60m' }));
-        }
-    )
-);
-
-// TODO: Add support for custom address after the callback
-
-router.get(
-    '/',
-    passport.authenticate('google', {
-        scope: [
-            'https://www.googleapis.com/auth/userinfo.profile',
-            'https://www.googleapis.com/auth/userinfo.email',
-            'https://www.googleapis.com/auth/calendar',
-            'https://www.googleapis.com/auth/admin.directory.resource.calendar.readonly'
-        ],
-        session: false
-    })
-);
-
-router.get(
-    '/callback',
-    passport.authenticate('google', {
-        failureRedirect: `${frontendUrl}/auth/failure`,
-        session: false
-    }),
-    function (req, res) {
-        res.redirect(`${frontendUrl}/auth/success?token=${req.user}`);
+router.get('/callback', async (req: express.Request, res: express.Response) => {
+    if (!req.query.code) {
+        res.status(500).send({
+            message: 'Internal Server Error'
+        });
     }
-);
 
-*/
+    const code: string = req.query.code as string;
+    const client = getOAuthClient();
+    const { tokens } = await client.getToken(code);
+
+    client.setCredentials(tokens);
+    const accessToken = tokens.access_token as string;
+    const idToken = tokens.id_token as string;
+
+    if (!idToken || !accessToken) {
+        return res.redirect(`${frontendUrl}/auth/failure`);
+    }
+
+    const payload = await client
+        .verifyIdToken({
+            idToken: idToken
+        })
+        .then((ticket) => ticket.getPayload());
+
+    if (payload?.hd !== 'oispahuone.com') {
+        return res.redirect(`${frontendUrl}/auth/failure`);
+    }
+
+    // TODO:
+    // If this is the users first time, save refresh token and other stuff to database
+
+    // Sub is a unique identifier for an account that will not change
+    // so it should be used as primary key when we start using a db
+
+    // const sub = payload?.sub;
+    const name = payload?.name;
+
+    res.redirect(
+        `${frontendUrl}/auth/success?token=${accessToken}&name=${name}`
+    );
+});
