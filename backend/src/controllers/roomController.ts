@@ -2,6 +2,8 @@ import express from 'express';
 import { google } from 'googleapis';
 import 'dotenv/config';
 
+import { getBuildings } from './buildingsController';
+
 const admin = google.admin('directory_v1');
 
 /**
@@ -115,4 +117,44 @@ const simplifyResultData = (result: any) => {
             availableFor: 0
         };
     });
+};
+
+/**
+ * Middleware validates that a building belongs to the organization
+ * @param req Express request
+ * @param res Express response
+ * @param building Id of the building
+ * @param next Next
+ * @returns -
+ */
+export const validateBuildingInOrg = (
+    req: express.Request,
+    res: express.Response,
+    building: any,
+    next: express.NextFunction
+) => {
+    getBuildings(req.oAuthClient)
+        .then((result) => {
+            if (!result || result.length === 0) {
+                return res.status(500).send({
+                    code: 500,
+                    message: 'Internal Server Error'
+                });
+            }
+
+            const ids: string[] = result.map((x: any) => x.buildingId);
+
+            if (!ids.includes(building)) {
+                return res.status(400).send({
+                    code: 400,
+                    message: 'Bad Request'
+                });
+            }
+
+            return next();
+        })
+        .catch((err) => {
+            console.error(err);
+            return next();
+        });
 };

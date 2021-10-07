@@ -1,6 +1,5 @@
 import express from 'express';
 import { google } from 'googleapis';
-import { OAuth2Client } from 'google-auth-library';
 import 'dotenv/config';
 
 export const router = express.Router();
