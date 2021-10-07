@@ -65,15 +65,9 @@ export const validateAccessToken = () => {
         res: express.Response,
         next: express.NextFunction
     ) => {
-        if (!req.headers.authorization) {
-            return res.status(401).send({
-                code: 401,
-                message: 'Invalid token'
-            });
-        }
-
         const client = getOAuthClient();
         const accessToken = req.token;
+        client.setCredentials({ access_token: accessToken });
 
         client
             .getTokenInfo(accessToken)
@@ -82,9 +76,7 @@ export const validateAccessToken = () => {
 
                 // Access token is still valid
                 if (currentTime < tokenInfo.expiry_date) {
-                    client.setCredentials({ access_token: accessToken });
                     req.oAuthClient = client;
-
                     return next();
                 }
 
@@ -92,7 +84,6 @@ export const validateAccessToken = () => {
                 // Find a way to pass new access token back to frontend
                 // const sub = tokenInfo.sub as string;
                 req.token = accessToken;
-                client.setCredentials({ access_token: accessToken });
                 req.oAuthClient = client;
 
                 return next();
