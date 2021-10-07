@@ -87,6 +87,10 @@ export const removeReservedRooms = () => {
         const client = res.locals.oAuthClient;
         const rooms = res.locals.rooms;
 
+        if (req.query.showReserved) {
+            next();
+        }
+
         if (!rooms || rooms.length === 0) {
             return res.status(500).send({
                 code: 500,
