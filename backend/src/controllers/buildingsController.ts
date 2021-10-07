@@ -3,18 +3,17 @@ import { google } from 'googleapis';
 
 const admin = google.admin('directory_v1');
 
+/**
+ * Get all buildings in the organization
+ * @param req Express request
+ * @param res Express response
+ * @returns -
+ */
 export const getBuildings = async (
     req: express.Request,
     res: express.Response
 ) => {
     const client = req.oAuthClient;
-
-    if (!process.env.GOOGLE_CUSTOMER_ID) {
-        return res.status(500).send({
-            code: 500,
-            message: 'Google Workspace customer id not set'
-        });
-    }
 
     admin.resources.buildings
         .list({
@@ -22,6 +21,13 @@ export const getBuildings = async (
             auth: client
         })
         .then((result) => {
+            if (!result.data.buildings) {
+                return res.status(204).json({
+                    code: 204,
+                    message: 'No Content'
+                });
+            }
+
             const buildings = result.data.buildings?.map((x) => {
                 return {
                     buildingId: x.buildingId,
@@ -33,12 +39,10 @@ export const getBuildings = async (
 
             res.json({ buildings });
         })
-        .catch((err) => {
-            const code = err.response.status;
-            const message = err.response.statusText;
-            return res.status(code).send({
-                code,
-                message
+        .catch(() => {
+            return res.status(500).json({
+                code: 500,
+                message: 'Internal Server Error'
             });
         });
 };
