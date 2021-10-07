@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import { OAuth2Client } from 'google-auth-library';
 import {
     authFilter,
+    checkEnvVariables,
     parseAccessToken,
     validateAccessToken
 } from './authMiddleware';
@@ -25,6 +26,7 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(morgan('short'));
 app.use(helmet());
 app.use(express.json());
+app.use(checkEnvVariables());
 app.use(parseAccessToken().unless(authFilter));
 app.use(validateAccessToken().unless(authFilter));
 
