@@ -8,6 +8,7 @@ router.get(
     '/',
     controller.validateBuildingInOrg(),
     controller.addAllRooms(),
+    controller.removeReservedRooms(),
     (req, res) => {
         return res.json({ rooms: res.locals.rooms });
     }

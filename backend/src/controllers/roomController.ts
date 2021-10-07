@@ -1,5 +1,6 @@
 import express from 'express';
 import { google } from 'googleapis';
+import _ from 'lodash';
 import 'dotenv/config';
 
 import { getBuildings } from './buildingsController';
@@ -67,6 +68,75 @@ export const addAllRooms = () => {
                 });
             }
         }
+    };
+
+    return middleware;
+};
+
+/**
+ * Middleware that removes all the reserved rooms from the res.locals.rooms
+ * Note: This is currently pretty slow!
+ * @returns -
+ */
+export const removeReservedRooms = () => {
+    const middleware = async (
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction
+    ) => {
+        const client = res.locals.oAuthClient;
+        const rooms = res.locals.rooms;
+
+        if (!rooms || rooms.length === 0) {
+            return res.status(500).send({
+                code: 500,
+                message: 'Internal Server Error'
+            });
+        }
+
+        const calendarIds = rooms.map((x: any) => {
+            return { id: x.email };
+        });
+
+        const startTime = new Date();
+        const endTime = new Date(startTime.getTime() + 120 * 60000);
+
+        let results: any = {};
+        let toRemove: string[] = [];
+
+        for (let i = 0; i < calendarIds.length; i += 50) {
+            const runIds = calendarIds.slice(i, 50 + i);
+
+            const result = await calendar.freebusy.query({
+                requestBody: {
+                    timeMin: startTime.toISOString(),
+                    timeMax: endTime.toISOString(),
+                    items: runIds,
+                    calendarExpansionMax: 50
+                },
+                auth: client
+            });
+
+            results = {
+                ...results,
+                ...result.data.calendars
+            };
+        }
+
+        calendarIds.forEach((x: any) => {
+            if (results[x.id].busy.length !== 0) {
+                toRemove.push(x.id);
+            }
+        });
+
+        _.remove(rooms, (room: any) => {
+            if (toRemove.includes(room.email)) {
+                return true;
+            }
+            return false;
+        });
+
+        next();
     };
 
     return middleware;

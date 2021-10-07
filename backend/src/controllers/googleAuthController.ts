@@ -1,5 +1,5 @@
 import express from 'express';
-import { google } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
 import 'dotenv/config';
 
 export const router = express.Router();
@@ -20,7 +20,7 @@ const scopes = [
  * @returns OAuth2Client
  */
 export const getOAuthClient = (accessToken: string | undefined = undefined) => {
-    const client = new google.auth.OAuth2(
+    const client = new OAuth2Client(
         process.env.GOOGLE_CLIENT_ID || '',
         process.env.GOOGLE_CLIENT_SECRET || '',
         `${backendUrl}/auth/google/callback`
