@@ -5,90 +5,162 @@ import 'dotenv/config';
 import { getBuildings } from './buildingsController';
 
 const admin = google.admin('directory_v1');
+const calendar = google.calendar('v3');
 
 /**
- * Get all rooms in the given building
- * @param req Express request
- * @param res Express response
- * @param buildingId Id of the building
+ * Middleware that adds all the rooms to the res.locals.rooms
  * @returns -
  */
-export const getRoomsBuilding = (
-    req: express.Request,
-    res: express.Response,
-    buildingId: any
-) => {
-    const client = req.oAuthClient;
+export const addAllRooms = () => {
+    const middleware = async (
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction
+    ) => {
+        const client = req.oAuthClient;
+        const building = req.query.building as string;
 
-    // TODO: Validate given building against real data
+        if (building) {
+            try {
+                const rooms = await getRoomsBuilding(building, client);
 
-    admin.resources.calendars
-        .list({
-            customer: process.env.GOOGLE_CUSTOMER_ID,
-            orderBy: 'capacity desc',
-            query: `resourceCategory=CONFERENCE_ROOM AND buildingId=${buildingId}`,
-            auth: client
-        })
-        .then((result) => {
-            if (!result.data.items) {
-                return res.status(204).json({
-                    code: 204,
-                    message: 'No Content'
+                if (rooms.length === 0) {
+                    return res.status(204).json({
+                        code: 204,
+                        message: 'No Content'
+                    });
+                }
+
+                res.locals.rooms = rooms;
+                next();
+            } catch (err: any) {
+                // Custom error for incorrect building
+                if (err.errors[0].message === 'Invalid Input: filter') {
+                    return res.status(400).json({
+                        code: 400,
+                        message: 'Bad Request'
+                    });
+                }
+
+                return res.status(500).json({
+                    code: 500,
+                    message: 'Internal Server Error'
                 });
             }
+        } else {
+            try {
+                const rooms = await getRooms(client);
 
-            return res.json({ rooms: simplifyResultData(result) });
-        })
-        .catch((err) => {
-            // Custom error for incorrect building
-            if (err.errors[0].message === 'Invalid Input: filter') {
-                return res.status(400).json({
-                    code: 400,
-                    message: 'Bad Request'
+                if (rooms.length === 0) {
+                    return res.status(204).json({
+                        code: 204,
+                        message: 'No Content'
+                    });
+                }
+
+                res.locals.rooms = rooms;
+                next();
+            } catch {
+                return res.status(500).json({
+                    code: 500,
+                    message: 'Internal Server Error'
                 });
             }
+        }
+    };
 
-            return res.status(500).json({
-                code: 500,
-                message: 'Internal Server Error'
-            });
-        });
+    return middleware;
 };
 
 /**
- * Get all rooms in the organization
+ * Middleware validates that a building belongs to the organization
  * @param req Express request
  * @param res Express response
+ * @param next Next
  * @returns -
  */
-export const getRooms = async (req: express.Request, res: express.Response) => {
-    const client = req.oAuthClient;
+export const validateBuildingInOrg = () => {
+    const middleware = (
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction
+    ) => {
+        const building = req.query.building as string;
 
-    // TODO: Add support for multiple pages (over 500 results)
+        if (!building) {
+            return next();
+        }
 
-    admin.resources.calendars
-        .list({
-            customer: process.env.GOOGLE_CUSTOMER_ID,
-            orderBy: 'buildingId, capacity desc',
-            query: `resourceCategory=CONFERENCE_ROOM`,
-            auth: client
-        })
-        .then((result) => {
-            if (!result.data.items) {
-                return res.status(204).json({
-                    code: 204,
-                    message: 'No Content'
-                });
-            }
+        getBuildings(req.oAuthClient)
+            .then((result) => {
+                if (!result || result.length === 0) {
+                    return res.status(500).send({
+                        code: 500,
+                        message: 'Internal Server Error'
+                    });
+                }
 
-            return res.json({ rooms: simplifyResultData(result) });
-        })
-        .catch(() => {
-            return res.status(500).json({
-                code: 500,
-                message: 'Internal Server Error'
+                const ids: string[] = result.map((x: any) => x.buildingId);
+
+                if (!ids.includes(building)) {
+                    return res.status(400).send({
+                        code: 400,
+                        message: 'Bad Request'
+                    });
+                }
+
+                return next();
+            })
+            .catch((err) => {
+                console.error(err);
+                return next();
             });
-        });
+    };
+
+    return middleware;
+};
+
+/**
+ * Return all rooms in the organization
+ * @param client OAuth2Client
+ * @returns -
+ */
+const getRooms = async (client: any) => {
+    const rooms = await admin.resources.calendars.list({
+        customer: process.env.GOOGLE_CUSTOMER_ID,
+        orderBy: 'buildingId, capacity desc',
+        query: `resourceCategory=CONFERENCE_ROOM`,
+        auth: client
+    });
+
+    // TODO: Add support for multiple pages
+
+    if (!rooms.data.items) {
+        return [];
+    }
+
+    return simplifyResultData(rooms);
+};
+
+/**
+ * Return all rooms inside the building
+ * @param building buildingId of the building
+ * @param client OAuth2Client
+ * @returns -
+ */
+const getRoomsBuilding = async (building: any, client: any) => {
+    const rooms = await admin.resources.calendars.list({
+        customer: process.env.GOOGLE_CUSTOMER_ID,
+        orderBy: 'capacity desc',
+        query: `resourceCategory=CONFERENCE_ROOM AND buildingId=${building}`,
+        auth: client
+    });
+
+    if (!rooms.data.items) {
+        return [];
+    }
+
+    return simplifyResultData(rooms);
 };
 
 /**
@@ -117,44 +189,4 @@ const simplifyResultData = (result: any) => {
             availableFor: 0
         };
     });
-};
-
-/**
- * Middleware validates that a building belongs to the organization
- * @param req Express request
- * @param res Express response
- * @param building Id of the building
- * @param next Next
- * @returns -
- */
-export const validateBuildingInOrg = (
-    req: express.Request,
-    res: express.Response,
-    building: any,
-    next: express.NextFunction
-) => {
-    getBuildings(req.oAuthClient)
-        .then((result) => {
-            if (!result || result.length === 0) {
-                return res.status(500).send({
-                    code: 500,
-                    message: 'Internal Server Error'
-                });
-            }
-
-            const ids: string[] = result.map((x: any) => x.buildingId);
-
-            if (!ids.includes(building)) {
-                return res.status(400).send({
-                    code: 400,
-                    message: 'Bad Request'
-                });
-            }
-
-            return next();
-        })
-        .catch((err) => {
-            console.error(err);
-            return next();
-        });
 };
