@@ -17,14 +17,23 @@ const scopes = [
 
 /**
  * Returns a OAuth2Client to use for authentication
+ * @param accessToken Optional. Access token to embed into client
  * @returns OAuth2Client
  */
-export const getOAuthClient = () => {
-    return new google.auth.OAuth2(
+export const getOAuthClient = (accessToken: string | undefined = undefined) => {
+    const client = new google.auth.OAuth2(
         process.env.GOOGLE_CLIENT_ID || '',
         process.env.GOOGLE_CLIENT_SECRET || '',
         `${backendUrl}/auth/google/callback`
     );
+
+    if (accessToken) {
+        client.setCredentials({
+            access_token: accessToken
+        });
+    }
+
+    return client;
 };
 
 router.get('/', async (req: express.Request, res: express.Response) => {

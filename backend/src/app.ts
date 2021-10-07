@@ -7,6 +7,7 @@ import { router as indexRouter } from './routes/index';
 import { router as apiDocsRouter } from './routes/apiDocs';
 import { router as authRouter } from './routes/auth';
 import { router as buildingRouter } from './routes/buildings';
+import { router as roomRouter } from './routes/rooms';
 
 const app = express();
 const port = 8080;
@@ -25,7 +26,16 @@ app.use('/', indexRouter);
 app.use('/api-docs', apiDocsRouter);
 app.use('/auth', authRouter);
 app.use('/buildings', buildingRouter);
+app.use('/rooms', roomRouter);
 
 app.listen(port, () => {
     console.log(`Get A Room! API listening at http://localhost:${port}`);
 });
+
+declare global {
+    namespace Express {
+        interface Request {
+            token: string;
+        }
+    }
+}

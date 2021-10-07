@@ -38,12 +38,14 @@ export const accessTokenValidator = (noAuthPaths: string[]) => {
 
                 // Access token is still valid
                 if (currentTime < tokenInfo.expiry_date) {
+                    req.token = accessToken;
                     next();
                 }
 
                 // Retrieve refresh token and refresh access token with it
                 // Find a way to pass new access token back to frontend
                 // const sub = tokenInfo.sub as string;
+                req.token = accessToken;
                 next();
             })
             .catch(() => {
