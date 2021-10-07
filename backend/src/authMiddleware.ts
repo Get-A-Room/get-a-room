@@ -1,6 +1,57 @@
 import express from 'express';
+import unless from 'express-unless';
 import { getOAuthClient } from './controllers/googleAuthController';
 import 'dotenv/config';
+
+/**
+ * Filter for unless
+ * @param req Express request
+ * @returns {boolean}
+ */
+export const authFilter = (req: express.Request) => {
+    const path = req.path;
+    const skipPaths = ['/auth', '/api-docs'];
+
+    if (path === '/') {
+        return true;
+    }
+
+    if (skipPaths.some((v) => path.includes(v))) {
+        return true;
+    }
+
+    return false;
+};
+
+/**
+ * Parses access token from headers and sets it to req.token but does not validate it
+ * @returns -
+ */
+export const parseAccessToken = () => {
+    const middleware = (
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction
+    ) => {
+        if (!req.headers.authorization) {
+            return res.status(401).send({
+                code: 401,
+                message: 'Invalid token'
+            });
+        }
+
+        const bearerHeader = req.headers.authorization;
+        const bearer = bearerHeader.split(' ');
+        const accessToken = bearer[1];
+        req.token = accessToken;
+
+        next();
+    };
+
+    middleware.unless = unless;
+
+    return middleware;
+};
 
 /**
  * Validate that the access token included in the authorization header is valid
@@ -8,17 +59,12 @@ import 'dotenv/config';
  * @param noAuthPaths Array of paths that don't require autentication
  * @returns -
  */
-export const accessTokenValidator = (noAuthPaths: string[]) => {
+export const validateAccessToken = () => {
     const middleware = (
         req: express.Request,
         res: express.Response,
         next: express.NextFunction
     ) => {
-        // Some paths do not require authentication
-        if (req.path === '/' || noAuthPaths.some((v) => req.path.includes(v))) {
-            return next();
-        }
-
         if (!req.headers.authorization) {
             return res.status(401).send({
                 code: 401,
@@ -27,9 +73,7 @@ export const accessTokenValidator = (noAuthPaths: string[]) => {
         }
 
         const client = getOAuthClient();
-        const bearerHeader = req.headers.authorization;
-        const bearer = bearerHeader.split(' ');
-        const accessToken = bearer[1];
+        const accessToken = req.token;
 
         client
             .getTokenInfo(accessToken)
@@ -38,15 +82,20 @@ export const accessTokenValidator = (noAuthPaths: string[]) => {
 
                 // Access token is still valid
                 if (currentTime < tokenInfo.expiry_date) {
-                    req.token = accessToken;
-                    next();
+                    client.setCredentials({ access_token: accessToken });
+                    req.oAuthClient = client;
+
+                    return next();
                 }
 
                 // Retrieve refresh token and refresh access token with it
                 // Find a way to pass new access token back to frontend
                 // const sub = tokenInfo.sub as string;
                 req.token = accessToken;
-                next();
+                client.setCredentials({ access_token: accessToken });
+                req.oAuthClient = client;
+
+                return next();
             })
             .catch(() => {
                 return res.status(401).send({
@@ -55,6 +104,8 @@ export const accessTokenValidator = (noAuthPaths: string[]) => {
                 });
             });
     };
+
+    middleware.unless = unless;
 
     return middleware;
 };

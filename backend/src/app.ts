@@ -1,7 +1,13 @@
 import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
-import { accessTokenValidator } from './authMiddleware';
+import unless from 'express-unless';
+import { OAuth2Client } from 'google-auth-library';
+import {
+    authFilter,
+    parseAccessToken,
+    validateAccessToken
+} from './authMiddleware';
 
 import { router as indexRouter } from './routes/index';
 import { router as apiDocsRouter } from './routes/apiDocs';
@@ -20,7 +26,8 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(morgan('short'));
 app.use(helmet());
 app.use(express.json());
-app.use(accessTokenValidator(['/auth', '/api-docs']));
+app.use(parseAccessToken().unless(authFilter));
+app.use(validateAccessToken().unless(authFilter));
 
 app.use('/', indexRouter);
 app.use('/api-docs', apiDocsRouter);
@@ -36,6 +43,7 @@ declare global {
     namespace Express {
         interface Request {
             token: string;
+            oAuthClient: OAuth2Client;
         }
     }
 }
