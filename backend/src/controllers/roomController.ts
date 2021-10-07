@@ -75,7 +75,7 @@ export const addAllRooms = () => {
 
 /**
  * Middleware that removes all the reserved rooms from the res.locals.rooms
- * Note: This is currently pretty slow!
+ * Note: This is currently VERY slow!
  * @returns -
  */
 export const removeReservedRooms = () => {
@@ -94,37 +94,38 @@ export const removeReservedRooms = () => {
             });
         }
 
-        const calendarIds = rooms.map((x: any) => {
+        // Create id objects for freebusy query
+        const calendarIds = _.map(rooms, (x: any) => {
             return { id: x.email };
         });
 
         const startTime = new Date();
-        const endTime = new Date(startTime.getTime() + 120 * 60000);
+        const endTime = new Date(startTime.getTime() + 60 * 60000);
 
         let results: any = {};
         let toRemove: string[] = [];
 
+        // The query can support maximum of 50 items, so we need to split the rooms into
+        // 50 item chunks and run the requests with those chunks.
         for (let i = 0; i < calendarIds.length; i += 50) {
-            const runIds = calendarIds.slice(i, 50 + i);
+            const runIds: any[] = _.slice(calendarIds, i, 50 + i);
 
             const result = await calendar.freebusy.query({
                 requestBody: {
                     timeMin: startTime.toISOString(),
                     timeMax: endTime.toISOString(),
                     items: runIds,
-                    calendarExpansionMax: 50
+                    calendarExpansionMax: runIds.length
                 },
                 auth: client
             });
 
-            results = {
-                ...results,
-                ...result.data.calendars
-            };
+            // Merge all query results into one object for later use
+            _.merge(results, result.data.calendars);
         }
 
-        calendarIds.forEach((x: any) => {
-            if (results[x.id].busy.length !== 0) {
+        _.forEach(calendarIds, (x: any) => {
+            if (results[x.id] && results[x.id].busy.length !== 0) {
                 toRemove.push(x.id);
             }
         });
