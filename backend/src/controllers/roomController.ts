@@ -17,7 +17,7 @@ export const addAllRooms = () => {
         res: express.Response,
         next: express.NextFunction
     ) => {
-        const client = req.oAuthClient;
+        const client = res.locals.oAuthClient;
         const building = req.query.building as string;
 
         if (building) {
@@ -91,7 +91,7 @@ export const validateBuildingInOrg = () => {
             return next();
         }
 
-        getBuildings(req.oAuthClient)
+        getBuildings(res.locals.oAuthClient)
             .then((result) => {
                 if (!result || result.length === 0) {
                     return res.status(500).send({

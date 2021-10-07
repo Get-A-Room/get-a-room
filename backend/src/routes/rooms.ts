@@ -9,6 +9,6 @@ router.get(
     controller.validateBuildingInOrg(),
     controller.addAllRooms(),
     (req, res) => {
-        return res.json(res.locals.rooms);
+        return res.json({ rooms: res.locals.rooms });
     }
 );

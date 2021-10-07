@@ -39,12 +39,3 @@ app.use('/rooms', roomRouter);
 app.listen(port, () => {
     console.log(`Get A Room! API listening at http://localhost:${port}`);
 });
-
-declare global {
-    namespace Express {
-        interface Request {
-            token: string;
-            oAuthClient: OAuth2Client;
-        }
-    }
-}

@@ -24,7 +24,7 @@ export const authFilter = (req: express.Request) => {
 };
 
 /**
- * Parses access token from headers and sets it to req.token but does not validate it
+ * Parses access token from headers and sets it to res.locals.token but does not validate it
  * @returns -
  */
 export const parseAccessToken = () => {
@@ -43,7 +43,7 @@ export const parseAccessToken = () => {
         const bearerHeader = req.headers.authorization;
         const bearer = bearerHeader.split(' ');
         const accessToken = bearer[1];
-        req.token = accessToken;
+        res.locals.token = accessToken;
 
         next();
     };
@@ -66,7 +66,7 @@ export const validateAccessToken = () => {
         next: express.NextFunction
     ) => {
         const client = getOAuthClient();
-        const accessToken = req.token;
+        const accessToken = res.locals.token;
         client.setCredentials({ access_token: accessToken });
 
         client
@@ -76,15 +76,15 @@ export const validateAccessToken = () => {
 
                 // Access token is still valid
                 if (currentTime < tokenInfo.expiry_date) {
-                    req.oAuthClient = client;
+                    res.locals.oAuthClient = client;
                     return next();
                 }
 
                 // Retrieve refresh token and refresh access token with it
                 // Find a way to pass new access token back to frontend
                 // const sub = tokenInfo.sub as string;
-                req.token = accessToken;
-                req.oAuthClient = client;
+                res.locals.token = accessToken;
+                res.locals.oAuthClient = client;
 
                 return next();
             })

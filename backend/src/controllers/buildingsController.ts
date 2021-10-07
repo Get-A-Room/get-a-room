@@ -14,7 +14,7 @@ export const sendBuildings = async (
     req: express.Request,
     res: express.Response
 ) => {
-    const client = req.oAuthClient;
+    const client = res.locals.oAuthClient;
 
     admin.resources.buildings
         .list({
