@@ -14,10 +14,6 @@
     },
     "servers": [
         {
-            "url": "https://virtserver.swaggerhub.com/Mikkooo/api/0.2.0",
-            "description": "SwaggerHub API Auto Mocking"
-        },
-        {
             "url": "oispahuone.com",
             "description": "The staging environment"
         }
@@ -269,11 +265,11 @@
                 }
             }
         },
-        "/availableRooms": {
+        "/rooms": {
             "get": {
                 "tags": ["bookings"],
-                "summary": "Get available rooms",
-                "description": "Available rooms don't currently have a booking\n",
+                "summary": "Get rooms",
+                "description": "By default gets free (not currently in use) rooms from all buildings.\nCan be altered to limit to one building or to get reserved rooms as well. \n",
                 "operationId": "getAvailableRooms",
                 "parameters": [
                     {
@@ -285,6 +281,18 @@
                         "explode": true,
                         "schema": {
                             "$ref": "#/components/schemas/uuid"
+                        }
+                    },
+                    {
+                        "name": "showReserved",
+                        "in": "query",
+                        "description": "Should reserved rooms be included",
+                        "required": false,
+                        "style": "form",
+                        "explode": true,
+                        "schema": {
+                            "type": "boolean",
+                            "default": false
                         }
                     }
                 ],
@@ -313,7 +321,17 @@
                 "operationId": "getBuildings",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/building"
+                                    }
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "The user was not authenticated"

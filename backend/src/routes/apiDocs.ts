@@ -1,5 +1,5 @@
 import express from 'express';
-import swaggerDocument from '../swagger.json';
+import swaggerDocument from '../apidoc/swagger.json';
 
 export const router = express.Router();
 
