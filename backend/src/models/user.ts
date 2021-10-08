@@ -1,13 +1,21 @@
 import mongoose, { Schema } from 'mongoose';
-import { preferencesSchema } from './preferences';
+import { Preferences, preferencesSchema } from './preferences';
 
-export const userSchema = new Schema({
-    googleId: {
+export type User = {
+    subject: string;
+    refreshToken?: string;
+    preferences: Preferences;
+};
+
+export const userSchema = new Schema<User>({
+    subject: {
         type: String,
-        required: [true, 'googleId is required']
+        required: [true, 'googleId is required'],
+        unique: true,
+        index: true
     },
     refreshToken: String,
-    preferences: preferencesSchema
+    preferences: { required: true, type: preferencesSchema }
 });
 
-export default mongoose.model('User', userSchema);
+export default mongoose.model<User>('User', userSchema);
