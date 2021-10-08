@@ -8,9 +8,9 @@ router.use('/google', googleRouter);
 
 // REMOVE THESE WHEN FRONTEND IS READY FOR USE
 router.get('/success', (req: express.Request, res: express.Response) => {
-    if (req.query.token) {
+    if (req.query.token && req.query.name) {
         res.send(
-            `<h1>Google login successful :)</h1><p>Token: ${req.query.token}</p>`
+            `<h1>Google login successful :)</h1><h3>User: ${req.query.name}</h3><p>Token: ${req.query.token}</p>`
         );
     } else {
         res.send('<h1>Google login successful :)</h1>');
