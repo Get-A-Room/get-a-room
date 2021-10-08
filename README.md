@@ -2,7 +2,7 @@
 
 ## Project structure
 
-The project is divided into frontend and backend folders which contain the corresponding npm projects.
+The project is divided into frontend and backend folders which contain the corresponding npm projects and README.md:s. Remember to also check those README.md:s for development environment instructions etc.
 
 ## Code formatting
 
