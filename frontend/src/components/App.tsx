@@ -1,13 +1,15 @@
 import React from 'react';
 import logo from './../logo.svg';
 import './App.css';
+import Header from './Header'
+import MainView from './MainView'
 import BookingView from './BookingView'
-import AppBar from './AppBar'
 
 function App() {
     return (
         <div className="App">
-            <BookingView />
+            <Header />
+            <MainView />
         </div>
     );
 }
