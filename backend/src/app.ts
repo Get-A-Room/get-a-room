@@ -1,7 +1,6 @@
 import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
-import { OAuth2Client } from 'google-auth-library';
 import {
     authFilter,
     checkEnvVariables,
