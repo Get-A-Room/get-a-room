@@ -4,6 +4,7 @@ import { OAuth2Client } from 'google-auth-library';
 
 import buildingData from './../interfaces/buildingData';
 import * as admin from './googleAPI/adminAPI';
+import * as responses from '../utils/responses';
 
 /**
  * Add all buildings in the organization to res.locals.buildings
@@ -19,10 +20,7 @@ export const addBuildings = () => {
         const buildings = await admin.getBuildingData(client);
 
         if (buildings.length === 0) {
-            return res.status(500).send({
-                code: 500,
-                message: 'Internal Server Error'
-            });
+            return responses.internalServerError(req, res);
         }
 
         res.locals.buildings = simplifyBuildingData(buildings);

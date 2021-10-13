@@ -1,6 +1,7 @@
 import express from 'express';
 import { getOAuthClient } from '../googleController';
 import { OAuth2Client } from 'google-auth-library';
+import * as responses from '../../utils/responses';
 
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
 
@@ -47,10 +48,7 @@ export const verifyCode = () => {
         next: express.NextFunction
     ) => {
         if (!req.query.code) {
-            res.status(500).send({
-                code: 500,
-                message: 'Internal Server Error'
-            });
+            return responses.internalServerError(req, res);
         }
 
         const code: string = req.query.code as string;

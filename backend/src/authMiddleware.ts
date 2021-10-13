@@ -1,6 +1,7 @@
 import express from 'express';
 import unless from 'express-unless';
 import { getOAuthClient } from './controllers/googleController';
+import * as responses from './utils/responses';
 
 /**
  * Filter for unless
@@ -33,10 +34,7 @@ export const parseAccessToken = () => {
         next: express.NextFunction
     ) => {
         if (!req.headers.authorization) {
-            return res.status(401).send({
-                code: 401,
-                message: 'Invalid token'
-            });
+            return responses.invalidToken(req, res);
         }
 
         const bearerHeader = req.headers.authorization;
@@ -88,10 +86,7 @@ export const validateAccessToken = () => {
                 return next();
             })
             .catch(() => {
-                return res.status(401).send({
-                    code: 401,
-                    message: 'Invalid token'
-                });
+                return responses.invalidToken(req, res);
             });
     };
 
@@ -112,24 +107,20 @@ export const checkEnvVariables = () => {
         next: express.NextFunction
     ) => {
         if (!process.env.GOOGLE_CLIENT_ID) {
-            return res.status(500).send({
-                code: 500,
-                message: 'Client id not set'
-            });
+            return responses.custom(req, res, 500, 'Client id not set');
         }
 
         if (!process.env.GOOGLE_CLIENT_SECRET) {
-            return res.status(500).send({
-                code: 500,
-                message: 'Client secret not set'
-            });
+            return responses.custom(req, res, 500, 'Client secret not set');
         }
 
         if (!process.env.GOOGLE_CUSTOMER_ID) {
-            return res.status(500).send({
-                code: 500,
-                message: 'Workspace customer id not set'
-            });
+            return responses.custom(
+                req,
+                res,
+                500,
+                'Workspace customer id not set'
+            );
         }
 
         next();

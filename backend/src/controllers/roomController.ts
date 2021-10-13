@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 
 import * as admin from './googleAPI/adminAPI';
 import * as calendar from './googleAPI/calendarAPI';
+import * as responses from '../utils/responses';
 import roomData from '../interfaces/roomData';
 import { getBuildings } from './buildingsController';
 
@@ -30,19 +31,13 @@ export const validateBuildingInOrg = () => {
         getBuildings(res.locals.oAuthClient)
             .then((result) => {
                 if (!result || result.length === 0) {
-                    return res.status(500).send({
-                        code: 500,
-                        message: 'Internal Server Error'
-                    });
+                    return responses.internalServerError(req, res);
                 }
 
                 const ids: string[] = result.map((x: any) => x.buildingId);
 
                 if (!ids.includes(building)) {
-                    return res.status(400).send({
-                        code: 400,
-                        message: 'Bad Request'
-                    });
+                    return responses.badRequest(req, res);
                 }
 
                 return next();
@@ -91,16 +86,10 @@ export const addAllRooms = () => {
         } catch (err: any) {
             // Custom error for incorrect building
             if (err.errors[0].message === 'Invalid Input: filter') {
-                return res.status(400).json({
-                    code: 400,
-                    message: 'Bad Request'
-                });
+                return responses.badRequest(req, res);
             }
 
-            return res.status(500).json({
-                code: 500,
-                message: 'Internal Server Error'
-            });
+            return responses.internalServerError(req, res);
         }
     };
 
