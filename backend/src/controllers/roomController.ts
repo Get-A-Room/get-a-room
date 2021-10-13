@@ -1,7 +1,6 @@
 import express from 'express';
 import { google } from 'googleapis';
 import _ from 'lodash';
-import 'dotenv/config';
 
 import { getBuildings } from './buildingsController';
 

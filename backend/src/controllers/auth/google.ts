@@ -1,7 +1,6 @@
 import express from 'express';
 import { getOAuthClient } from '../googleController';
 import { OAuth2Client } from 'google-auth-library';
-import 'dotenv/config';
 
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
 
