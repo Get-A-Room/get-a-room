@@ -1,0 +1,7 @@
+node_modules
+coverage
+apidoc
+build
+.vscode
+package.json
+package-lock.json
