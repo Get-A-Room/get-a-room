@@ -3,8 +3,9 @@ import { Preferences, preferencesSchema } from './preferences';
 
 export type User = {
     subject: string;
-    refreshToken?: string;
     preferences: Preferences;
+    name?: string;
+    refreshToken?: string;
 };
 
 export const userSchema = new Schema<User>({
@@ -14,6 +15,7 @@ export const userSchema = new Schema<User>({
         unique: true,
         index: true
     },
+    name: String,
     refreshToken: String,
     preferences: { required: true, type: preferencesSchema }
 });

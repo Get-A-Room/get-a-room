@@ -1,37 +1,57 @@
 import { createUserMiddleware } from './userMiddleware';
 import { Request, Response } from 'express';
-import { createUser, getUserWithSubject } from './userController';
+import {
+    createUserFromTokenPayload,
+    getUserWithSubject
+} from './userController';
 import { mocked } from 'ts-jest/utils';
 
-const TEST_SUB = 'sub';
-const TEST_REFRESH_TOKEN = 'refreshToken';
+const TEST_TOKEN_PAYLOAD = { sub: 'sub' };
 
 jest.mock('./userController');
-describe('createUserIfNotFound', () => {
-    const mockedCreateUser = mocked(createUser, false);
-    const mockedGetUserWithSubject = mocked(getUserWithSubject, false);
+const mockedCreateUser = mocked(createUserFromTokenPayload, false);
+const mockedGetUserWithSubject = mocked(getUserWithSubject, false);
 
-    let mockRequest: Partial<Request> = {};
-    let mockResponse: Partial<Response> = {};
-    let mockNext = jest.fn();
+describe('createUserIfNotFound', () => {
+    let mockRequest: Partial<Request>;
+    let mockResponse: Partial<Response>;
+    let mockNext: jest.Mock;
 
     beforeEach(() => {
-        mockResponse.locals = {
-            sub: TEST_SUB,
-            refreshToken: TEST_REFRESH_TOKEN
+        mockRequest = {};
+        mockResponse = {
+            locals: {
+                payload: TEST_TOKEN_PAYLOAD
+            }
         };
+        mockNext = jest.fn();
+
         jest.resetAllMocks();
+    });
+
+    test('Should throw an error when token payload is missing from res.locals', () => {
+        mockResponse.locals = {
+            payload: undefined
+        };
+
+        expect(() =>
+            createUserMiddleware()(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNext
+            )
+        ).toThrow('payload');
     });
 
     test('Should create user if no user was found for sub', async () => {
         mockedGetUserWithSubject.mockResolvedValueOnce(null);
 
-        await createUserMiddleware(
+        await createUserMiddleware()(
             mockRequest as Request,
             mockResponse as Response,
             mockNext
         );
-        expect(mockedCreateUser).toBeCalledWith(TEST_SUB, TEST_REFRESH_TOKEN);
+        expect(mockedCreateUser).toBeCalledWith(TEST_TOKEN_PAYLOAD);
         expect(mockNext).toBeCalledWith();
     });
 
@@ -41,7 +61,7 @@ describe('createUserIfNotFound', () => {
             preferences: {}
         });
 
-        await createUserMiddleware(
+        await createUserMiddleware()(
             mockRequest as Request,
             mockResponse as Response,
             mockNext
@@ -50,13 +70,13 @@ describe('createUserIfNotFound', () => {
         expect(mockNext).toBeCalledWith();
     });
 
-    test('Should do something when creating an user fails', async () => {
+    test('Should call next with the error if an error was thrown on user creation', async () => {
         mockedGetUserWithSubject.mockResolvedValueOnce(null);
 
         const error = new Error('Saving user failed');
         mockedCreateUser.mockRejectedValueOnce(error);
 
-        await createUserMiddleware(
+        await createUserMiddleware()(
             mockRequest as Request,
             mockResponse as Response,
             mockNext
