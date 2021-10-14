@@ -1,5 +1,6 @@
 import { OAuth2Client } from 'google-auth-library';
-import { google, admin_directory_v1 } from 'googleapis';
+import { google } from 'googleapis';
+import * as schema from '../../utils/googleSchema';
 
 const admin = google.admin('directory_v1');
 
@@ -10,7 +11,7 @@ const admin = google.admin('directory_v1');
  */
 export const getBuildingData = async (
     client: OAuth2Client
-): Promise<admin_directory_v1.Schema$Building[]> => {
+): Promise<schema.Building[]> => {
     try {
         const result = await admin.resources.buildings.list({
             customer: process.env.GOOGLE_CUSTOMER_ID,
@@ -37,8 +38,8 @@ export const getBuildingData = async (
  */
 export const getRoomData = async (
     client: OAuth2Client,
-    building: string | undefined = undefined
-): Promise<admin_directory_v1.Schema$CalendarResource[]> => {
+    building?: string
+): Promise<schema.CalendarResource[]> => {
     let result;
 
     try {

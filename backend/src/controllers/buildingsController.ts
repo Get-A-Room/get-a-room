@@ -1,10 +1,10 @@
 import express from 'express';
-import { admin_directory_v1 } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 
 import buildingData from './../interfaces/buildingData';
 import * as admin from './googleAPI/adminAPI';
 import * as responses from '../utils/responses';
+import * as schema from '../utils/googleSchema';
 
 /**
  * Add all buildings in the organization to res.locals.buildings
@@ -45,9 +45,7 @@ export const getBuildings = async (client: OAuth2Client) => {
  * @param result Results from Google API
  * @returns simplified results
  */
-const simplifyBuildingData = (
-    result: admin_directory_v1.Schema$Building[]
-): buildingData[] => {
+const simplifyBuildingData = (result: schema.Building[]): buildingData[] => {
     return result.map((x) => {
         return {
             buildingId: x.buildingId,

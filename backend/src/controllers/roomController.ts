@@ -1,11 +1,11 @@
 import express from 'express';
 import _ from 'lodash';
-import { admin_directory_v1 } from 'googleapis';
 import { DateTime } from 'luxon';
 
 import * as admin from './googleAPI/adminAPI';
 import * as calendar from './googleAPI/calendarAPI';
 import * as responses from '../utils/responses';
+import * as schema from '../utils/googleSchema';
 import roomData from '../interfaces/roomData';
 import { getBuildings } from './buildingsController';
 
@@ -65,7 +65,7 @@ export const addAllRooms = () => {
         const building = req.query.building as string;
 
         try {
-            let result: admin_directory_v1.Schema$CalendarResource[];
+            let result: schema.CalendarResource[];
             if (building) {
                 result = await admin.getRoomData(client, building);
             } else {
@@ -174,9 +174,7 @@ export const writeReservationData = () => {
  * @param result Results from Google API
  * @returns simplified results
  */
-const simplifyRoomData = (
-    result: admin_directory_v1.Schema$CalendarResource[]
-): roomData[] => {
+const simplifyRoomData = (result: schema.CalendarResource[]): roomData[] => {
     return result.map((x) => {
         /**
          * Cleans features of unnecessary information

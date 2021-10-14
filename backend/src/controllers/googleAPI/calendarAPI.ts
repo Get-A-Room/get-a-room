@@ -1,6 +1,7 @@
 import { OAuth2Client } from 'google-auth-library';
-import { google, calendar_v3 } from 'googleapis';
+import { google } from 'googleapis';
 import _ from 'lodash';
+import * as schema from '../../utils/googleSchema';
 
 const calendar = google.calendar('v3');
 
@@ -33,18 +34,15 @@ export const freeBusyQuery = async (
         const calendars = queryResult.data.calendars;
         const results: any = {};
 
-        _.forIn(
-            calendars,
-            (data: calendar_v3.Schema$FreeBusyCalendar, id: string) => {
-                let startOfReservation: string | null | undefined = end;
+        _.forIn(calendars, (data: schema.FreeBusyCalendar, id: string) => {
+            let startOfReservation: string | null | undefined = end;
 
-                if (Array.isArray(data.busy) && data.busy.length !== 0) {
-                    startOfReservation = data.busy[0].start;
-                }
-
-                results[id] = startOfReservation;
+            if (Array.isArray(data.busy) && data.busy.length !== 0) {
+                startOfReservation = data.busy[0].start;
             }
-        );
+
+            results[id] = startOfReservation;
+        });
 
         return results;
     } catch (err) {
