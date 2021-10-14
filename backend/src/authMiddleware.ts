@@ -1,6 +1,6 @@
 import express from 'express';
 import unless from 'express-unless';
-import { getOAuthClient } from './controllers/googleAuthController';
+import { getOAuthClient } from './controllers/googleController';
 import 'dotenv/config';
 
 /**
