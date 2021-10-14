@@ -4,4 +4,6 @@ import * as controller from '../controllers/buildingsController';
 export const router = express.Router();
 
 // Returns all buildings
-router.get('/', controller.sendBuildings);
+router.get('/', controller.addBuildings(), (req, res) => {
+    return res.json({ buildings: res.locals.buildings });
+});

@@ -1,6 +1,5 @@
 import express from 'express';
 import { OAuth2Client } from 'google-auth-library';
-import 'dotenv/config';
 
 import * as controller from './auth/google';
 

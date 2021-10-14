@@ -1,64 +1,43 @@
 import express from 'express';
 import { OAuth2Client } from 'google-auth-library';
-import { google } from 'googleapis';
 
-const admin = google.admin('directory_v1');
+import buildingData from './../interfaces/buildingData';
+import * as admin from './googleAPI/adminAPI';
+import * as responses from '../utils/responses';
+import * as schema from '../utils/googleSchema';
 
 /**
- * Send all buildings in the organization
- * @param req Express request
- * @param res Express response
+ * Add all buildings in the organization to res.locals.buildings
  * @returns -
  */
-export const sendBuildings = async (
-    req: express.Request,
-    res: express.Response
-) => {
-    const client = res.locals.oAuthClient;
+export const addBuildings = () => {
+    const middleware = async (
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction
+    ) => {
+        const client = res.locals.oAuthClient;
+        const buildings = await admin.getBuildingData(client);
 
-    admin.resources.buildings
-        .list({
-            customer: process.env.GOOGLE_CUSTOMER_ID,
-            auth: client
-        })
-        .then((result) => {
-            if (!result.data.buildings) {
-                return res.status(204).json({
-                    code: 204,
-                    message: 'No Content'
-                });
-            }
+        if (buildings.length === 0) {
+            return responses.internalServerError(req, res);
+        }
 
-            res.json({ buildings: simplifyResultData(result) });
-        })
-        .catch(() => {
-            return res.status(500).json({
-                code: 500,
-                message: 'Internal Server Error'
-            });
-        });
+        res.locals.buildings = simplifyBuildingData(buildings);
+        next();
+    };
+
+    return middleware;
 };
 
 /**
  * Return all buildings in the organization as an array for other uses
  * @param client OAuth2Client to use for authentication
+ * @returns array of buildingData
  */
-export const getBuildings = (client: OAuth2Client) => {
-    return admin.resources.buildings
-        .list({
-            customer: process.env.GOOGLE_CUSTOMER_ID,
-            auth: client
-        })
-        .then((result) => {
-            if (!result.data.buildings) {
-                return [];
-            }
-
-            return simplifyResultData(result);
-        })
-        .catch(() => {
-            return [];
-        });
+export const getBuildings = async (client: OAuth2Client) => {
+    const buildings = await admin.getBuildingData(client);
+    return simplifyBuildingData(buildings);
 };
 
 /**
@@ -66,8 +45,8 @@ export const getBuildings = (client: OAuth2Client) => {
  * @param result Results from Google API
  * @returns simplified results
  */
-const simplifyResultData = (result: any) => {
-    return result.data.buildings?.map((x: any) => {
+const simplifyBuildingData = (result: schema.Building[]): buildingData[] => {
+    return result.map((x) => {
         return {
             buildingId: x.buildingId,
             buildingName: x.buildingName,
