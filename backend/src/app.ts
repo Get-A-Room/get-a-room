@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
+import cors, { CorsOptions } from 'cors';
 import 'dotenv/config';
 import {
     authFilter,
@@ -40,9 +41,15 @@ if (process.env.NODE_ENV !== 'production') {
     app.set('json spaces', 2);
 }
 
+// Options for CORS
+const corsOptions: CorsOptions = {
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000'
+};
+
 app.use(morgan('short'));
 app.use(helmet());
 app.use(express.json());
+app.use(cors(corsOptions));
 app.use(parseAccessToken().unless(authFilter));
 app.use(validateAccessToken().unless(authFilter));
 
