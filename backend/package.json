@@ -5,7 +5,7 @@
     "main": "src/app.ts",
     "scripts": {
         "test": "jest",
-        "build": "tsc",
+        "build": "tsc --project tsconfig.production.json",
         "start": "ts-node src/app.ts",
         "nodemon": "nodemon -e js,ts,json src/app.ts",
         "start-production": "node build/app.js"
