@@ -11,7 +11,8 @@ router.get(
     query('building').trim().escape(),
     controller.validateBuildingInOrg(),
     controller.addAllRooms(),
-    controller.removeReservedRooms(),
+    controller.fetchAvailability(),
+    controller.writeReservationData(),
     (req, res) => {
         return res.json({ rooms: res.locals.rooms });
     }
