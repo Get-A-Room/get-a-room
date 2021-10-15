@@ -18,5 +18,7 @@ router.get('/success', (req: express.Request, res: express.Response) => {
 });
 
 router.get('/failure', (req: express.Request, res: express.Response) => {
-    res.send('<h1>Google login failed :-(</h1>');
+    res.send(
+        '<h1>Google login failed :-(</h1><a href="/auth/google">Continue</a>'
+    );
 });
