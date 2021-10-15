@@ -94,37 +94,3 @@ export const validateAccessToken = () => {
 
     return middleware;
 };
-
-/**
- * Simple middleware to check that the app has given every env variable
- * that it needs to operate
- * @returns -
- */
-export const checkEnvVariables = () => {
-    const middleware = (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
-    ) => {
-        if (!process.env.GOOGLE_CLIENT_ID) {
-            return responses.custom(req, res, 500, 'Client id not set');
-        }
-
-        if (!process.env.GOOGLE_CLIENT_SECRET) {
-            return responses.custom(req, res, 500, 'Client secret not set');
-        }
-
-        if (!process.env.GOOGLE_CUSTOMER_ID) {
-            return responses.custom(
-                req,
-                res,
-                500,
-                'Workspace customer id not set'
-            );
-        }
-
-        next();
-    };
-
-    return middleware;
-};

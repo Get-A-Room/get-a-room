@@ -4,11 +4,11 @@ import helmet from 'helmet';
 import 'dotenv/config';
 import {
     authFilter,
-    checkEnvVariables,
     parseAccessToken,
     validateAccessToken
 } from './authMiddleware';
 import mongoose from 'mongoose';
+import { checkEnvVariables } from './utils/checkEnvVariables';
 
 import { router as indexRouter } from './routes/index';
 import { router as apiDocsRouter } from './routes/apiDocs';
@@ -21,8 +21,18 @@ const app = express();
 const port = 8080;
 
 try {
-    mongoose.connect(getDatabaseUrl());
-} catch (e) {
+    checkEnvVariables();
+} catch (e: any) {
+    // On error, prevent startup
+    console.error(e);
+    process.exit(1);
+}
+
+try {
+    mongoose
+        .connect(getDatabaseUrl())
+        .then(() => console.info('Mongo connection - OK'));
+} catch (e: any) {
     console.error(e);
 }
 // Indent JSON
@@ -33,7 +43,6 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(morgan('short'));
 app.use(helmet());
 app.use(express.json());
-app.use(checkEnvVariables());
 app.use(parseAccessToken().unless(authFilter));
 app.use(validateAccessToken().unless(authFilter));
 
@@ -44,5 +53,5 @@ app.use('/buildings', buildingRouter);
 app.use('/rooms', roomRouter);
 
 app.listen(port, () => {
-    console.log(`Get A Room! API listening at http://localhost:${port}`);
+    console.log(`Get A Room! API listening at port ${port}`);
 });
