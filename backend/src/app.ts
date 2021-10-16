@@ -14,6 +14,7 @@ import { checkEnvVariables } from './utils/checkEnvVariables';
 import { router as indexRouter } from './routes/index';
 import { router as apiDocsRouter } from './routes/apiDocs';
 import { router as authRouter } from './routes/auth';
+import { router as bookingRouter } from './routes/booking';
 import { router as buildingRouter } from './routes/buildings';
 import { router as roomRouter } from './routes/rooms';
 import { getDatabaseUrl } from './utils/config';
@@ -24,9 +25,8 @@ const port = 8080;
 try {
     checkEnvVariables();
 } catch (e: any) {
-    // On error, prevent startup
     console.error(e);
-    process.exit(1);
+    process.exit(1); // On error, prevent startup
 }
 
 try {
@@ -35,10 +35,7 @@ try {
         .then(() => console.info('Mongo connection - OK'));
 } catch (e: any) {
     console.error(e);
-}
-// Indent JSON
-if (process.env.NODE_ENV !== 'production') {
-    app.set('json spaces', 2);
+    process.exit(1); // On error, prevent startup
 }
 
 // Options for CORS
@@ -56,6 +53,7 @@ app.use(validateAccessToken().unless(authFilter));
 app.use('/', indexRouter);
 app.use('/api-docs', apiDocsRouter);
 app.use('/auth', authRouter);
+app.use('/booking', bookingRouter);
 app.use('/buildings', buildingRouter);
 app.use('/rooms', roomRouter);
 

@@ -16,7 +16,7 @@ export const addBuildings = () => {
         res: express.Response,
         next: express.NextFunction
     ) => {
-        const client = res.locals.oAuthClient;
+        const client: OAuth2Client = res.locals.oAuthClient;
         const buildings = await admin.getBuildingData(client);
 
         if (buildings.length === 0) {

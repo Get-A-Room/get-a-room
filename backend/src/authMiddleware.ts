@@ -69,19 +69,18 @@ export const validateAccessToken = () => {
         client
             .getTokenInfo(accessToken)
             .then((tokenInfo) => {
-                const currentTime = new Date().getTime();
+                res.locals.token = accessToken;
+                res.locals.oAuthClient = client;
+                res.locals.email = tokenInfo.email;
 
                 // Access token is still valid
-                if (currentTime < tokenInfo.expiry_date) {
-                    res.locals.oAuthClient = client;
+                if (new Date().getTime() < tokenInfo.expiry_date) {
                     return next();
                 }
 
                 // Retrieve refresh token and refresh access token with it
                 // Find a way to pass new access token back to frontend
                 // const sub = tokenInfo.sub as string;
-                res.locals.token = accessToken;
-                res.locals.oAuthClient = client;
 
                 return next();
             })

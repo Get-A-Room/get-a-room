@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { getOAuthClient } from '../googleController';
 import { OAuth2Client } from 'google-auth-library';
 import * as responses from '../../utils/responses';
@@ -15,14 +15,10 @@ const scopes = [
 
 /**
  * Generate auth URL and add it to res.locals.authUrl
- * @returns -
+ * @returns
  */
 export const redirectUrl = () => {
-    const middleware = (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
-    ) => {
+    const middleware = (req: Request, res: Response, next: NextFunction) => {
         const client = getOAuthClient();
         const url = client.generateAuthUrl({
             access_type: 'online', // When we are ready to receive refresh_token change this offline
@@ -44,9 +40,9 @@ export const redirectUrl = () => {
  */
 export const verifyCode = () => {
     const middleware = async (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
+        req: Request,
+        res: Response,
+        next: NextFunction
     ) => {
         try {
             if (!req.query.code) {
@@ -80,13 +76,13 @@ export const verifyCode = () => {
 
 /**
  * Unpacks payload and adds it to res.locals.payload
- * @returns -
+ * @returns
  */
 export const unpackPayload = () => {
     const middleware = async (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
+        req: Request,
+        res: Response,
+        next: NextFunction
     ) => {
         try {
             const client: OAuth2Client = res.locals.oAuthClient;
