@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { DateTime } from 'luxon';
 import * as calendar from '../googleAPI/calendarAPI';
 import * as responses from '../../utils/responses';
@@ -16,20 +16,24 @@ export const validateInput = () => {
         res: Response,
         next: NextFunction
     ) => {
-        if (
-            !req.body.roomId ||
-            !req.body.title ||
-            !req.body.duration ||
-            !Number.isInteger(req.body.duration)
-        ) {
-            return responses.badRequest(req, res);
+        try {
+            if (
+                !req.body.roomId ||
+                !req.body.title ||
+                !req.body.duration ||
+                !Number.isInteger(req.body.duration)
+            ) {
+                return responses.badRequest(req, res);
+            }
+
+            res.locals.roomId = req.body.roomId;
+            res.locals.title = req.body.title;
+            res.locals.duration = req.body.duration;
+
+            next();
+        } catch (err) {
+            next(err);
         }
-
-        res.locals.roomId = req.body.roomId;
-        res.locals.title = req.body.title;
-        res.locals.duration = req.body.duration;
-
-        next();
     };
 
     return middleware;
@@ -45,30 +49,34 @@ export const makeBooking = () => {
         res: Response,
         next: NextFunction
     ) => {
-        const startTime = DateTime.now().toISO();
-        const endTime = DateTime.now()
-            .plus({ minutes: req.body.duration })
-            .toISO();
+        try {
+            const startTime = DateTime.now().toISO();
+            const endTime = DateTime.now()
+                .plus({ minutes: req.body.duration })
+                .toISO();
 
-        const client: OAuth2Client = res.locals.oAuthClient;
-        const response = await calendar.createEvent(
-            client,
-            res.locals.roomId,
-            res.locals.email,
-            res.locals.title,
-            startTime,
-            endTime
-        );
+            const client: OAuth2Client = res.locals.oAuthClient;
+            const response = await calendar.createEvent(
+                client,
+                res.locals.roomId,
+                res.locals.email,
+                res.locals.title,
+                startTime,
+                endTime
+            );
 
-        if (!response.id) {
-            console.error('ERROR - Could not get id of the created event');
-            return responses.internalServerError(req, res);
+            if (!response.id) {
+                console.error('ERROR - Could not get id of the created event');
+                return responses.internalServerError(req, res);
+            }
+
+            res.locals.event = response;
+            res.locals.eventId = response.id;
+
+            next();
+        } catch (err) {
+            next(err);
         }
-
-        res.locals.event = response;
-        res.locals.eventId = response.id;
-
-        next();
     };
 
     return middleware;
@@ -85,34 +93,39 @@ export const checkRoomAccepted = () => {
         res: Response,
         next: NextFunction
     ) => {
-        const client: OAuth2Client = res.locals.oAuthClient;
-        const eventId: string = res.locals.eventId;
-        const roomId: string = res.locals.roomId;
+        try {
+            const client: OAuth2Client = res.locals.oAuthClient;
+            const eventId: string = res.locals.eventId;
+            const roomId: string = res.locals.roomId;
 
-        // NOTE: For some reason, the first response doesn't contain details about the rooms status,
-        // so do request and check its response to see if the room has accepted the event
-        // Also the acceptance seems to take some time on Google's end, so we try and wait a
-        // few times before giving up (usually it seems to take 300-500ms)
-        for (let i = 0; i < 8; i += 1) {
-            const eventData = await calendar.getEventData(client, eventId);
-            const attendees = eventData.attendees;
-            res.locals.event = eventData;
+            // NOTE: For some reason, the first response doesn't contain details about the rooms status,
+            // so do request and check its response to see if the room has accepted the event
+            // Also the acceptance seems to take some time on Google's end, so we try and wait a
+            // few times before giving up (usually it seems to take 300-500ms)
+            for (let i = 0; i < 8; i += 1) {
+                const eventData = await calendar.getEventData(client, eventId);
+                const attendees = eventData.attendees;
+                res.locals.event = eventData;
 
-            const room = _.find(attendees, (x) => {
-                return x.email === roomId;
-            });
+                const room = _.find(attendees, (x) => {
+                    return x.email === roomId;
+                });
 
-            if (room?.responseStatus !== 'needsAction') {
-                res.locals.roomAccepted = room?.responseStatus === 'accepted';
-                return next();
+                if (room?.responseStatus !== 'needsAction') {
+                    res.locals.roomAccepted =
+                        room?.responseStatus === 'accepted';
+                    return next();
+                }
+
+                // Sleep for 150ms
+                await new Promise((resolve) => setTimeout(resolve, 150));
             }
 
-            // Sleep for 150ms
-            await new Promise((resolve) => setTimeout(resolve, 150));
+            res.locals.roomAccepted = false;
+            next();
+        } catch (err) {
+            next(err);
         }
-
-        res.locals.roomAccepted = false;
-        next();
     };
 
     return middleware;
@@ -128,17 +141,21 @@ export const removeDeclinedEvent = () => {
         res: Response,
         next: NextFunction
     ) => {
-        const client: OAuth2Client = res.locals.oAuthClient;
-        const roomAccepted: boolean = res.locals.roomAccepted;
-        const eventId: string = res.locals.eventId;
+        try {
+            const client: OAuth2Client = res.locals.oAuthClient;
+            const roomAccepted: boolean = res.locals.roomAccepted;
+            const eventId: string = res.locals.eventId;
 
-        if (!roomAccepted && eventId) {
-            console.warn('WARNING - Room did not accept, deleting event');
-            await calendar.deleteEvent(client, eventId);
-            return responses.custom(req, res, 409, 'Conflict');
+            if (!roomAccepted && eventId) {
+                console.warn('WARNING - Room did not accept, deleting event');
+                await calendar.deleteEvent(client, eventId);
+                return responses.custom(req, res, 409, 'Conflict');
+            }
+
+            next();
+        } catch (err) {
+            next(err);
         }
-
-        next();
     };
 
     return middleware;
@@ -154,22 +171,26 @@ export const simplifyEventData = () => {
         res: Response,
         next: NextFunction
     ) => {
-        const event: schema.EventData = res.locals.event;
-        const roomId: string = res.locals.roomId;
+        try {
+            const event: schema.EventData = res.locals.event;
+            const roomId: string = res.locals.roomId;
 
-        // TODO: Should we fetch room data from Google here to match defined API?
+            // TODO: Should we fetch room data from Google here to match defined API?
 
-        const simpleEvent = {
-            id: event.id,
-            startTime: event.start?.dateTime,
-            endTime: event.end?.dateTime,
-            room: {
-                id: roomId
-            }
-        };
+            const simpleEvent = {
+                id: event.id,
+                startTime: event.start?.dateTime,
+                endTime: event.end?.dateTime,
+                room: {
+                    id: roomId
+                }
+            };
 
-        res.locals.event = simpleEvent;
-        next();
+            res.locals.event = simpleEvent;
+            next();
+        } catch (err) {
+            next(err);
+        }
     };
 
     return middleware;

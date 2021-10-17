@@ -22,30 +22,34 @@ export const validateBuildingInOrg = () => {
         res: express.Response,
         next: express.NextFunction
     ) => {
-        const building = req.query.building as string;
+        try {
+            const building = req.query.building as string;
 
-        if (!building) {
-            return next();
+            if (!building) {
+                return next();
+            }
+
+            getBuildings(res.locals.oAuthClient)
+                .then((result) => {
+                    if (!result || result.length === 0) {
+                        return responses.internalServerError(req, res);
+                    }
+
+                    const ids: string[] = result.map((x: any) => x.buildingId);
+
+                    if (!ids.includes(building)) {
+                        return responses.badRequest(req, res);
+                    }
+
+                    return next();
+                })
+                .catch((err) => {
+                    console.error(err);
+                    return next(err);
+                });
+        } catch (err) {
+            next(err);
         }
-
-        getBuildings(res.locals.oAuthClient)
-            .then((result) => {
-                if (!result || result.length === 0) {
-                    return responses.internalServerError(req, res);
-                }
-
-                const ids: string[] = result.map((x: any) => x.buildingId);
-
-                if (!ids.includes(building)) {
-                    return responses.badRequest(req, res);
-                }
-
-                return next();
-            })
-            .catch((err) => {
-                console.error(err);
-                return next();
-            });
     };
 
     return middleware;
@@ -107,36 +111,40 @@ export const fetchAvailability = () => {
         res: express.Response,
         next: express.NextFunction
     ) => {
-        const client = res.locals.oAuthClient;
-        const rooms: roomData[] = res.locals.rooms;
+        try {
+            const client = res.locals.oAuthClient;
+            const rooms: roomData[] = res.locals.rooms;
 
-        // Create id objects for freebusy query
-        const calendarIds = _.map(rooms, (x: roomData) => {
-            return { id: x.email };
-        });
+            // Create id objects for freebusy query
+            const calendarIds = _.map(rooms, (x: roomData) => {
+                return { id: x.email };
+            });
 
-        // TODO: What should happen when the difference is e.g. 1 minute?
-        const start = DateTime.now().toUTC().toISO();
-        const end = DateTime.local().endOf('day').toUTC().toISO();
+            // TODO: What should happen when the difference is e.g. 1 minute?
+            const start = DateTime.now().toUTC().toISO();
+            const end = DateTime.local().endOf('day').toUTC().toISO();
 
-        // Combine all results from freeBusyQuery to this
-        const results = {};
+            // Combine all results from freeBusyQuery to this
+            const results = {};
 
-        // The query can support maximum of 50 items, so we need to split the rooms into
-        // 50 item chunks and run the requests with those chunks.
-        for (let i = 0; i < calendarIds.length; i += 50) {
-            const result = await calendar.freeBusyQuery(
-                client,
-                _.slice(calendarIds, i, 50 + i),
-                start,
-                end
-            );
+            // The query can support maximum of 50 items, so we need to split the rooms into
+            // 50 item chunks and run the requests with those chunks.
+            for (let i = 0; i < calendarIds.length; i += 50) {
+                const result = await calendar.freeBusyQuery(
+                    client,
+                    _.slice(calendarIds, i, 50 + i),
+                    start,
+                    end
+                );
 
-            _.merge(results, result);
+                _.merge(results, result);
+            }
+
+            res.locals.roomReservations = results;
+            next();
+        } catch (err) {
+            next(err);
         }
-
-        res.locals.roomReservations = results;
-        next();
     };
 
     return middleware;
@@ -153,17 +161,19 @@ export const writeReservationData = () => {
         res: express.Response,
         next: express.NextFunction
     ) => {
-        const rooms: roomData[] = res.locals.rooms;
-        const reservations = res.locals.roomReservations;
+        try {
+            const rooms: roomData[] = res.locals.rooms;
+            const reservations = res.locals.roomReservations;
 
-        _.forEach(rooms, (room: roomData) => {
-            const email = room.email as string;
-            room.nextCalendarEvent = reservations[email];
-        });
+            _.forEach(rooms, (room: roomData) => {
+                const email = room.email as string;
+                room.nextCalendarEvent = reservations[email];
+            });
 
-        // console.log(rooms);
-
-        next();
+            next();
+        } catch (err) {
+            next(err);
+        }
     };
 
     return middleware;

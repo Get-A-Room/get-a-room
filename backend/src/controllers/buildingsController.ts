@@ -16,15 +16,19 @@ export const addBuildings = () => {
         res: express.Response,
         next: express.NextFunction
     ) => {
-        const client: OAuth2Client = res.locals.oAuthClient;
-        const buildings = await admin.getBuildingData(client);
+        try {
+            const client: OAuth2Client = res.locals.oAuthClient;
+            const buildings = await admin.getBuildingData(client);
 
-        if (buildings.length === 0) {
-            return responses.internalServerError(req, res);
+            if (buildings.length === 0) {
+                return responses.internalServerError(req, res);
+            }
+
+            res.locals.buildings = simplifyBuildingData(buildings);
+            next();
+        } catch (err) {
+            next(err);
         }
-
-        res.locals.buildings = simplifyBuildingData(buildings);
-        next();
     };
 
     return middleware;
