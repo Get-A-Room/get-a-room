@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import { query } from 'express-validator';
 import * as controller from '../controllers/booking/makeBookingController';
 import * as responses from '../utils/responses';
 
@@ -7,6 +8,7 @@ export const router = express.Router();
 // Make a booking
 router.post(
     '/',
+    query('noConfirmation').toBoolean(true),
     controller.validateInput(),
     controller.makeBooking(),
     controller.checkRoomAccepted(), // This middleware slows things down :(

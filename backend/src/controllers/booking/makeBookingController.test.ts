@@ -3,6 +3,7 @@ import { mocked } from 'ts-jest/utils';
 import * as schema from '../../utils/googleSchema';
 import { DateTime } from 'luxon';
 import { badRequest, custom, internalServerError } from '../../utils/responses';
+import { query } from 'express-validator';
 import {
     makeBooking,
     validateInput,
@@ -177,6 +178,7 @@ describe('makeBookingController', () => {
     describe('checkRoomAccepted', () => {
         beforeEach(() => {
             mockRequest = {
+                query: {},
                 body: {
                     duration: 60
                 }
@@ -191,6 +193,23 @@ describe('makeBookingController', () => {
             mockNext = jest.fn();
 
             jest.resetAllMocks();
+        });
+
+        test('Should call next if noConfirmation is true', async () => {
+            mockRequest.query = {
+                noConfirmation: 'true'
+            };
+
+            await query('noConfirmation').toBoolean().run(mockRequest);
+            await checkRoomAccepted()(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNext
+            );
+
+            expect(mockNext).toBeCalledTimes(1);
+            expect(mockNext).toBeCalledWith();
+            expect(mockedGetEventData).not.toBeCalled();
         });
 
         test('Should return after 8 failed tries', async () => {
@@ -306,7 +325,7 @@ describe('makeBookingController', () => {
 
     describe('removeDeclinedEvent', () => {
         beforeEach(() => {
-            mockRequest = {};
+            mockRequest = { query: {} };
             mockResponse = {
                 locals: {
                     oAuthClient: 'client',
@@ -317,6 +336,24 @@ describe('makeBookingController', () => {
             mockNext = jest.fn();
 
             jest.resetAllMocks();
+        });
+
+        test('Should call next if noConfirmation is true', async () => {
+            mockRequest.query = {
+                noConfirmation: 'true'
+            };
+
+            await query('noConfirmation').toBoolean().run(mockRequest);
+            await removeDeclinedEvent()(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNext
+            );
+
+            expect(mockNext).toBeCalledTimes(1);
+            expect(mockNext).toBeCalledWith();
+            expect(mockedDeleteEvent).not.toBeCalled();
+            expect(mockedCustomResponse).not.toBeCalled();
         });
 
         test('Should call deleteEvent if roomAccepted is false and eventId defined', async () => {

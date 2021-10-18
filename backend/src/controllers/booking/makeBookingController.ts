@@ -92,6 +92,10 @@ export const checkRoomAccepted = () => {
         res: Response,
         next: NextFunction
     ) => {
+        if (req.query.noConfirmation) {
+            return next();
+        }
+
         try {
             const client: OAuth2Client = res.locals.oAuthClient;
             const eventId: string = res.locals.eventId;
@@ -144,6 +148,10 @@ export const removeDeclinedEvent = () => {
         res: Response,
         next: NextFunction
     ) => {
+        if (req.query.noConfirmation) {
+            return next();
+        }
+
         try {
             const client: OAuth2Client = res.locals.oAuthClient;
             const roomAccepted: boolean = res.locals.roomAccepted;
