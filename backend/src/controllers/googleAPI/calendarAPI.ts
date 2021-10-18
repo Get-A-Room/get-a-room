@@ -68,10 +68,10 @@ export const createEvent = async (
     end: string
 ): Promise<schema.EventData> => {
     try {
-        const startDt: schema.EventDateTier = {
+        const startDt: schema.EventDateTime = {
             dateTime: start
         };
-        const endDt: schema.EventDateTier = {
+        const endDt: schema.EventDateTime = {
             dateTime: end
         };
 

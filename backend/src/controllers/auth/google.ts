@@ -1,7 +1,6 @@
-import express, { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { getOAuthClient } from '../googleController';
 import { OAuth2Client } from 'google-auth-library';
-import * as responses from '../../utils/responses';
 
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
 

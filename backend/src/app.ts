@@ -25,8 +25,7 @@ const port = 8080;
 try {
     checkEnvVariables();
 } catch (e: any) {
-    console.error(e);
-    process.exit(1); // On error, prevent startup
+    throw e;
 }
 
 try {
@@ -34,8 +33,7 @@ try {
         .connect(getDatabaseUrl())
         .then(() => console.info('Mongo connection - OK'));
 } catch (e: any) {
-    console.error(e);
-    process.exit(1); // On error, prevent startup
+    throw e;
 }
 
 // Options for CORS
