@@ -2,6 +2,7 @@ import express from 'express';
 import { OAuth2Client } from 'google-auth-library';
 
 import * as controller from './auth/google';
+import { createUserMiddleware } from './userMiddleware';
 
 export const router = express.Router();
 
@@ -41,6 +42,7 @@ router.get(
     '/callback',
     controller.verifyCode(),
     controller.unpackPayload(),
+    createUserMiddleware(),
     // Add DB middleware here
     (req, res) => {
         const payload = res.locals.payload;
