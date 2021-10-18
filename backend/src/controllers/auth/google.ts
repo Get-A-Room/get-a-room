@@ -18,15 +18,19 @@ const scopes = [
  */
 export const redirectUrl = () => {
     const middleware = (req: Request, res: Response, next: NextFunction) => {
-        const client = getOAuthClient();
-        const url = client.generateAuthUrl({
-            access_type: 'online', // When we are ready to receive refresh_token change this offline
-            scope: scopes,
-            hd: process.env.HOSTED_DOMAIN
-        });
+        try {
+            const client = getOAuthClient();
+            const url = client.generateAuthUrl({
+                access_type: 'online', // When we are ready to receive refresh_token change this offline
+                scope: scopes,
+                hd: process.env.HOSTED_DOMAIN
+            });
 
-        res.locals.authUrl = url;
-        next();
+            res.locals.authUrl = url;
+            next();
+        } catch (err) {
+            next(err);
+        }
     };
 
     return middleware;
@@ -65,7 +69,6 @@ export const verifyCode = () => {
             res.locals.token = accessToken;
             next();
         } catch (err: any) {
-            console.error(err);
             return res.redirect(`${frontendUrl}/auth/failure?code=500`);
         }
     };
@@ -97,7 +100,6 @@ export const unpackPayload = () => {
             res.locals.payload = payload;
             next();
         } catch (err: any) {
-            console.error(err);
             return res.redirect(`${frontendUrl}/auth/failure?code=500`);
         }
     };

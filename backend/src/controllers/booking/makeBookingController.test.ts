@@ -27,7 +27,7 @@ const mockedBadRequest = mocked(badRequest, false);
 const mockedCustomResponse = mocked(custom, false);
 const mockedInternalServerError = mocked(internalServerError, false);
 
-describe('Booking controller', () => {
+describe('makeBookingController', () => {
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
     let mockNext: jest.Mock;

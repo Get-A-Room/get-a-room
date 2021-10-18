@@ -10,7 +10,7 @@ import * as schema from '../utils/googleSchema';
  * Add all buildings in the organization to res.locals.buildings
  * @returns -
  */
-export const addBuildings = () => {
+export const getBuildingsMiddleware = () => {
     const middleware = async (
         req: express.Request,
         res: express.Response,
