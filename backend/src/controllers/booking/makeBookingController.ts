@@ -66,7 +66,6 @@ export const makeBooking = () => {
             );
 
             if (!response.id) {
-                console.error('ERROR - Could not get id of the created event');
                 return responses.internalServerError(req, res);
             }
 
@@ -111,14 +110,18 @@ export const checkRoomAccepted = () => {
                     return x.email === roomId;
                 });
 
-                if (room?.responseStatus !== 'needsAction') {
+                if (!room) {
+                    break;
+                }
+
+                if (room.responseStatus !== 'needsAction') {
                     res.locals.roomAccepted =
-                        room?.responseStatus === 'accepted';
+                        room.responseStatus === 'accepted';
                     return next();
                 }
 
-                // Sleep for 150ms
-                await new Promise((resolve) => setTimeout(resolve, 150));
+                // Sleep for 125ms
+                await new Promise((resolve) => setTimeout(resolve, 125));
             }
 
             res.locals.roomAccepted = false;
@@ -146,8 +149,11 @@ export const removeDeclinedEvent = () => {
             const roomAccepted: boolean = res.locals.roomAccepted;
             const eventId: string = res.locals.eventId;
 
+            if (!client) {
+                throw new Error('Client not defined');
+            }
+
             if (!roomAccepted && eventId) {
-                console.warn('WARNING - Room did not accept, deleting event');
                 await calendar.deleteEvent(client, eventId);
                 return responses.custom(req, res, 409, 'Conflict');
             }
@@ -185,6 +191,16 @@ export const simplifyEventData = () => {
                     id: roomId
                 }
             };
+
+            // Check if any of the properties are undefined
+            if (
+                !simpleEvent.id ||
+                !simpleEvent.startTime ||
+                !simpleEvent.endTime ||
+                !simpleEvent.room.id
+            ) {
+                throw new Error('Property undefined');
+            }
 
             res.locals.event = simpleEvent;
             next();

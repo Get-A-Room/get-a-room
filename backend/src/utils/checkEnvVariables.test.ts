@@ -36,6 +36,27 @@ describe('checkEnvVariables', () => {
         }).toThrow('Workspace customer id');
     });
 
+    test('Should fail with empty Google Client ID', () => {
+        process.env.GOOGLE_CLIENT_ID = '';
+        expect(() => {
+            checkEnvVariables();
+        }).toThrow('Client id');
+    });
+
+    test('Should fail with empty Google Client secret', () => {
+        process.env.GOOGLE_CLIENT_SECRET = '';
+        expect(() => {
+            checkEnvVariables();
+        }).toThrow('Client secret');
+    });
+
+    test('Should fail with empty Google Workspace customer id', () => {
+        process.env.GOOGLE_CUSTOMER_ID = '';
+        expect(() => {
+            checkEnvVariables();
+        }).toThrow('Workspace customer id');
+    });
+
     test('Should replace double quotes in env variables', () => {
         process.env = {
             GOOGLE_CLIENT_ID: '"Test ID"',
