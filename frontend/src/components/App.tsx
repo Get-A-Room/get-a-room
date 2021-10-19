@@ -3,7 +3,6 @@ import logo from './../logo.svg';
 import './App.css';
 import Header from './Header'
 import MainView from './MainView'
-import BookingView from './BookingView'
 
 function App() {
     return (
