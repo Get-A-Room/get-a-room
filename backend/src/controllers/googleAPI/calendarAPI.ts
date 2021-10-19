@@ -20,34 +20,30 @@ export const freeBusyQuery = async (
     start: string,
     end: string
 ): Promise<any> => {
-    try {
-        const queryResult = await calendar.freebusy.query({
-            requestBody: {
-                timeMin: start,
-                timeMax: end,
-                items: items,
-                calendarExpansionMax: items.length
-            },
-            auth: client
-        });
+    const queryResult = await calendar.freebusy.query({
+        requestBody: {
+            timeMin: start,
+            timeMax: end,
+            items: items,
+            calendarExpansionMax: items.length
+        },
+        auth: client
+    });
 
-        const calendars = queryResult.data.calendars;
-        const results: any = {};
+    const calendars = queryResult.data.calendars;
+    const results: any = {};
 
-        _.forIn(calendars, (data: schema.FreeBusyCalendar, id: string) => {
-            let startOfReservation: string | null | undefined = end;
+    _.forIn(calendars, (data: schema.FreeBusyCalendar, id: string) => {
+        let startOfReservation: string | null | undefined = end;
 
-            if (Array.isArray(data.busy) && data.busy.length !== 0) {
-                startOfReservation = data.busy[0].start;
-            }
+        if (Array.isArray(data.busy) && data.busy.length !== 0) {
+            startOfReservation = data.busy[0].start;
+        }
 
-            results[id] = startOfReservation;
-        });
+        results[id] = startOfReservation;
+    });
 
-        return results;
-    } catch (err) {
-        throw err;
-    }
+    return results;
 };
 
 /**
@@ -67,39 +63,35 @@ export const createEvent = async (
     start: string,
     end: string
 ): Promise<schema.EventData> => {
-    try {
-        const startDt: schema.EventDateTime = {
-            dateTime: start
-        };
-        const endDt: schema.EventDateTime = {
-            dateTime: end
-        };
+    const startDt: schema.EventDateTime = {
+        dateTime: start
+    };
+    const endDt: schema.EventDateTime = {
+        dateTime: end
+    };
 
-        const attendeeList: schema.EventAttendee[] = [
-            { email: room, resource: true },
-            { email: organizer, responseStatus: 'accepted' }
-        ];
+    const attendeeList: schema.EventAttendee[] = [
+        { email: room, resource: true },
+        { email: organizer, responseStatus: 'accepted' }
+    ];
 
-        const event: schema.EventData = {
-            summary: title,
-            start: startDt,
-            end: endDt,
-            attendees: attendeeList,
-            reminders: {
-                useDefault: false
-            }
-        };
+    const event: schema.EventData = {
+        summary: title,
+        start: startDt,
+        end: endDt,
+        attendees: attendeeList,
+        reminders: {
+            useDefault: false
+        }
+    };
 
-        const eventResult = await calendar.events.insert({
-            calendarId: 'primary',
-            requestBody: event,
-            auth: client
-        });
+    const eventResult = await calendar.events.insert({
+        calendarId: 'primary',
+        requestBody: event,
+        auth: client
+    });
 
-        return eventResult.data;
-    } catch (err) {
-        throw err;
-    }
+    return eventResult.data;
 };
 
 /**
@@ -108,16 +100,12 @@ export const createEvent = async (
  * @param eventId Id of the event to delete
  */
 export const deleteEvent = async (client: OAuth2Client, eventId: string) => {
-    try {
-        await calendar.events.delete({
-            calendarId: 'primary',
-            eventId: eventId,
-            sendUpdates: 'none',
-            auth: client
-        });
-    } catch (err) {
-        throw err;
-    }
+    await calendar.events.delete({
+        calendarId: 'primary',
+        eventId: eventId,
+        sendUpdates: 'none',
+        auth: client
+    });
 };
 
 /**
@@ -130,15 +118,11 @@ export const getEventData = async (
     client: OAuth2Client,
     eventId: string
 ): Promise<schema.EventData> => {
-    try {
-        const response = await calendar.events.get({
-            calendarId: 'primary',
-            eventId: eventId,
-            auth: client
-        });
+    const response = await calendar.events.get({
+        calendarId: 'primary',
+        eventId: eventId,
+        auth: client
+    });
 
-        return response.data;
-    } catch (err) {
-        throw err;
-    }
+    return response.data;
 };
