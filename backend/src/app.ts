@@ -22,19 +22,11 @@ import { getDatabaseUrl } from './utils/config';
 const app = express();
 const port = 8080;
 
-try {
-    checkEnvVariables();
-} catch (e: any) {
-    throw e;
-}
+checkEnvVariables();
 
-try {
-    mongoose
-        .connect(getDatabaseUrl())
-        .then(() => console.info('Mongo connection - OK'));
-} catch (e: any) {
-    throw e;
-}
+mongoose
+    .connect(getDatabaseUrl())
+    .then(() => console.info('Mongo connection - OK'));
 
 // Options for CORS
 const corsOptions: CorsOptions = {
