@@ -10,21 +10,25 @@ import * as schema from '../utils/googleSchema';
  * Add all buildings in the organization to res.locals.buildings
  * @returns -
  */
-export const addBuildings = () => {
+export const getBuildingsMiddleware = () => {
     const middleware = async (
         req: express.Request,
         res: express.Response,
         next: express.NextFunction
     ) => {
-        const client = res.locals.oAuthClient;
-        const buildings = await admin.getBuildingData(client);
+        try {
+            const client: OAuth2Client = res.locals.oAuthClient;
+            const buildings = await admin.getBuildingData(client);
 
-        if (buildings.length === 0) {
-            return responses.internalServerError(req, res);
+            if (buildings.length === 0) {
+                return responses.internalServerError(req, res);
+            }
+
+            res.locals.buildings = simplifyBuildingData(buildings);
+            next();
+        } catch (err) {
+            next(err);
         }
-
-        res.locals.buildings = simplifyBuildingData(buildings);
-        next();
     };
 
     return middleware;

@@ -5,5 +5,6 @@ module.exports = {
     globals: {
         // https://stackoverflow.com/questions/45087018/jest-simple-tests-are-slow
         'ts-jest': { isolatedModules: true }
-    }
+    },
+    coverageReporters: ['lcov']
 };

@@ -1,7 +1,6 @@
-import express from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { getOAuthClient } from '../googleController';
 import { OAuth2Client } from 'google-auth-library';
-import * as responses from '../../utils/responses';
 
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
 
@@ -15,23 +14,23 @@ const scopes = [
 
 /**
  * Generate auth URL and add it to res.locals.authUrl
- * @returns -
+ * @returns
  */
 export const redirectUrl = () => {
-    const middleware = (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
-    ) => {
-        const client = getOAuthClient();
-        const url = client.generateAuthUrl({
-            access_type: 'online', // When we are ready to receive refresh_token change this offline
-            scope: scopes,
-            hd: process.env.HOSTED_DOMAIN
-        });
+    const middleware = (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const client = getOAuthClient();
+            const url = client.generateAuthUrl({
+                access_type: 'online', // When we are ready to receive refresh_token change this offline
+                scope: scopes,
+                hd: process.env.HOSTED_DOMAIN
+            });
 
-        res.locals.authUrl = url;
-        next();
+            res.locals.authUrl = url;
+            next();
+        } catch (err) {
+            next(err);
+        }
     };
 
     return middleware;
@@ -44,9 +43,9 @@ export const redirectUrl = () => {
  */
 export const verifyCode = () => {
     const middleware = async (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
+        req: Request,
+        res: Response,
+        next: NextFunction
     ) => {
         try {
             if (!req.query.code) {
@@ -70,7 +69,6 @@ export const verifyCode = () => {
             res.locals.token = accessToken;
             next();
         } catch (err: any) {
-            console.error(err);
             return res.redirect(`${frontendUrl}/auth/failure?code=500`);
         }
     };
@@ -80,13 +78,13 @@ export const verifyCode = () => {
 
 /**
  * Unpacks payload and adds it to res.locals.payload
- * @returns -
+ * @returns
  */
 export const unpackPayload = () => {
     const middleware = async (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
+        req: Request,
+        res: Response,
+        next: NextFunction
     ) => {
         try {
             const client: OAuth2Client = res.locals.oAuthClient;
@@ -102,7 +100,6 @@ export const unpackPayload = () => {
             res.locals.payload = payload;
             next();
         } catch (err: any) {
-            console.error(err);
             return res.redirect(`${frontendUrl}/auth/failure?code=500`);
         }
     };
