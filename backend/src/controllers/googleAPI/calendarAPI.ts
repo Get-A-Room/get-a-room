@@ -5,6 +5,8 @@ import * as schema from '../../utils/googleSchema';
 
 const calendar = google.calendar('v3');
 
+type NextEventById = Record<string, string | null | undefined>;
+
 /**
  * Run freeBusyQuery for items and return array containing objects
  * with id and start of next or current event
@@ -16,10 +18,10 @@ const calendar = google.calendar('v3');
  */
 export const freeBusyQuery = async (
     client: OAuth2Client,
-    items: any[],
+    items: schema.FreeBusyRequestItem[],
     start: string,
     end: string
-): Promise<any> => {
+): Promise<NextEventById> => {
     const queryResult = await calendar.freebusy.query({
         requestBody: {
             timeMin: start,
@@ -31,7 +33,7 @@ export const freeBusyQuery = async (
     });
 
     const calendars = queryResult.data.calendars;
-    const results: any = {};
+    const results: NextEventById = {};
 
     _.forIn(calendars, (data: schema.FreeBusyCalendar, id: string) => {
         let startOfReservation: string | null | undefined = end;

@@ -68,7 +68,7 @@ export const verifyCode = () => {
             res.locals.oAuthClient = client;
             res.locals.token = accessToken;
             next();
-        } catch (err: any) {
+        } catch (err) {
             return res.redirect(`${frontendUrl}/auth/failure?code=500`);
         }
     };
@@ -99,7 +99,7 @@ export const unpackPayload = () => {
 
             res.locals.payload = payload;
             next();
-        } catch (err: any) {
+        } catch (err) {
             return res.redirect(`${frontendUrl}/auth/failure?code=500`);
         }
     };

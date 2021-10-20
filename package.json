@@ -4,7 +4,8 @@
     "description": "",
     "scripts": {
         "prepare": "husky install",
-        "lint": "lint-staged"
+        "lint": "lint-staged",
+        "check-style": "prettier --check ."
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx,json,css,scss,md,html,yml}": [

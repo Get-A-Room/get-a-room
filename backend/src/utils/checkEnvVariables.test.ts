@@ -1,10 +1,10 @@
 import { checkEnvVariables } from './checkEnvVariables';
 
-const TEST_ENV_VARIABLES = {
-    GOOGLE_CLIENT_ID: 'Test ID',
-    GOOGLE_CLIENT_SECRET: 'Test secret',
-    GOOGLE_CUSTOMER_ID: 'Test customer ID'
-};
+// const TEST_ENV_VARIABLES = {
+//     GOOGLE_CLIENT_ID: 'Test ID',
+//     GOOGLE_CLIENT_SECRET: 'Test secret',
+//     GOOGLE_CUSTOMER_ID: 'Test customer ID'
+// };
 
 describe('checkEnvVariables', () => {
     beforeEach(() => {

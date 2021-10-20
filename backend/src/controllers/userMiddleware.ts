@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { TokenPayload } from 'google-auth-library';
-import { User } from '../models/user';
 import {
     createUserFromTokenPayload,
     getUserWithSubject
@@ -20,7 +19,7 @@ export const createUserMiddleware = () => {
                     return foundUser;
                 }
             })
-            .then((_user) => {
+            .then(() => {
                 next();
             })
             .catch((err) => {

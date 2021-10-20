@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+// import { Request, Response } from 'express';
 import {
     badRequest,
     unauthorized,
@@ -11,6 +11,7 @@ import {
     custom
 } from './responses';
 
+/* eslint-disable @typescript-eslint/no-explicit-any*/
 const mockRequest: any = () => {
     return {};
 };

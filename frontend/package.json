@@ -24,11 +24,8 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "lint": "eslint . && prettier --check .",
         "build:ci": "CI=true npm run build",
         "test:ci": "CI=true npm test",
-        "check-style": "prettier --check .",
-        "format-all": "prettier --write .",
         "eject": "react-scripts eject"
     },
     "eslintConfig": {
@@ -51,8 +48,6 @@
         ]
     },
     "devDependencies": {
-        "eslint-config-prettier": "^8.3.0",
-        "lint-staged": "^11.1.2",
-        "prettier": "2.4.1"
+        "eslint-config-prettier": "^8.3.0"
     }
 }

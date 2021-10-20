@@ -9,6 +9,7 @@ import * as schema from '../utils/googleSchema';
 import roomData from '../interfaces/roomData';
 import { getBuildings } from './buildingsController';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Middleware validates that a building belongs to the organization
  * @param req Express request
