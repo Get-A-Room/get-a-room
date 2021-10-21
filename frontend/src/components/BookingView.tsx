@@ -1,4 +1,11 @@
-import { useState, useEffect, Key, ReactChild, ReactFragment, ReactPortal } from 'react';
+import {
+    useState,
+    useEffect,
+    Key,
+    ReactChild,
+    ReactFragment,
+    ReactPortal
+} from 'react';
 import {
     Button,
     Box,
@@ -7,9 +14,10 @@ import {
     ListItemText,
     CircularProgress
 } from '@mui/material';
-import './BookingView.css'
+import './BookingView.css';
 
-const token = 'ya29.a0ARrdaM-7eTqt9fZZDQgvTa9QhlqfFbdKKnVRMZDmuUtg4jrdY-ylmcwXRjfaPFLs4gMXVjAJTumz4DC_geSUNQ52dORpwSBM8_hvXZWaJsfzxQ-w0gcr3EvtzcyTNvG1OtArPrZvTOWOOZHkibDlEglYlYB7';
+const token =
+    'ya29.a0ARrdaM8H12GuNmQ19kcGJQtC40N_xCEamBDQmfTsVLy5yf8gBYEX7OjOsJan9U-o9pQPXz__JrWF660dB-2pc43ojN1xohIQWPuyyms-0tShxJZXH9yjawT-oMdykSKHdIoRdU39VWnjFoT8TwaUABL_00_yow';
 const backendUrl = 'http://localhost:8080';
 
 async function book() {
@@ -48,8 +56,8 @@ function BookingView() {
             const res = await fetch(backendUrl + '/rooms', {
                 method: 'GET',
                 headers: {
-                    'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + token,
+                    'Content-Type': 'application/json'
                 }
             });
             const room = await res.json();
@@ -70,7 +78,7 @@ function BookingView() {
             </header>
             {!roomsFound(arrayOfRooms) ? (
                 <div className="BookingView-loadingScreen">
-                    <CircularProgress 
+                    <CircularProgress
                         style={{
                             color: '#F04E30'
                         }}
@@ -78,36 +86,53 @@ function BookingView() {
                 </div>
             ) : (
                 <List>
-                    {arrayOfRooms && arrayOfRooms.map((room: { id: Key | null | undefined; name: boolean |
-                                                                ReactChild | ReactFragment | ReactPortal |
-                                                                null | undefined; }) =>
-                        <Box key={room.id} m={1} border={2} borderColor='#282c34'>
-                            <ListItem>
-                                <ListItemText
-                                    disableTypography
-                                    style={{
-                                        fontSize: '18x',
-                                        fontWeight: 'bold',
-                                    }}>
-                                    {room.name}
-                                </ListItemText>
-                                <Button
-                                    style={{
-                                        backgroundColor: '#282c34',
-                                        color: 'white',
-                                        fontSize: '18px',
-                                        textTransform: 'none',
-                                        minWidth: '120px',
-                                        minHeight: '50px',
-                                        maxWidth: '120px',
-                                        maxHeight: '50px'
-                                    }}
-                                    onClick={book}>
-                                    Quick Book
-                                </Button>
-                            </ListItem>
-                        </Box>
-                    )}
+                    {arrayOfRooms &&
+                        arrayOfRooms.map(
+                            (room: {
+                                id: Key | null | undefined;
+                                name:
+                                    | boolean
+                                    | ReactChild
+                                    | ReactFragment
+                                    | ReactPortal
+                                    | null
+                                    | undefined;
+                            }) => (
+                                <Box
+                                    key={room.id}
+                                    m={1}
+                                    border={2}
+                                    borderColor="#282c34"
+                                >
+                                    <ListItem>
+                                        <ListItemText
+                                            disableTypography
+                                            style={{
+                                                fontSize: '18x',
+                                                fontWeight: 'bold'
+                                            }}
+                                        >
+                                            {room.name}
+                                        </ListItemText>
+                                        <Button
+                                            style={{
+                                                backgroundColor: '#282c34',
+                                                color: 'white',
+                                                fontSize: '18px',
+                                                textTransform: 'none',
+                                                minWidth: '120px',
+                                                minHeight: '50px',
+                                                maxWidth: '120px',
+                                                maxHeight: '50px'
+                                            }}
+                                            onClick={book}
+                                        >
+                                            Quick Book
+                                        </Button>
+                                    </ListItem>
+                                </Box>
+                            )
+                        )}
                 </List>
             )}
         </div>
@@ -115,4 +140,3 @@ function BookingView() {
 }
 
 export default BookingView;
-

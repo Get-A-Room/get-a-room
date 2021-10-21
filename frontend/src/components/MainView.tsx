@@ -1,6 +1,6 @@
 import React from 'react';
 import './MainView.css';
-import BookingView from './BookingView'
+import BookingView from './BookingView';
 
 const MainView = () => {
     return <BookingView />;
