@@ -17,6 +17,19 @@ html {
   color: #F04E30;
 }
 
+.BookingView-loadingScreen {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 50%;
+  left: 50%;
+  margin-top: -50px;
+  margin-left: -50px;
+  width: 100px;
+  height: 100px;
+}
+
 .BookingView-link {
   color: #61dafb;
 }

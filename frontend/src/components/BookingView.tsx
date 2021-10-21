@@ -4,16 +4,41 @@ import {
     Box,
     List,
     ListItem,
-    ListItemText
+    ListItemText,
+    CircularProgress
 } from '@mui/material';
 import './BookingView.css'
 
+const token = 'ya29.a0ARrdaM-7eTqt9fZZDQgvTa9QhlqfFbdKKnVRMZDmuUtg4jrdY-ylmcwXRjfaPFLs4gMXVjAJTumz4DC_geSUNQ52dORpwSBM8_hvXZWaJsfzxQ-w0gcr3EvtzcyTNvG1OtArPrZvTOWOOZHkibDlEglYlYB7';
+const backendUrl = 'http://localhost:8080';
+
+async function book() {
+    alert('Booking successful!');
+
+    /*
+    const res = await fetch(backendUrl + '/booking', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'content-type': 'application/json;',
+        }
+    });
+    */
+}
+
+function roomsFound(rooms: Array<any>) {
+    try {
+        let roomsLength = rooms.length;
+        if (roomsLength >= 0) {
+            return true;
+        }
+    } catch (e) {
+        return false;
+    }
+    return false;
+}
 
 function BookingView() {
-    const token = 'ya29.a0ARrdaM-bnoXH7SMpZIUk1DKMmGvk2wOjpKi9am6LjcJUeqxjA7bGILaUybviAyE-RSdDTTIMWdQjd5wsWGaDGk0YFy06qVjn3Shn63T1hKNagUUOqCgQ9WHdRrbZp70QkdtM9M4ENDWhXQSoJKRVWMzuBlD8Sg';
-
-    const backendUrl = 'http://localhost:8080';
-
     const [rooms, setRooms] = useState<any[]>([]);
 
     useEffect(() => {
@@ -36,12 +61,23 @@ function BookingView() {
     // Rooms as an array
     let arrayOfRooms: any = rooms['rooms' as any];
 
+    console.log(arrayOfRooms);
+
     return (
         <div className="BookingView">
             <header className="BookingView-header">
                 <h1>Available rooms</h1>
             </header>
-            <List>
+            {!roomsFound(arrayOfRooms) ? (
+                <div className="BookingView-loadingScreen">
+                    <CircularProgress 
+                        style={{
+                            color: '#F04E30'
+                        }}
+                    />
+                </div>
+            ) : (
+                <List>
                     {arrayOfRooms && arrayOfRooms.map((room: { id: Key | null | undefined; name: boolean |
                                                                 ReactChild | ReactFragment | ReactPortal |
                                                                 null | undefined; }) =>
@@ -65,15 +101,18 @@ function BookingView() {
                                         minHeight: '50px',
                                         maxWidth: '120px',
                                         maxHeight: '50px'
-                                    }}>
+                                    }}
+                                    onClick={book}>
                                     Quick Book
                                 </Button>
                             </ListItem>
                         </Box>
                     )}
-            </List>
+                </List>
+            )}
         </div>
     );
 }
 
 export default BookingView;
+
