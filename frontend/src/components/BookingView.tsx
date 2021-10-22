@@ -59,11 +59,7 @@ function getFeatures(room: any) {
         }
     }
 
-    if (features.length > 0) {
-        return featuresDisplay;
-    } else {
-        return '';
-    }
+    return featuresDisplay;
 }
 
 // Check if rooms are fetched
