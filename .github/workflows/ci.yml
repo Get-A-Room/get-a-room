@@ -1,9 +1,5 @@
 name: CI
 
-defaults:
-    run:
-        working-directory: frontend
-
 on: push
 
 env:
@@ -17,49 +13,63 @@ jobs:
         name: Check code style
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
+            - uses: actions/checkout@main
+            - uses: actions/setup-node@main
               with:
                   node-version: 16
                   cache: npm
             - run: npm ci
             - run: npm run check-style
 
-    build:
-        name: Build
+    frontend-build:
+        name: Build frontend
         runs-on: ubuntu-latest
         needs: check-style
+
+        defaults:
+            run:
+                working-directory: frontend
+
         steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
+            - uses: actions/checkout@main
+            - uses: actions/setup-node@main
               with:
                   node-version: 16
                   cache: npm
             - run: npm ci
             - run: npm run build:ci
-            - uses: actions/upload-artifact@v2
+            - uses: actions/upload-artifact@main
               with:
-                  name: build
+                  name: frontend-build
                   path: frontend/build
 
-    test:
-        name: Test
+    frontend-test:
+        name: Test frontend
         runs-on: ubuntu-latest
-        needs: build
+        needs: frontend-build
+
+        defaults:
+            run:
+                working-directory: frontend
+
         steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
+            - uses: actions/checkout@main
+            - uses: actions/setup-node@main
               with:
                   node-version: 16
                   cache: npm
             - run: npm ci
             - run: npm run test:ci
 
-    deploy-react-frontend:
+    frontend-deploy:
         name: Deploy React frontend
         if: github.ref == 'refs/heads/dev'
-        needs: test
+        needs: frontend-test
         runs-on: ubuntu-latest
+
+        defaults:
+            run:
+                working-directory: frontend
 
         steps:
             # Checks out the repository
@@ -70,7 +80,7 @@ jobs:
             - name: Download Artifact
               uses: actions/download-artifact@main
               with:
-                  name: build
+                  name: frontend-build
                   path: frontend/.docker/build
 
             # Prepares the GCloud CLI with your project ID and private key
@@ -99,11 +109,56 @@ jobs:
                     --platform "managed" \
                     --allow-unauthenticated
 
-    deploy-node-backend:
+    backend-build:
+        name: Build backend
+        needs: check-style
+        runs-on: ubuntu-latest
+
+        defaults:
+            run:
+                working-directory: backend
+
+        steps:
+            - uses: actions/checkout@main
+            - uses: actions/setup-node@main
+              with:
+                  node-version: 16
+                  cache: npm
+            - run: npm ci
+            - run: npm run lint:ci
+            - run: npm run build
+            - uses: actions/upload-artifact@main
+              with:
+                  name: backend-build
+                  path: backend/build
+
+    backend-test:
+        name: Test backend
+        needs: backend-build
+        runs-on: ubuntu-latest
+
+        defaults:
+            run:
+                working-directory: backend
+
+        steps:
+            - uses: actions/checkout@main
+            - uses: actions/setup-node@main
+              with:
+                  node-version: 16
+                  cache: npm
+            - run: npm ci
+            - run: npm run test:ci
+
+    backend-deploy:
         name: Deploy Node backend
         if: github.ref == 'refs/heads/dev'
-        needs: test
+        needs: backend-test
         runs-on: ubuntu-latest
+
+        defaults:
+            run:
+                working-directory: backend
 
         steps:
             # Checks out the repository
@@ -120,7 +175,6 @@ jobs:
 
             # Pushes the .docker directory to Google Cloud Build to build the Docker image and save it to Google Cloud Registry
             - name: Build and push Node backend to Container registry
-              working-directory: backend
               run: |-
                   gcloud builds submit \
                     --quiet \

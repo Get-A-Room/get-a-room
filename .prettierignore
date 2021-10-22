@@ -3,5 +3,4 @@ coverage
 apidoc
 build
 .vscode
-package.json
 package-lock.json
