@@ -1,11 +1,4 @@
-import {
-    useState,
-    useEffect,
-    Key,
-    ReactChild,
-    ReactFragment,
-    ReactPortal
-} from 'react';
+import { useState, useEffect, Key } from 'react';
 import {
     Button,
     Box,
@@ -14,10 +7,11 @@ import {
     ListItemText,
     CircularProgress
 } from '@mui/material';
+import { Business, Group } from '@mui/icons-material';
 import './BookingView.css';
 
 const token =
-    'ya29.a0ARrdaM8p7KEnP4Vta-Qk-pMdkrTtuhtUNgDM4KtXxKuAV46SF1ZIO2oAez5wcIlW8uwSLcsuUY_5lGDGaCQ_BEwx0XuLRYDvdbAl5wAxH11lzVc1XNgRe1nClU-oPB8UHarxtOmU9xBDBysokUSaxl0QsZOoJg';
+    'ya29.a0ARrdaM-DH6PbmyUetrS9JJ3su5UdY6tqJKWuoZG6K7qg7uKolkLzzPAdoVacxtZIo8dsxfIgkGfT6JaDmcZrlas96OT96MgTfpdTYLhWd63YmoqF8YPbGaqozGgOrRH4R-5z0X4ct82MBVHlQyAAKTOHPYsQCg';
 const backendUrl = 'http://localhost:8080';
 
 async function book() {
@@ -34,11 +28,25 @@ async function book() {
     */
 }
 
+// Return room name
+function getName(room: any) {
+    let name: any = room.name;
+    return name;
+}
+
+// Return the building of a room
 function getBuilding(room: any) {
     let building: any = room.building;
     return building;
 }
 
+// Return room capacity
+function getCapacity(room: any) {
+    let capacity: any = room.capacity;
+    return capacity;
+}
+
+// Return room features
 function getFeatures(room: any) {
     let features: any = room.features;
     let featuresDisplay = [];
@@ -51,9 +59,14 @@ function getFeatures(room: any) {
         }
     }
 
-    return featuresDisplay;
+    if (features.length > 0) {
+        return featuresDisplay;
+    } else {
+        return '';
+    }
 }
 
+// Check if rooms are fetched
 function roomsFetched(rooms: Array<any>) {
     try {
         // Rooms fetched successfully
@@ -109,16 +122,7 @@ function BookingView() {
                 <List>
                     {arrayOfRooms &&
                         arrayOfRooms.map(
-                            (room: {
-                                id: Key | null | undefined;
-                                name:
-                                    | boolean
-                                    | ReactChild
-                                    | ReactFragment
-                                    | ReactPortal
-                                    | null
-                                    | undefined;
-                            }) => (
+                            (room: { id: Key | null | undefined }) => (
                                 <Box
                                     key={room.id}
                                     m={1}
@@ -133,7 +137,7 @@ function BookingView() {
                                                 fontWeight: 'bold'
                                             }}
                                         >
-                                            {room.name}
+                                            {getName(room)}
                                         </ListItemText>
                                         <Button
                                             style={{
@@ -152,6 +156,14 @@ function BookingView() {
                                         </Button>
                                     </ListItem>
                                     <ListItem>
+                                        <Business />
+                                        <ListItemText
+                                            style={{
+                                                maxWidth: '2px'
+                                            }}
+                                        >
+                                            {' '}
+                                        </ListItemText>
                                         <ListItemText
                                             disableTypography
                                             style={{
@@ -163,15 +175,36 @@ function BookingView() {
                                         </ListItemText>
                                     </ListItem>
                                     <ListItem>
+                                        <Group />
+                                        <ListItemText
+                                            style={{
+                                                maxWidth: '2px'
+                                            }}
+                                        >
+                                            {' '}
+                                        </ListItemText>
                                         <ListItemText
                                             disableTypography
                                             style={{
-                                                fontSize: '16px'
+                                                fontSize: '16px',
+                                                fontWeight: 'bold'
                                             }}
                                         >
-                                            {getFeatures(room)}
+                                            {getCapacity(room)}
                                         </ListItemText>
                                     </ListItem>
+                                    {getFeatures(room).length > 0 ? (
+                                        <ListItem>
+                                            <ListItemText
+                                                disableTypography
+                                                style={{
+                                                    fontSize: '16px'
+                                                }}
+                                            >
+                                                {getFeatures(room)}
+                                            </ListItemText>
+                                        </ListItem>
+                                    ) : null}
                                 </Box>
                             )
                         )}
