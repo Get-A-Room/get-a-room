@@ -17,7 +17,7 @@ import {
 import './BookingView.css';
 
 const token =
-    'ya29.a0ARrdaM_-tuPd0C1TkwK6uZu-IjjOYiEGv_LPjOHCYWBw08SDAmPXiFLYB0LHOBQ49FV-_br5ht_eXeuB2cB89teHOEDGHYl6rBkTv7qFjLkXrf1b5GkIqVkV5aGemag2sKVvvCNgrsGeM3Yoh72M45JYZONHgA';
+    'ya29.a0ARrdaM8p7KEnP4Vta-Qk-pMdkrTtuhtUNgDM4KtXxKuAV46SF1ZIO2oAez5wcIlW8uwSLcsuUY_5lGDGaCQ_BEwx0XuLRYDvdbAl5wAxH11lzVc1XNgRe1nClU-oPB8UHarxtOmU9xBDBysokUSaxl0QsZOoJg';
 const backendUrl = 'http://localhost:8080';
 
 async function book() {
@@ -34,7 +34,12 @@ async function book() {
     */
 }
 
-function roomFeatures(room: any) {
+function getBuilding(room: any) {
+    let building: any = room.building;
+    return building;
+}
+
+function getFeatures(room: any) {
     let features: any = room.features;
     let featuresDisplay = [];
 
@@ -118,7 +123,7 @@ function BookingView() {
                                     key={room.id}
                                     m={1}
                                     border={3}
-                                    borderColor="#282c34"
+                                    borderColor="#f04e30"
                                 >
                                     <ListItem>
                                         <ListItemText
@@ -147,8 +152,24 @@ function BookingView() {
                                         </Button>
                                     </ListItem>
                                     <ListItem>
-                                        <ListItemText>
-                                            {roomFeatures(room)}
+                                        <ListItemText
+                                            disableTypography
+                                            style={{
+                                                fontSize: '16px',
+                                                fontWeight: 'bold'
+                                            }}
+                                        >
+                                            {getBuilding(room)}
+                                        </ListItemText>
+                                    </ListItem>
+                                    <ListItem>
+                                        <ListItemText
+                                            disableTypography
+                                            style={{
+                                                fontSize: '16px'
+                                            }}
+                                        >
+                                            {getFeatures(room)}
                                         </ListItemText>
                                     </ListItem>
                                 </Box>

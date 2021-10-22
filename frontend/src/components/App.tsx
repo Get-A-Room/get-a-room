@@ -6,8 +6,8 @@ import MainView from './MainView';
 function App() {
     return (
         <div className="App">
-            <Header />
             <MainView />
+            <Header />
         </div>
     );
 }

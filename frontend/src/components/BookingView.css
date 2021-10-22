@@ -5,6 +5,7 @@ html {
 .BookingView {
     background-color: #e3e3e3;
     text-align: center;
+    margin-bottom: 7vh;
 }
 
 .BookingView-header {
