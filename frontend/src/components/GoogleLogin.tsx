@@ -3,8 +3,10 @@ import React from 'react';
 import './GoogleLogin.css';
 import image from './google_image.png';
 
+const DEVELOPMENT_AUTH_URL = 'http://localhost:8080/auth/google';
+
 function login() {
-    const response = fetch('/auth/google');
+    window.location.href = DEVELOPMENT_AUTH_URL;
 }
 
 const GoogleLogin = () => {
