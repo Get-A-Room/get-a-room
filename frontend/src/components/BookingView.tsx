@@ -11,7 +11,7 @@ import { Business, Group } from '@mui/icons-material';
 import './BookingView.css';
 
 const token =
-    'ya29.a0ARrdaM-DH6PbmyUetrS9JJ3su5UdY6tqJKWuoZG6K7qg7uKolkLzzPAdoVacxtZIo8dsxfIgkGfT6JaDmcZrlas96OT96MgTfpdTYLhWd63YmoqF8YPbGaqozGgOrRH4R-5z0X4ct82MBVHlQyAAKTOHPYsQCg';
+    'ya29.a0ARrdaM_J5WIBz2uk-vdCtZ0gaIEq0LeCt_NsV377hnn02GviY6k54E6vQzeNkvkKijGkCrjXiq4Al0cpJ7JX-Lpb-8O4cHhAv6xaPoqO1Z6q9cjFhopZUGq0eMr-uP7jutfHshfgG5AERdBkSTF6YLPzqJByOQ';
 const backendUrl = 'http://localhost:8080';
 
 async function book() {

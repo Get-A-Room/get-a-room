@@ -1,4 +1,4 @@
-.Header {
+.NavBar {
     background-color: #282c34;
     color: white;
     min-height: 8vh;
@@ -11,18 +11,18 @@
     font-size: calc(10px + 2vmin);
 }
 
-.Header-logo {
+.NavBar-logo {
     height: 40vmin;
     pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-    .Header-logo {
+    .NavBar-logo {
         animation: App-logo-spin infinite 20s linear;
     }
 }
 
-.Header-link {
+.NavBar-link {
     color: #61dafb;
 }
 
