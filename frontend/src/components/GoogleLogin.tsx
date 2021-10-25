@@ -4,7 +4,7 @@ import './GoogleLogin.css';
 import image from './google_image.png';
 
 function login() {
-    //const response = fetch('localhost:8080/auth/google');
+    const response = fetch('/auth/google');
 }
 
 const GoogleLogin = () => {
