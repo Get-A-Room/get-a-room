@@ -1,7 +1,9 @@
 import React from 'react';
+import './MainView.css';
+import BookingView from './BookingView';
 
 const MainView = () => {
-    return <div>{`Testing MainView`}</div>;
+    return <BookingView />;
 };
 
 export default MainView;
