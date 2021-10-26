@@ -51,23 +51,11 @@
     -->
         <script>
             if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function () {
-                    navigator.serviceWorker.register('/serviceworker.js').then(
-                        function (registration) {
-                            // Registration was successful
-                            console.log(
-                                'ServiceWorker registration successful with scope: ',
-                                registration.scope
-                            );
-                        },
-                        function (err) {
-                            // registration failed :(
-                            console.log(
-                                'ServiceWorker registration failed: ',
-                                err
-                            );
-                        }
-                    );
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker
+                        .register('/serviceworker.js')
+                        .then((reg) => console.log('Success: ', reg.scope))
+                        .catch((err) => console.log('Failure: ', err));
                 });
             }
         </script>
