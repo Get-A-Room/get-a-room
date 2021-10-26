@@ -18,7 +18,7 @@ export const getOAuthClient = (accessToken: string | undefined = undefined) => {
     const client = new OAuth2Client(
         process.env.GOOGLE_CLIENT_ID || '',
         process.env.GOOGLE_CLIENT_SECRET || '',
-        `${backendUrl}/auth/google/callback`
+        `${backendUrl}/api/auth/google/callback`
     );
 
     if (accessToken) {
@@ -35,7 +35,7 @@ router.get('/', controller.redirectUrl(), (req, res) => {
         return res.redirect(res.locals.authUrl);
     }
 
-    return res.redirect(`${frontendUrl}/auth/failure`);
+    return res.redirect(`${frontendUrl}/api/auth/failure`);
 });
 
 router.get(
@@ -50,7 +50,7 @@ router.get(
         const accessToken = res.locals.token;
 
         res.redirect(
-            `${frontendUrl}/auth/success?token=${accessToken}&name=${name}`
+            `${frontendUrl}/api/auth/success?token=${accessToken}&name=${name}`
         );
     }
 );

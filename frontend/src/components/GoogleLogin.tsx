@@ -2,7 +2,7 @@ import React from 'react';
 import './GoogleLogin.css';
 import image from './google_image.png';
 
-const GOOGLE_AUTH_ROUTE = 'auth/google';
+const GOOGLE_AUTH_ROUTE = 'api/auth/google';
 
 const getGoogleAuthUrl = () => {
     if (process.env.NODE_ENV === 'development') {
