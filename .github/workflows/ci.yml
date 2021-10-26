@@ -152,8 +152,8 @@ jobs:
 
     backend-deploy:
         name: Deploy Node backend
-        if: github.ref == 'refs/heads/dev'
-        needs: backend-test
+        # if: github.ref == 'refs/heads/dev'
+        # needs: backend-test
         runs-on: ubuntu-latest
 
         defaults:

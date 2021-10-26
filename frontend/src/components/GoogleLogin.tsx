@@ -1,13 +1,21 @@
-import { get } from 'http';
 import React from 'react';
 import './GoogleLogin.css';
 import image from './google_image.png';
 
-const DEVELOPMENT_AUTH_URL = 'http://localhost:8080/auth/google';
+const GOOGLE_AUTH_ROUTE = 'auth/google';
 
-function login() {
-    window.location.href = DEVELOPMENT_AUTH_URL;
-}
+const getGoogleAuthUrl = () => {
+    if (process.env.NODE_ENV === 'development') {
+        return `http://localhost:8080/${GOOGLE_AUTH_ROUTE}`;
+    } else {
+        return `${window.location.origin}/${GOOGLE_AUTH_ROUTE}`;
+    }
+};
+
+const login = () => {
+    // Redirect to google login page
+    window.location.assign(getGoogleAuthUrl());
+};
 
 const GoogleLogin = () => {
     return (
