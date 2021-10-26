@@ -64,8 +64,8 @@ jobs:
     frontend-deploy:
         name: Deploy React frontend
         # if: github.ref == 'refs/heads/dev'
-        # needs: frontend-test
         needs: frontend-build
+        # needs: frontend-test
         runs-on: ubuntu-latest
 
         defaults:
@@ -112,7 +112,7 @@ jobs:
 
     # backend-build:
     #     name: Build backend
-    #     needs: check-style
+    #     # needs: check-style
     #     runs-on: ubuntu-latest
 
     #     defaults:
