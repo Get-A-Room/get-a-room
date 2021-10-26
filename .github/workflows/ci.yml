@@ -9,22 +9,22 @@ env:
     NODE_BACKEND_CLOUD_RUN_SERVICE_NAME: get-a-room-node-backend
 
 jobs:
-    check-style:
-        name: Check code style
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@main
-            - uses: actions/setup-node@main
-              with:
-                  node-version: 16
-                  cache: npm
-            - run: npm ci
-            - run: npm run check-style
+    # check-style:
+    #     name: Check code style
+    #     runs-on: ubuntu-latest
+    #     steps:
+    #         - uses: actions/checkout@main
+    #         - uses: actions/setup-node@main
+    #           with:
+    #               node-version: 16
+    #               cache: npm
+    #         - run: npm ci
+    #         - run: npm run check-style
 
     frontend-build:
         name: Build frontend
         runs-on: ubuntu-latest
-        needs: check-style
+        # needs: check-style
 
         defaults:
             run:
@@ -43,28 +43,29 @@ jobs:
                   name: frontend-build
                   path: frontend/build
 
-    frontend-test:
-        name: Test frontend
-        runs-on: ubuntu-latest
-        needs: frontend-build
+    # frontend-test:
+    #     name: Test frontend
+    #     runs-on: ubuntu-latest
+    #     needs: frontend-build
 
-        defaults:
-            run:
-                working-directory: frontend
+    #     defaults:
+    #         run:
+    #             working-directory: frontend
 
-        steps:
-            - uses: actions/checkout@main
-            - uses: actions/setup-node@main
-              with:
-                  node-version: 16
-                  cache: npm
-            - run: npm ci
-            - run: npm run test:ci
+    #     steps:
+    #         - uses: actions/checkout@main
+    #         - uses: actions/setup-node@main
+    #           with:
+    #               node-version: 16
+    #               cache: npm
+    #         - run: npm ci
+    #         - run: npm run test:ci
 
     frontend-deploy:
         name: Deploy React frontend
         if: github.ref == 'refs/heads/dev'
-        needs: frontend-test
+        # needs: frontend-test
+        needs: frontend-build
         runs-on: ubuntu-latest
 
         defaults:
@@ -109,46 +110,46 @@ jobs:
                     --platform "managed" \
                     --allow-unauthenticated
 
-    backend-build:
-        name: Build backend
-        needs: check-style
-        runs-on: ubuntu-latest
+    # backend-build:
+    #     name: Build backend
+    #     needs: check-style
+    #     runs-on: ubuntu-latest
 
-        defaults:
-            run:
-                working-directory: backend
+    #     defaults:
+    #         run:
+    #             working-directory: backend
 
-        steps:
-            - uses: actions/checkout@main
-            - uses: actions/setup-node@main
-              with:
-                  node-version: 16
-                  cache: npm
-            - run: npm ci
-            - run: npm run lint:ci
-            - run: npm run build
-            - uses: actions/upload-artifact@main
-              with:
-                  name: backend-build
-                  path: backend/build
+    #     steps:
+    #         - uses: actions/checkout@main
+    #         - uses: actions/setup-node@main
+    #           with:
+    #               node-version: 16
+    #               cache: npm
+    #         - run: npm ci
+    #         - run: npm run lint:ci
+    #         - run: npm run build
+    #         - uses: actions/upload-artifact@main
+    #           with:
+    #               name: backend-build
+    #               path: backend/build
 
-    backend-test:
-        name: Test backend
-        needs: backend-build
-        runs-on: ubuntu-latest
+    # backend-test:
+    #     name: Test backend
+    #     needs: backend-build
+    #     runs-on: ubuntu-latest
 
-        defaults:
-            run:
-                working-directory: backend
+    #     defaults:
+    #         run:
+    #             working-directory: backend
 
-        steps:
-            - uses: actions/checkout@main
-            - uses: actions/setup-node@main
-              with:
-                  node-version: 16
-                  cache: npm
-            - run: npm ci
-            - run: npm run test:ci
+    #     steps:
+    #         - uses: actions/checkout@main
+    #         - uses: actions/setup-node@main
+    #           with:
+    #               node-version: 16
+    #               cache: npm
+    #         - run: npm ci
+    #         - run: npm run test:ci
 
     backend-deploy:
         name: Deploy Node backend
