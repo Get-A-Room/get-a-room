@@ -63,7 +63,7 @@ jobs:
 
     frontend-deploy:
         name: Deploy React frontend
-        # if: github.ref == 'refs/heads/dev'
+        if: github.ref == 'refs/heads/dev'
         needs: frontend-test
         runs-on: ubuntu-latest
 
@@ -152,7 +152,7 @@ jobs:
 
     backend-deploy:
         name: Deploy Node backend
-        # if: github.ref == 'refs/heads/dev'
+        if: github.ref == 'refs/heads/dev'
         needs: backend-test
         runs-on: ubuntu-latest
 
