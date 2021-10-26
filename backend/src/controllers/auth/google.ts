@@ -50,7 +50,7 @@ export const verifyCode = () => {
         try {
             if (!req.query.code) {
                 console.error(`ERROR - "No code"`);
-                return res.redirect(`${frontendUrl}/api/auth/failure?code=401`);
+                return res.redirect(`${frontendUrl}/auth/failure?code=401`);
             }
 
             const code: string = req.query.code as string;
@@ -62,14 +62,14 @@ export const verifyCode = () => {
             const idToken = tokens.id_token as string;
 
             if (!idToken || !accessToken) {
-                return res.redirect(`${frontendUrl}/api/auth/failure?code=500`);
+                return res.redirect(`${frontendUrl}/auth/failure?code=500`);
             }
 
             res.locals.oAuthClient = client;
             res.locals.token = accessToken;
             next();
         } catch (err) {
-            return res.redirect(`${frontendUrl}/api/auth/failure?code=500`);
+            return res.redirect(`${frontendUrl}/auth/failure?code=500`);
         }
     };
 
@@ -94,13 +94,13 @@ export const unpackPayload = () => {
             const payload = ticket.getPayload();
 
             if (payload?.hd !== 'oispahuone.com') {
-                return res.redirect(`${frontendUrl}/api/auth/failure?code=400`);
+                return res.redirect(`${frontendUrl}/auth/failure?code=400`);
             }
 
             res.locals.payload = payload;
             next();
         } catch (err) {
-            return res.redirect(`${frontendUrl}/api/auth/failure?code=500`);
+            return res.redirect(`${frontendUrl}/auth/failure?code=500`);
         }
     };
 

@@ -37,6 +37,7 @@ app.use(morgan('short'));
 app.use(helmet());
 app.use(express.json());
 app.use(cors(corsOptions));
+
 app.use(parseAccessToken().unless(authFilter));
 app.use(validateAccessToken().unless(authFilter));
 

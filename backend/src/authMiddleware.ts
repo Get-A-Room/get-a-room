@@ -10,7 +10,12 @@ import * as responses from './utils/responses';
  */
 export const authFilter = (req: express.Request) => {
     const path = req.path;
-    const skipPaths = ['/auth', '/api-docs', '/favicon.ico'];
+    const skipPaths = [
+        '/api',
+        '/api/auth',
+        '/api/api-docs',
+        '/api/favicon.ico'
+    ];
 
     if (path === '/') {
         return true;
