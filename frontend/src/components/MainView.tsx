@@ -1,13 +1,13 @@
 import React from 'react';
 import './MainView.css';
-//import Login from './GoogleLogin';
+import Login from './GoogleLogin';
 //import OfficeSelection from './SelectOffice';
-import BookingView from './BookingView';
+// import BookingView from './BookingView';
 
 const MainView = () => {
-    //return <Login />;
+    return <Login />;
     //return <OfficeSelection />;
-    return <BookingView />;
+    // return <BookingView />;
 };
 
 export default MainView;

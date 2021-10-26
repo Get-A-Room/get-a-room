@@ -7,7 +7,7 @@ import { createUserMiddleware } from './userMiddleware';
 export const router = express.Router();
 
 const backendUrl = process.env.CALLBACK_URL || 'http://localhost:8080';
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 /**
  * Returns a OAuth2Client to use for authentication
@@ -18,7 +18,7 @@ export const getOAuthClient = (accessToken: string | undefined = undefined) => {
     const client = new OAuth2Client(
         process.env.GOOGLE_CLIENT_ID || '',
         process.env.GOOGLE_CLIENT_SECRET || '',
-        `${backendUrl}/auth/google/callback`
+        `${backendUrl}/api/auth/google/callback`
     );
 
     if (accessToken) {

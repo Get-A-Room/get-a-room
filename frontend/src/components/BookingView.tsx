@@ -82,7 +82,7 @@ function BookingView() {
         getRooms();
 
         async function getRooms() {
-            const res = await fetch(backendUrl + '/rooms', {
+            const res = await fetch('/api/rooms', {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
