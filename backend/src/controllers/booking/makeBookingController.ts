@@ -82,6 +82,49 @@ export const makeBooking = () => {
 };
 
 /**
+ * Book a room
+ * @returns
+ */
+export const getCurrentReservationMiddleware = () => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            // const startTime = DateTime.now().toISO();
+            // const endTime = DateTime.now()
+            //     .plus({ minutes: req.body.duration })
+            //     .toISO();
+
+            // const client: OAuth2Client = res.locals.oAuthClient;
+            // const response = await calendar.createEvent(
+            //     client,
+            //     res.locals.roomId,
+            //     res.locals.email,
+            //     res.locals.title,
+            //     startTime,
+            //     endTime
+            // );
+
+            // if (!response.id) {
+            //     return responses.internalServerError(req, res);
+            // }
+
+            // res.locals.event = response;
+            // res.locals.eventId = response.id;
+            res.locals.currentBooking = 'Current booking on tama testi!';
+
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    return middleware;
+};
+
+/**
  * Add res.locals.roomAccepted boolean that tells if the room has accepted the event
  * NOTE: If we somehow can get around this, the calls would be 3x faster!
  * @returns

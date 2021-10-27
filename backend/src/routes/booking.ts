@@ -20,8 +20,12 @@ router.post(
 );
 
 // Get the status of the current booking of the user
-router.get('/current', (req: Request, res: Response) =>
-    responses.notImplemented(req, res)
+router.get(
+    '/current',
+    controller.getCurrentReservationMiddleware(),
+    (req: Request, res: Response) => {
+        res.status(200).json(res.locals.currentBooking);
+    }
 );
 
 // Get details of a booking
