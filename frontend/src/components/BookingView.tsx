@@ -1,31 +1,30 @@
 import { useState, useEffect, Key } from 'react';
 import {
     Button,
-    Box,
     List,
-    ListItem,
-    ListItemText,
+    Card,
+    CardContent,
+    Typography,
     CircularProgress
 } from '@mui/material';
 import { Business, Group } from '@mui/icons-material';
 import './BookingView.css';
 
-const token =
-    'ya29.a0ARrdaM-DH6PbmyUetrS9JJ3su5UdY6tqJKWuoZG6K7qg7uKolkLzzPAdoVacxtZIo8dsxfIgkGfT6JaDmcZrlas96OT96MgTfpdTYLhWd63YmoqF8YPbGaqozGgOrRH4R-5z0X4ct82MBVHlQyAAKTOHPYsQCg';
+const token = '';
 const backendUrl = 'http://localhost:8080';
 
 async function book() {
     alert('Booking successful!');
 
-    /*
     const res = await fetch(backendUrl + '/booking', {
         method: 'POST',
         headers: {
-            'Authorization': 'Bearer ' + token,
-            'content-type': 'application/json;',
+            Authorization: 'Bearer ' + token,
+            ContentType: 'application/json'
         }
     });
-    */
+    const book = await res.json();
+    console.log(book);
 }
 
 // Return room name
@@ -87,7 +86,7 @@ function BookingView() {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + token,
-                    'Content-Type': 'application/json'
+                    ContentType: 'application/json'
                 }
             });
             const room = await res.json();
@@ -119,22 +118,24 @@ function BookingView() {
                     {arrayOfRooms &&
                         arrayOfRooms.map(
                             (room: { id: Key | null | undefined }) => (
-                                <Box
-                                    key={room.id}
-                                    m={1}
-                                    border={3}
-                                    borderColor="#f04e30"
+                                <Card
+                                    sx={{
+                                        bgcolor: '#d6d6d6',
+                                        borderColor: '#f04e30',
+                                        borderRadius: 3,
+                                        boxShadow: 1,
+                                        m: 1
+                                    }}
                                 >
-                                    <ListItem>
-                                        <ListItemText
-                                            disableTypography
+                                    <CardContent>
+                                        <Typography
                                             style={{
                                                 fontSize: '18px',
                                                 fontWeight: 'bold'
                                             }}
                                         >
                                             {getName(room)}
-                                        </ListItemText>
+                                        </Typography>
                                         <Button
                                             style={{
                                                 backgroundColor: '#282c34',
@@ -150,58 +151,45 @@ function BookingView() {
                                         >
                                             Quick Book
                                         </Button>
-                                    </ListItem>
-                                    <ListItem>
+                                    </CardContent>
+                                    <CardContent>
                                         <Business />
-                                        <ListItemText
-                                            style={{
-                                                maxWidth: '2px'
-                                            }}
-                                        >
+                                        <Typography style={{ maxWidth: '2px' }}>
                                             {' '}
-                                        </ListItemText>
-                                        <ListItemText
-                                            disableTypography
+                                        </Typography>
+                                        <Typography
                                             style={{
                                                 fontSize: '16px',
                                                 fontWeight: 'bold'
                                             }}
                                         >
                                             {getBuilding(room)}
-                                        </ListItemText>
-                                    </ListItem>
-                                    <ListItem>
+                                        </Typography>
+                                    </CardContent>
+                                    <CardContent>
                                         <Group />
-                                        <ListItemText
-                                            style={{
-                                                maxWidth: '2px'
-                                            }}
-                                        >
+                                        <Typography style={{ maxWidth: '2px' }}>
                                             {' '}
-                                        </ListItemText>
-                                        <ListItemText
-                                            disableTypography
+                                        </Typography>
+                                        <Typography
                                             style={{
                                                 fontSize: '16px',
                                                 fontWeight: 'bold'
                                             }}
                                         >
                                             {getCapacity(room)}
-                                        </ListItemText>
-                                    </ListItem>
+                                        </Typography>
+                                    </CardContent>
                                     {getFeatures(room).length > 0 ? (
-                                        <ListItem>
-                                            <ListItemText
-                                                disableTypography
-                                                style={{
-                                                    fontSize: '16px'
-                                                }}
+                                        <CardContent>
+                                            <Typography
+                                                style={{ fontSize: '16px' }}
                                             >
                                                 {getFeatures(room)}
-                                            </ListItemText>
-                                        </ListItem>
+                                            </Typography>
+                                        </CardContent>
                                     ) : null}
-                                </Box>
+                                </Card>
                             )
                         )}
                 </List>
