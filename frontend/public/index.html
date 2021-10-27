@@ -54,8 +54,18 @@
                 window.addEventListener('load', () => {
                     navigator.serviceWorker
                         .register('/serviceworker.js')
-                        .then((reg) => console.log('Success: ', reg.scope))
-                        .catch((err) => console.log('Failure: ', err));
+                        .then((reg) =>
+                            console.log(
+                                'Service workkerin reskiterointi onnistui ja sen scope on: reg.scope:',
+                                reg.scope
+                            )
+                        )
+                        .catch((err) =>
+                            console.log(
+                                'Service workkerin reskiterointi EPAONNISTUI :( errorilla: ',
+                                err
+                            )
+                        );
                 });
             }
         </script>
