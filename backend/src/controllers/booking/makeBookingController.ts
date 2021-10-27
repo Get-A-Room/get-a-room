@@ -85,7 +85,7 @@ export const makeBooking = () => {
  * Book a room
  * @returns
  */
-export const getCurrentReservationMiddleware = () => {
+export const getCurrentBookingMiddleware = () => {
     const middleware = async (
         req: Request,
         res: Response,
