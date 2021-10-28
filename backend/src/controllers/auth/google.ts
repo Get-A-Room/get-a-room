@@ -59,6 +59,7 @@ export const verifyCode = () => {
 
             client.setCredentials(tokens);
             const accessToken = tokens.access_token as string;
+            const refreshToken = tokens.refresh_token as string;
             const idToken = tokens.id_token as string;
 
             if (!idToken || !accessToken) {
@@ -67,6 +68,7 @@ export const verifyCode = () => {
 
             res.locals.oAuthClient = client;
             res.locals.token = accessToken;
+            res.locals.refreshToken = refreshToken;
             next();
         } catch (err) {
             return res.redirect(`${frontendUrl}/auth/failure?code=500`);

@@ -43,14 +43,14 @@ router.get(
     controller.verifyCode(),
     controller.unpackPayload(),
     createUserMiddleware(),
-    // Add DB middleware here
     (req, res) => {
         const payload = res.locals.payload;
         const name = payload.name;
         const accessToken = res.locals.token;
+        const refreshToken = res.locals.refreshToken;
 
-        res.redirect(
-            `${frontendUrl}/auth/success?token=${accessToken}&name=${name}`
-        );
+        res.cookie('token', accessToken);
+        res.cookie('refreshToken', refreshToken);
+        res.redirect(`${frontendUrl}/auth/success?name=${name}`);
     }
 );
