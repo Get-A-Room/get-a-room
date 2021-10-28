@@ -44,18 +44,6 @@ export const parseTokens = () => {
         res.locals.refreshToken = refreshToken;
         res.locals.token = token;
 
-        /*
-        const bearerHeader = req.headers.authorization;
-
-        if (bearerHeader) {
-            const bearer = bearerHeader.split(' ');
-            const accessToken = bearer[1];
-            res.locals.token = accessToken;
-        } else {
-            res.locals.token = undefined;
-        }
-        */
-
         next();
     };
 
@@ -87,13 +75,13 @@ export const validateAccessToken = () => {
             });
 
             const newToken = (await client.getAccessToken()).token;
-            console.log('New token is same:', newToken == token);
 
+            // Token had expired
             if (token !== newToken) {
                 res.locals.token = newToken;
                 res.cookie('token', newToken, {
                     maxAge: 3600000, // 60 minutes
-                    httpOnly: false
+                    httpOnly: true
                 });
             }
 

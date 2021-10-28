@@ -51,11 +51,11 @@ router.get(
 
         res.cookie('token', accessToken, {
             maxAge: 3600000, // 60 minutes
-            httpOnly: false
+            httpOnly: true
         });
         res.cookie('refreshToken', refreshToken, {
             maxAge: 31556952000, // ~1 year
-            httpOnly: false
+            httpOnly: true
         });
 
         res.redirect(`${frontendUrl}/auth/success?name=${name}`);
