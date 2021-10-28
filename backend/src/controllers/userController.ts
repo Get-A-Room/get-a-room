@@ -1,11 +1,14 @@
 import { TokenPayload } from 'google-auth-library';
 import UserModel, { User } from '../models/user';
 
-export function createUserFromTokenPayload(payload: TokenPayload) {
+export function createUserFromTokenPayload(
+    payload: TokenPayload,
+    refreshToken?: string
+) {
     const userBase: User = {
         subject: payload.sub,
         name: payload.name,
-        refreshToken: undefined, // TODO
+        refreshToken: refreshToken,
         preferences: {}
     };
     const user = new UserModel(userBase);
