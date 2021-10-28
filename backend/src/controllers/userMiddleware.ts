@@ -18,22 +18,20 @@ export const createUserMiddleware = () => {
         return getUserWithSubject(authTokenPayload.sub)
             .then((foundUser) => {
                 // If new refresh token is received, always update it to db
-                if (refreshToken) {
+                if (!foundUser) {
                     res.locals.refreshToken = refreshToken;
-
-                    if (foundUser) {
-                        return updateRefreshToken(
-                            authTokenPayload.sub,
-                            refreshToken
-                        );
-                    } else {
-                        return createUserFromTokenPayload(
-                            authTokenPayload,
-                            refreshToken
-                        );
-                    }
+                    return createUserFromTokenPayload(
+                        authTokenPayload,
+                        refreshToken
+                    );
+                } else if (refreshToken) {
+                    res.locals.refreshToken = refreshToken;
+                    return updateRefreshToken(
+                        authTokenPayload.sub,
+                        refreshToken
+                    );
                 } else {
-                    res.locals.refreshToken = foundUser?.refreshToken;
+                    res.locals.refreshToken = foundUser.refreshToken;
                     return foundUser;
                 }
             })
