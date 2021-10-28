@@ -18,3 +18,10 @@ export function createUserFromTokenPayload(
 export function getUserWithSubject(subject: string): Promise<User | null> {
     return UserModel.findOne({ subject }).exec();
 }
+
+export function updateRefreshToken(
+    subject: string,
+    refreshToken: string
+): Promise<User | null> {
+    return UserModel.findOneAndUpdate({ subject }, { refreshToken }).exec();
+}

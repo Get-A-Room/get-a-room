@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { TokenPayload } from 'google-auth-library';
 import {
     createUserFromTokenPayload,
-    getUserWithSubject
+    getUserWithSubject,
+    updateRefreshToken
 } from './userController';
 
 export const createUserMiddleware = () => {
@@ -17,17 +18,26 @@ export const createUserMiddleware = () => {
         return getUserWithSubject(authTokenPayload.sub)
             .then((foundUser) => {
                 // If new refresh token is received, always update it to db
-                if (!foundUser || refreshToken) {
-                    return createUserFromTokenPayload(
-                        authTokenPayload,
-                        refreshToken
-                    );
+                if (refreshToken) {
+                    res.locals.refreshToken = refreshToken;
+
+                    if (foundUser) {
+                        return updateRefreshToken(
+                            authTokenPayload.sub,
+                            refreshToken
+                        );
+                    } else {
+                        return createUserFromTokenPayload(
+                            authTokenPayload,
+                            refreshToken
+                        );
+                    }
                 } else {
+                    res.locals.refreshToken = foundUser?.refreshToken;
                     return foundUser;
                 }
             })
-            .then((user) => {
-                res.locals.refreshToken = user.refreshToken;
+            .then(() => {
                 next();
             })
             .catch((err) => {
