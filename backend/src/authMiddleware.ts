@@ -91,7 +91,10 @@ export const validateAccessToken = () => {
 
             if (token !== newToken) {
                 res.locals.token = newToken;
-                res.cookie('token', newToken);
+                res.cookie('token', newToken, {
+                    maxAge: 3600000, // 60 minutes
+                    httpOnly: false
+                });
             }
 
             const tokenInfo = await client.getTokenInfo(res.locals.token);

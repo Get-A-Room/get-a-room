@@ -54,6 +54,7 @@ router.get(
             httpOnly: false
         });
         res.cookie('refreshToken', refreshToken, {
+            maxAge: 31556952000, // ~1 year
             httpOnly: false
         });
 
