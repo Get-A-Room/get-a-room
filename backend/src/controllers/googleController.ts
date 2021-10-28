@@ -49,8 +49,14 @@ router.get(
         const accessToken = res.locals.token;
         const refreshToken = res.locals.refreshToken;
 
-        res.cookie('token', accessToken);
-        res.cookie('refreshToken', refreshToken);
+        res.cookie('token', accessToken, {
+            maxAge: 3540000, // 59 minutes
+            httpOnly: false
+        });
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: false
+        });
+
         res.redirect(`${frontendUrl}/auth/success?name=${name}`);
     }
 );
