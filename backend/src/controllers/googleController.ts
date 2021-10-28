@@ -50,7 +50,7 @@ router.get(
         const refreshToken = res.locals.refreshToken;
 
         res.cookie('token', accessToken, {
-            maxAge: 3540000, // 59 minutes
+            maxAge: 3600000, // 60 minutes
             httpOnly: false
         });
         res.cookie('refreshToken', refreshToken, {

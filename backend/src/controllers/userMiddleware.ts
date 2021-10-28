@@ -26,7 +26,8 @@ export const createUserMiddleware = () => {
                     return foundUser;
                 }
             })
-            .then(() => {
+            .then((user) => {
+                res.locals.refreshToken = user.refreshToken;
                 next();
             })
             .catch((err) => {
