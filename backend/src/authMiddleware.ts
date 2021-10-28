@@ -24,23 +24,37 @@ export const authFilter = (req: express.Request) => {
 };
 
 /**
- * Parses access token from headers and sets it to res.locals.token but does not validate it
+ * Parses access token from headers and refresh token from
+ * httpOnly cookie and sets them to res.locals
  * @returns -
  */
-export const parseAccessToken = () => {
+export const parseTokens = () => {
     const middleware = (
         req: express.Request,
         res: express.Response,
         next: express.NextFunction
     ) => {
-        if (!req.headers.authorization) {
+        const refreshToken = req.cookies.refreshToken;
+        const token = req.cookies.token;
+
+        if (!refreshToken) {
             return responses.invalidToken(req, res);
         }
 
+        res.locals.refreshToken = refreshToken;
+        res.locals.token = token;
+
+        /*
         const bearerHeader = req.headers.authorization;
-        const bearer = bearerHeader.split(' ');
-        const accessToken = bearer[1];
-        res.locals.token = accessToken;
+
+        if (bearerHeader) {
+            const bearer = bearerHeader.split(' ');
+            const accessToken = bearer[1];
+            res.locals.token = accessToken;
+        } else {
+            res.locals.token = undefined;
+        }
+        */
 
         next();
     };
@@ -57,36 +71,36 @@ export const parseAccessToken = () => {
  * @returns -
  */
 export const validateAccessToken = () => {
-    const middleware = (
+    const middleware = async (
         req: express.Request,
         res: express.Response,
         next: express.NextFunction
     ) => {
-        const client = getOAuthClient();
-        const accessToken = res.locals.token;
-        client.setCredentials({ access_token: accessToken });
+        try {
+            const client = getOAuthClient();
+            const token = res.locals.token;
+            const refreshToken = res.locals.refreshToken;
 
-        client
-            .getTokenInfo(accessToken)
-            .then((tokenInfo) => {
-                res.locals.token = accessToken;
-                res.locals.oAuthClient = client;
-                res.locals.email = tokenInfo.email;
-
-                // Access token is still valid
-                if (new Date().getTime() < tokenInfo.expiry_date) {
-                    return next();
-                }
-
-                // Retrieve refresh token and refresh access token with it
-                // Find a way to pass new access token back to frontend
-                // const sub = tokenInfo.sub as string;
-
-                return next();
-            })
-            .catch(() => {
-                return responses.invalidToken(req, res);
+            client.setCredentials({
+                access_token: token,
+                refresh_token: refreshToken
             });
+
+            const newToken = (await client.getAccessToken()).token;
+            console.log('New token is same:', newToken == token);
+
+            if (token !== newToken) {
+                res.locals.token = newToken;
+                res.cookie('token', newToken);
+            }
+
+            const tokenInfo = await client.getTokenInfo(res.locals.token);
+            res.locals.oAuthClient = client;
+            res.locals.email = tokenInfo.email;
+            next();
+        } catch {
+            return responses.invalidToken(req, res);
+        }
     };
 
     middleware.unless = unless;

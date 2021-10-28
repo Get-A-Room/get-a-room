@@ -2,12 +2,9 @@ import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors, { CorsOptions } from 'cors';
+import cookieParser from 'cookie-parser';
 import 'dotenv/config';
-import {
-    authFilter,
-    parseAccessToken,
-    validateAccessToken
-} from './authMiddleware';
+import { authFilter, parseTokens, validateAccessToken } from './authMiddleware';
 import mongoose from 'mongoose';
 import { checkEnvVariables } from './utils/checkEnvVariables';
 
@@ -36,9 +33,10 @@ const corsOptions: CorsOptions = {
 app.use(morgan('short'));
 app.use(helmet());
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors(corsOptions));
 
-app.use(parseAccessToken().unless(authFilter));
+app.use(parseTokens().unless(authFilter));
 app.use(validateAccessToken().unless(authFilter));
 
 app.use('/api', indexRouter);
