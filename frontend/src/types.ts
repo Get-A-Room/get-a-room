@@ -27,6 +27,7 @@ export interface Preferences {
 export interface Room {
     id: string;
     name: string;
+    building: string;
     capacity?: number;
     features?: Array<string>;
     nextCalendarEvent?: string;
