@@ -7,7 +7,7 @@ import express from 'express';
 //
 
 /**
- * Bad Request
+ * 400 Bad Request
  */
 export const badRequest = (req: express.Request, res: express.Response) => {
     return res.status(400).json({
@@ -17,7 +17,7 @@ export const badRequest = (req: express.Request, res: express.Response) => {
 };
 
 /**
- * Unauthorized
+ * 401 Unauthorized
  */
 export const unauthorized = (req: express.Request, res: express.Response) => {
     return res.status(401).json({
@@ -27,7 +27,7 @@ export const unauthorized = (req: express.Request, res: express.Response) => {
 };
 
 /**
- * Invalid Token - unofficial
+ * 401 Invalid Token - unofficial
  */
 export const invalidToken = (req: express.Request, res: express.Response) => {
     return res.status(401).json({
@@ -37,7 +37,7 @@ export const invalidToken = (req: express.Request, res: express.Response) => {
 };
 
 /**
- * Forbidden
+ * 403 Forbidden
  */
 export const forbidden = (req: express.Request, res: express.Response) => {
     return res.status(403).json({
@@ -47,7 +47,7 @@ export const forbidden = (req: express.Request, res: express.Response) => {
 };
 
 /**
- * Not Found
+ * 404 Not Found
  */
 export const notFound = (req: express.Request, res: express.Response) => {
     return res.status(404).json({
@@ -61,7 +61,7 @@ export const notFound = (req: express.Request, res: express.Response) => {
 //
 
 /**
- * Internal Server Error
+ * 500 Internal Server Error
  */
 export const internalServerError = (
     req: express.Request,
@@ -74,7 +74,7 @@ export const internalServerError = (
 };
 
 /**
- * Not Implemented
+ * 501 Not Implemented
  */
 export const notImplemented = (req: express.Request, res: express.Response) => {
     return res.status(501).json({
@@ -84,7 +84,7 @@ export const notImplemented = (req: express.Request, res: express.Response) => {
 };
 
 /**
- * Service Unavailable
+ * 503 Service Unavailable
  */
 export const serviceUnavailable = (
     req: express.Request,
