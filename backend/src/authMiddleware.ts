@@ -35,7 +35,7 @@ export const parseTokens = () => {
         next: express.NextFunction
     ) => {
         const { refreshToken, token } = req.cookies;
-        
+
         if (!refreshToken) {
             return responses.invalidToken(req, res);
         }
