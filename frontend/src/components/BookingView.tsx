@@ -15,6 +15,7 @@ import './BookingView.css';
 import { getRooms } from '../services/roomService';
 import { makeBooking } from '../services/bookingService';
 import { Room, BookingDetails } from '../types';
+import NavBar from './NavBar';
 
 async function book(event: React.MouseEvent<HTMLElement>, room: Room) {
     alert('Booking successful!');
@@ -178,47 +179,53 @@ function BookingView() {
                                         {getCapacity(room)}
                                     </Typography>
                                 </CardContent>
-                                <CardContent
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        maxHeight: '20px'
-                                    }}
-                                >
-                                    <CardActions disableSpacing>
-                                        <IconButton
-                                            onClick={(e) =>
-                                                handleExpandClick(e, room)
-                                            }
-                                            aria-label="Expand"
-                                        >
-                                            {expanded === room.id ? (
-                                                <ExpandLess />
-                                            ) : (
-                                                <ExpandMore />
-                                            )}
-                                        </IconButton>
-                                    </CardActions>
-                                </CardContent>
                                 {getFeatures(room).length > 0 ? (
-                                    <Collapse
-                                        in={expanded === room.id}
-                                        timeout="auto"
-                                        unmountOnExit
-                                    >
-                                        <CardContent>
-                                            <Typography
-                                                style={{ fontSize: '16px' }}
-                                            >
-                                                {getFeatures(room)}
-                                            </Typography>
+                                    <div>
+                                        <CardContent
+                                            style={{
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                maxHeight: '20px'
+                                            }}
+                                        >
+                                            <CardActions disableSpacing>
+                                                <IconButton
+                                                    onClick={(e) =>
+                                                        handleExpandClick(
+                                                            e,
+                                                            room
+                                                        )
+                                                    }
+                                                    aria-label="Expand"
+                                                >
+                                                    {expanded === room.id ? (
+                                                        <ExpandLess />
+                                                    ) : (
+                                                        <ExpandMore />
+                                                    )}
+                                                </IconButton>
+                                            </CardActions>
                                         </CardContent>
-                                    </Collapse>
+                                        <Collapse
+                                            in={expanded === room.id}
+                                            timeout="auto"
+                                            unmountOnExit
+                                        >
+                                            <CardContent>
+                                                <Typography
+                                                    style={{ fontSize: '16px' }}
+                                                >
+                                                    {getFeatures(room)}
+                                                </Typography>
+                                            </CardContent>
+                                        </Collapse>
+                                    </div>
                                 ) : null}
                             </Card>
                         ))}
                 </List>
             )}
+            <NavBar />
         </div>
     );
 }
