@@ -13,6 +13,7 @@ import { router as apiDocsRouter } from './routes/apiDocs';
 import { router as authRouter } from './routes/auth';
 import { router as bookingRouter } from './routes/booking';
 import { router as buildingRouter } from './routes/buildings';
+import { router as preferenceRouter } from './routes/preferences';
 import { router as roomRouter } from './routes/rooms';
 import { getDatabaseUrl } from './utils/config';
 
@@ -44,6 +45,7 @@ app.use('/api/api-docs', apiDocsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/booking', bookingRouter);
 app.use('/api/buildings', buildingRouter);
+app.use('/api/preferences', preferenceRouter);
 app.use('/api/rooms', roomRouter);
 
 app.listen(port, () => {
