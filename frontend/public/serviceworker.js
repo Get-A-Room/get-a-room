@@ -1,5 +1,5 @@
-const CACHE_NAME = 'version-1';
-const urlsToCache = ['index.html', 'offline.html'];
+const CACHE_NAME = 'static-cache';
+const urlsToCache = ['/index.html', '/offline.html'];
 
 const self = this;
 
@@ -16,10 +16,18 @@ self.addEventListener('install', (event) => {
 
 // Listen for requests
 self.addEventListener('fetch', (event) => {
+    console.log(event.request.url);
+
+    // We do not want to cache authenticated related resources because they are canceled anyway
+    if (event.request.url.indexOf('/auth/') !== -1) {
+        return false;
+    }
+
     event.respondWith(
-        caches.match(event.request).then(() => {
-            return fetch(event.request).catch(() =>
-                caches.match('offline.html')
+        caches.match(event.request).then(function (response) {
+            return (
+                response ||
+                fetch(event.request).catch(() => caches.match('offline.html'))
             );
         })
     );

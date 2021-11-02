@@ -2,12 +2,9 @@ import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors, { CorsOptions } from 'cors';
+import cookieParser from 'cookie-parser';
 import 'dotenv/config';
-import {
-    authFilter,
-    parseAccessToken,
-    validateAccessToken
-} from './authMiddleware';
+import { authFilter, parseTokens, validateAccessToken } from './authMiddleware';
 import mongoose from 'mongoose';
 import { checkEnvVariables } from './utils/checkEnvVariables';
 
@@ -36,16 +33,18 @@ const corsOptions: CorsOptions = {
 app.use(morgan('short'));
 app.use(helmet());
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors(corsOptions));
-app.use(parseAccessToken().unless(authFilter));
+
+app.use(parseTokens().unless(authFilter));
 app.use(validateAccessToken().unless(authFilter));
 
-app.use('/', indexRouter);
-app.use('/api-docs', apiDocsRouter);
-app.use('/auth', authRouter);
-app.use('/booking', bookingRouter);
-app.use('/buildings', buildingRouter);
-app.use('/rooms', roomRouter);
+app.use('/api', indexRouter);
+app.use('/api/api-docs', apiDocsRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/booking', bookingRouter);
+app.use('/api/buildings', buildingRouter);
+app.use('/api/rooms', roomRouter);
 
 app.listen(port, () => {
     console.log(`Get A Room! API listening at port ${port}`);

@@ -2,7 +2,8 @@ import { createUserMiddleware } from './userMiddleware';
 import { Request, Response } from 'express';
 import {
     createUserFromTokenPayload,
-    getUserWithSubject
+    getUserWithSubject,
+    updateRefreshToken
 } from './userController';
 import { mocked } from 'ts-jest/utils';
 
@@ -11,6 +12,7 @@ const TEST_TOKEN_PAYLOAD = { sub: 'sub' };
 jest.mock('./userController');
 const mockedCreateUser = mocked(createUserFromTokenPayload, false);
 const mockedGetUserWithSubject = mocked(getUserWithSubject, false);
+const mockedUpdateRefreshToken = mocked(updateRefreshToken, false);
 
 describe('createUserIfNotFound', () => {
     let mockRequest: Partial<Request>;
@@ -46,16 +48,21 @@ describe('createUserIfNotFound', () => {
     test('Should create user if no user was found for sub', async () => {
         mockedGetUserWithSubject.mockResolvedValueOnce(null);
 
+        mockResponse.locals = {
+            payload: TEST_TOKEN_PAYLOAD,
+            refreshToken: 'token'
+        };
+
         await createUserMiddleware()(
             mockRequest as Request,
             mockResponse as Response,
             mockNext
         );
-        expect(mockedCreateUser).toBeCalledWith(TEST_TOKEN_PAYLOAD);
+        expect(mockedCreateUser).toBeCalledWith(TEST_TOKEN_PAYLOAD, 'token');
         expect(mockNext).toBeCalledWith();
     });
 
-    test('Should not create user if one was found', async () => {
+    test('Should not create user if one was found and no refresh token is not given', async () => {
         mockedGetUserWithSubject.mockResolvedValueOnce({
             subject: 'sub',
             preferences: {}
@@ -67,6 +74,31 @@ describe('createUserIfNotFound', () => {
             mockNext
         );
         expect(mockedCreateUser).not.toBeCalled();
+        expect(mockedUpdateRefreshToken).not.toBeCalled();
+        expect(mockNext).toBeCalledWith();
+    });
+
+    test('Should update user if one was found and refresh token is given', async () => {
+        mockedGetUserWithSubject.mockResolvedValueOnce({
+            subject: 'sub',
+            preferences: {}
+        });
+
+        mockResponse.locals = {
+            payload: TEST_TOKEN_PAYLOAD,
+            refreshToken: 'token'
+        };
+
+        await createUserMiddleware()(
+            mockRequest as Request,
+            mockResponse as Response,
+            mockNext
+        );
+        expect(mockedCreateUser).not.toBeCalled();
+        expect(mockedUpdateRefreshToken).toBeCalledWith(
+            TEST_TOKEN_PAYLOAD.sub,
+            'token'
+        );
         expect(mockNext).toBeCalledWith();
     });
 

@@ -10,9 +10,9 @@ import * as responses from './utils/responses';
  */
 export const authFilter = (req: express.Request) => {
     const path = req.path;
-    const skipPaths = ['/auth', '/api-docs', '/favicon.ico'];
+    const skipPaths = ['/api/auth', '/api/api-docs', '/api/favicon.ico'];
 
-    if (path === '/') {
+    if (path === '/api') {
         return true;
     }
 
@@ -24,23 +24,24 @@ export const authFilter = (req: express.Request) => {
 };
 
 /**
- * Parses access token from headers and sets it to res.locals.token but does not validate it
+ * Parses access token from headers and refresh token from
+ * httpOnly cookie and sets them to res.locals
  * @returns -
  */
-export const parseAccessToken = () => {
+export const parseTokens = () => {
     const middleware = (
         req: express.Request,
         res: express.Response,
         next: express.NextFunction
     ) => {
-        if (!req.headers.authorization) {
+        const { refreshToken, token } = req.cookies;
+
+        if (!refreshToken) {
             return responses.invalidToken(req, res);
         }
 
-        const bearerHeader = req.headers.authorization;
-        const bearer = bearerHeader.split(' ');
-        const accessToken = bearer[1];
-        res.locals.token = accessToken;
+        res.locals.refreshToken = refreshToken;
+        res.locals.token = token;
 
         next();
     };
@@ -57,36 +58,39 @@ export const parseAccessToken = () => {
  * @returns -
  */
 export const validateAccessToken = () => {
-    const middleware = (
+    const middleware = async (
         req: express.Request,
         res: express.Response,
         next: express.NextFunction
     ) => {
-        const client = getOAuthClient();
-        const accessToken = res.locals.token;
-        client.setCredentials({ access_token: accessToken });
+        try {
+            const client = getOAuthClient();
+            const token = res.locals.token;
+            const refreshToken = res.locals.refreshToken;
 
-        client
-            .getTokenInfo(accessToken)
-            .then((tokenInfo) => {
-                res.locals.token = accessToken;
-                res.locals.oAuthClient = client;
-                res.locals.email = tokenInfo.email;
-
-                // Access token is still valid
-                if (new Date().getTime() < tokenInfo.expiry_date) {
-                    return next();
-                }
-
-                // Retrieve refresh token and refresh access token with it
-                // Find a way to pass new access token back to frontend
-                // const sub = tokenInfo.sub as string;
-
-                return next();
-            })
-            .catch(() => {
-                return responses.invalidToken(req, res);
+            client.setCredentials({
+                access_token: token,
+                refresh_token: refreshToken
             });
+
+            const newToken = (await client.getAccessToken()).token;
+
+            // Token had expired
+            if (token !== newToken) {
+                res.locals.token = newToken;
+                res.cookie('token', newToken, {
+                    maxAge: 3600000, // 60 minutes
+                    httpOnly: true
+                });
+            }
+
+            const tokenInfo = await client.getTokenInfo(res.locals.token);
+            res.locals.oAuthClient = client;
+            res.locals.email = tokenInfo.email;
+            next();
+        } catch {
+            return responses.invalidToken(req, res);
+        }
     };
 
     middleware.unless = unless;
