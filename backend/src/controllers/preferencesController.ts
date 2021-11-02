@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { OAuth2Client } from 'google-auth-library';
 
-import buildingData from '../interfaces/buildingData';
+// import buildingData from '../interfaces/buildingData';
 import { getUserWithSubject } from './userController';
 import * as responses from '../utils/responses';
 
