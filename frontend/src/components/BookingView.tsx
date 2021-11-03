@@ -18,12 +18,10 @@ import { Room, BookingDetails } from '../types';
 import NavBar from './NavBar';
 
 async function book(event: React.MouseEvent<HTMLElement>, room: Room) {
-    alert('Booking successful!');
-
     let bookingDetails: BookingDetails = {
         duration: 60,
         title: 'Title',
-        roomId: 'test@test.fi'
+        roomId: room.email
     };
 
     makeBooking(bookingDetails);
@@ -185,7 +183,7 @@ function BookingView() {
                                             style={{
                                                 display: 'flex',
                                                 justifyContent: 'center',
-                                                maxHeight: '20px'
+                                                maxHeight: '10px'
                                             }}
                                         >
                                             <CardActions disableSpacing>
