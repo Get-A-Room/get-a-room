@@ -21,7 +21,7 @@ export const redirectUrl = () => {
         try {
             const client = getOAuthClient();
             const url = client.generateAuthUrl({
-                access_type: 'online', // When we are ready to receive refresh_token change this offline
+                access_type: 'offline', // When we are ready to receive refresh_token change this offline
                 scope: scopes,
                 hd: process.env.HOSTED_DOMAIN
             });
@@ -59,6 +59,7 @@ export const verifyCode = () => {
 
             client.setCredentials(tokens);
             const accessToken = tokens.access_token as string;
+            const refreshToken = tokens.refresh_token as string;
             const idToken = tokens.id_token as string;
 
             if (!idToken || !accessToken) {
@@ -67,6 +68,7 @@ export const verifyCode = () => {
 
             res.locals.oAuthClient = client;
             res.locals.token = accessToken;
+            res.locals.refreshToken = refreshToken;
             next();
         } catch (err) {
             return res.redirect(`${frontendUrl}/auth/failure?code=500`);
