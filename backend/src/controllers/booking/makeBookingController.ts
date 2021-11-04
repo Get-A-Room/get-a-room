@@ -92,11 +92,6 @@ export const getCurrentBookingMiddleware = () => {
         next: NextFunction
     ) => {
         try {
-            // const startTime = DateTime.now().toISO();
-            // const endTime = DateTime.now()
-            //     .plus({ minutes: req.body.duration })
-            //     .toISO();
-
             const client: OAuth2Client = res.locals.oAuthClient;
             const currentBookings = await calendar.getCurrentBookings(client);
 
@@ -104,16 +99,10 @@ export const getCurrentBookingMiddleware = () => {
                 return responses.internalServerError(req, res);
             }
 
-            // console.log('response response response response response response response');
-            // console.log(currentBookings);
-            // console.log('ALLA currentBookings.items');
-            // console.log(currentBookings.items[0]);
-            // console.log('response response response response response response response');
-
             // TODO: Laita mahdollisesti omaan funkkariinsa!!!!
             const simplifiedCurrentBookings = currentBookings.items.map(
                 (booking) => {
-                    console.log(booking);
+                    // console.log(booking);
                     const simpleEvent = {
                         id: booking.id,
                         startTime: booking.start?.dateTime,
@@ -126,8 +115,17 @@ export const getCurrentBookingMiddleware = () => {
                 }
             );
 
-            res.locals.currentBooking = simplifiedCurrentBookings;
+            const onlyCurrentlyRunningBookings =
+                simplifiedCurrentBookings.filter((booking) => {
+                    if (!booking.startTime || !booking.endTime) {
+                        return false;
+                    }
 
+                    const now = DateTime.local().toISO();
+                    return booking.startTime <= now && booking.endTime >= now;
+                });
+
+            res.locals.currentBooking = onlyCurrentlyRunningBookings;
             next();
         } catch (err) {
             next(err);

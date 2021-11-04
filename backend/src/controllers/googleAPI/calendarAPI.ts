@@ -99,22 +99,14 @@ export const createEvent = async (
 };
 
 /**
- * Create an event, will not check if the rooms is free
+ * Gets current bookings of the user
  * @param client OAuth2Client
  */
 export const getCurrentBookings = async (
     client: OAuth2Client
 ): Promise<schema.EventsData> => {
-    // const event: schema.EventData = {
-    //     summary: title,
-    //     start: startDt,
-    //     end: endDt,
-    //     attendees: attendeeList,
-    //     reminders: {
-    //         useDefault: false
-    //     }
-    // };
-    const start = DateTime.now().toUTC().toISO();
+    // Do not fetch events that have started 30 days ago to reduce traffic
+    const start = DateTime.local().minus({ days: 30 }).toISO();
 
     const eventResult = await calendar.events.list({
         calendarId: 'primary',
