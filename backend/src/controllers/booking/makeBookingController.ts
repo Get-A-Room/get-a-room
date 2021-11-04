@@ -97,22 +97,24 @@ export const getCurrentBookingMiddleware = () => {
             //     .plus({ minutes: req.body.duration })
             //     .toISO();
 
-            // const client: OAuth2Client = res.locals.oAuthClient;
-            // const response = await calendar.createEvent(
-            //     client,
-            //     res.locals.roomId,
-            //     res.locals.email,
-            //     res.locals.title,
-            //     startTime,
-            //     endTime
-            // );
+            const client: OAuth2Client = res.locals.oAuthClient;
+            const response = await calendar.getCurrentBooking(client);
 
-            // if (!response.id) {
-            //     return responses.internalServerError(req, res);
-            // }
+            console.log(
+                'response response response response response response response'
+            );
+            console.log(response);
+            // console.log(response.items);
+            console.log(
+                'response response response response response response response'
+            );
 
-            // res.locals.event = response;
-            // res.locals.eventId = response.id;
+            if (!response.id) {
+                return responses.internalServerError(req, res);
+            }
+
+            res.locals.event = response;
+            res.locals.eventId = response.id;
             res.locals.currentBooking = 'Current booking on tama testi!';
 
             next();

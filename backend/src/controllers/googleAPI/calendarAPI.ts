@@ -1,6 +1,7 @@
 import { OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
 import _ from 'lodash';
+import { DateTime } from 'luxon';
 import * as schema from '../../utils/googleSchema';
 
 const calendar = google.calendar('v3');
@@ -33,6 +34,7 @@ export const freeBusyQuery = async (
     });
 
     const calendars = queryResult.data.calendars;
+
     const results: NextEventById = {};
 
     _.forIn(calendars, (data: schema.FreeBusyCalendar, id: string) => {
@@ -91,6 +93,33 @@ export const createEvent = async (
         calendarId: 'primary',
         requestBody: event,
         auth: client
+    });
+
+    return eventResult.data;
+};
+
+/**
+ * Create an event, will not check if the rooms is free
+ * @param client OAuth2Client
+ */
+export const getCurrentBooking = async (
+    client: OAuth2Client
+): Promise<schema.EventData> => {
+    // const event: schema.EventData = {
+    //     summary: title,
+    //     start: startDt,
+    //     end: endDt,
+    //     attendees: attendeeList,
+    //     reminders: {
+    //         useDefault: false
+    //     }
+    // };
+    const start = DateTime.now().toUTC().toISO();
+
+    const eventResult = await calendar.events.list({
+        calendarId: 'primary',
+        auth: client,
+        timeMin: start
     });
 
     return eventResult.data;
