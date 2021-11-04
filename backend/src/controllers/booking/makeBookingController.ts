@@ -5,6 +5,7 @@ import * as responses from '../../utils/responses';
 import { OAuth2Client } from 'google-auth-library';
 import * as schema from '../../utils/googleSchema';
 import _ from 'lodash';
+import currentBookingData from '../../interfaces/currentBookingData';
 
 /**
  * Validates booking body
@@ -82,7 +83,7 @@ export const makeBooking = () => {
 };
 
 /**
- * Book a room
+ * Simplifies and filters current bookings
  * @returns
  */
 export const simplifyCurrentBookingsMiddleware = () => {
@@ -92,12 +93,12 @@ export const simplifyCurrentBookingsMiddleware = () => {
         next: NextFunction
     ) => {
         try {
-            console.log('Koitetaan hakea current bookings!');
-            const allBookings = res.locals.currentBookings;
+            const allBookings: currentBookingData[] =
+                res.locals.currentBookings.items;
 
-            const simplifiedCurrentBookings = allBookings.items.map(
-                (booking: any) => {
-                    const simpleEvent = {
+            const simplifiedCurrentBookings = allBookings.map(
+                (booking: schema.EventData) => {
+                    const simpleEvent: currentBookingData = {
                         id: booking.id,
                         startTime: booking.start?.dateTime,
                         endTime: booking.end?.dateTime,
@@ -110,19 +111,23 @@ export const simplifyCurrentBookingsMiddleware = () => {
             );
 
             const onlyCurrentlyRunningBookings =
-                simplifiedCurrentBookings.filter((booking: any) => {
-                    if (!booking.startTime || !booking.endTime) {
-                        return false;
-                    }
+                simplifiedCurrentBookings.filter(
+                    (booking: currentBookingData) => {
+                        if (!booking.startTime || !booking.endTime) {
+                            return false;
+                        }
 
-                    // Checks that the event has a room or other resource
-                    if (_.isEmpty(booking.room.name)) {
-                        return false;
-                    }
+                        // Checks that the event has a room or other resource
+                        if (_.isEmpty(booking.room.name)) {
+                            return false;
+                        }
 
-                    const now = DateTime.local().toISO();
-                    return booking.startTime <= now && booking.endTime >= now;
-                });
+                        const now = DateTime.local().toISO();
+                        return (
+                            booking.startTime <= now && booking.endTime >= now
+                        );
+                    }
+                );
 
             res.locals.currentBookings = onlyCurrentlyRunningBookings;
             next();
@@ -135,10 +140,10 @@ export const simplifyCurrentBookingsMiddleware = () => {
 };
 
 /**
- * Book a room
+ * Gets all the users currently active bookings
  * @returns
  */
-export const getCurrentBookingMiddleware = () => {
+export const getCurrentBookingsMiddleware = () => {
     const middleware = async (
         req: Request,
         res: Response,
@@ -149,9 +154,7 @@ export const getCurrentBookingMiddleware = () => {
 
             const currentBookings: schema.EventsData =
                 await calendar.getCurrentBookings(client);
-            console.log('Asetetaan currentBookings!');
 
-            console.log(currentBookings);
             res.locals.currentBookings = currentBookings;
 
             if (!currentBookings.items) {

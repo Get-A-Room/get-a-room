@@ -22,7 +22,7 @@ router.post(
 // Get the status of the current booking of the user
 router.get(
     '/current',
-    controller.getCurrentBookingMiddleware(),
+    controller.getCurrentBookingsMiddleware(),
     controller.simplifyCurrentBookingsMiddleware(),
     (req: Request, res: Response) => {
         res.status(200).json(res.locals.currentBookings);
