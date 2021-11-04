@@ -8,7 +8,8 @@ import {
     Typography,
     CircularProgress,
     IconButton,
-    Collapse
+    Collapse,
+    Alert
 } from '@mui/material';
 import { Business, Group, ExpandMore, ExpandLess } from '@mui/icons-material';
 import './BookingView.css';
@@ -20,11 +21,17 @@ import NavBar from './NavBar';
 async function book(event: React.MouseEvent<HTMLElement>, room: Room) {
     let bookingDetails: BookingDetails = {
         duration: 60,
-        title: 'Title',
+        title: 'Reservation from Get a Room!',
         roomId: room.email
     };
 
-    makeBooking(bookingDetails);
+    makeBooking(bookingDetails)
+        .then(() => {
+            alert('Booking successful!');
+        })
+        .catch(() => {
+            alert('Booking failed.');
+        });
 }
 
 // Return room name
@@ -123,9 +130,9 @@ function BookingView() {
                                     <Button
                                         style={{
                                             backgroundColor: '#282c34',
+                                            textTransform: 'none',
                                             color: 'white',
                                             fontSize: '18px',
-                                            textTransform: 'none',
                                             animation: 'ripple 600ms linear',
                                             minWidth: '120px',
                                             minHeight: '50px',
