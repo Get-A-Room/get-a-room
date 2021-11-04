@@ -21,7 +21,7 @@ export interface Building {
 }
 
 export interface Preferences {
-    favouriteBuilding?: Building;
+    Building?: Building;
 }
 
 export interface Room {
