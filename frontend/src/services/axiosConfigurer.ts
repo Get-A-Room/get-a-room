@@ -1,6 +1,8 @@
 import axios from 'axios';
+import { createBrowserHistory } from 'history';
 
 const client = axios.create();
+export const history = createBrowserHistory();
 
 const initiateAxiosClient = () => {
     client.defaults.baseURL = '/api';
@@ -8,8 +10,8 @@ const initiateAxiosClient = () => {
         (response) => response,
         (error) => {
             if (error.response.status === 401) {
-                // TODO: Redirect to login page
-                console.error('Token missing or invalid');
+                // Redirect user to login screen
+                history.push('/login');
             }
             return Promise.reject(error);
         }
