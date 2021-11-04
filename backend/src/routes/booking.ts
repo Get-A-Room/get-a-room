@@ -23,10 +23,9 @@ router.post(
 router.get(
     '/current',
     controller.getCurrentBookingMiddleware(),
+    controller.simplifyCurrentBookingsMiddleware(),
     (req: Request, res: Response) => {
-        // console.log('TESTIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII');
-        // console.log(res.locals.currentBooking);
-        res.status(200).json(res.locals.currentBooking);
+        res.status(200).json(res.locals.currentBookings);
     }
 );
 

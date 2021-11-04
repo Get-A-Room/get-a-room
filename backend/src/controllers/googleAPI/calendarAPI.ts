@@ -108,13 +108,13 @@ export const getCurrentBookings = async (
     // Do not fetch events that have started 30 days ago to reduce traffic
     const start = DateTime.local().minus({ days: 30 }).toISO();
 
-    const eventResult = await calendar.events.list({
+    const eventsList = await calendar.events.list({
         calendarId: 'primary',
         auth: client,
         timeMin: start
     });
 
-    return eventResult.data;
+    return eventsList.data;
 };
 
 /**

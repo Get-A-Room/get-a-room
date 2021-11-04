@@ -85,24 +85,18 @@ export const makeBooking = () => {
  * Book a room
  * @returns
  */
-export const getCurrentBookingMiddleware = () => {
+export const simplifyCurrentBookingsMiddleware = () => {
     const middleware = async (
         req: Request,
         res: Response,
         next: NextFunction
     ) => {
         try {
-            const client: OAuth2Client = res.locals.oAuthClient;
-            const currentBookings = await calendar.getCurrentBookings(client);
+            console.log('Koitetaan hakea current bookings!');
+            const allBookings = res.locals.currentBookings;
 
-            if (!currentBookings.items) {
-                return responses.internalServerError(req, res);
-            }
-
-            // TODO: Laita mahdollisesti omaan funkkariinsa!!!!
-            const simplifiedCurrentBookings = currentBookings.items.map(
-                (booking) => {
-                    // console.log(booking);
+            const simplifiedCurrentBookings = allBookings.items.map(
+                (booking: any) => {
                     const simpleEvent = {
                         id: booking.id,
                         startTime: booking.start?.dateTime,
@@ -116,8 +110,13 @@ export const getCurrentBookingMiddleware = () => {
             );
 
             const onlyCurrentlyRunningBookings =
-                simplifiedCurrentBookings.filter((booking) => {
+                simplifiedCurrentBookings.filter((booking: any) => {
                     if (!booking.startTime || !booking.endTime) {
+                        return false;
+                    }
+
+                    // Checks that the event has a room or other resource
+                    if (_.isEmpty(booking.room.name)) {
                         return false;
                     }
 
@@ -125,7 +124,40 @@ export const getCurrentBookingMiddleware = () => {
                     return booking.startTime <= now && booking.endTime >= now;
                 });
 
-            res.locals.currentBooking = onlyCurrentlyRunningBookings;
+            res.locals.currentBookings = onlyCurrentlyRunningBookings;
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    return middleware;
+};
+
+/**
+ * Book a room
+ * @returns
+ */
+export const getCurrentBookingMiddleware = () => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const client: OAuth2Client = res.locals.oAuthClient;
+
+            const currentBookings: schema.EventsData =
+                await calendar.getCurrentBookings(client);
+            console.log('Asetetaan currentBookings!');
+
+            console.log(currentBookings);
+            res.locals.currentBookings = currentBookings;
+
+            if (!currentBookings.items) {
+                return responses.internalServerError(req, res);
+            }
+
             next();
         } catch (err) {
             next(err);
