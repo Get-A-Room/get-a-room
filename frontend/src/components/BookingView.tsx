@@ -144,12 +144,12 @@ function BookingView() {
                                                 backgroundColor: '#282c34',
                                                 textTransform: 'none',
                                                 color: 'white',
-                                                fontSize: '18px',
+                                                fontSize: '16px',
                                                 animation:
                                                     'ripple 600ms linear',
-                                                minWidth: '120px',
+                                                minWidth: '130px',
                                                 minHeight: '50px',
-                                                maxWidth: '120px',
+                                                maxWidth: '130px',
                                                 maxHeight: '50px'
                                             }}
                                             onClick={(e) =>
@@ -158,6 +158,11 @@ function BookingView() {
                                             aria-label="Expand"
                                         >
                                             Quick Book
+                                            {expandedBooking === room.id ? (
+                                                <ExpandLess />
+                                            ) : (
+                                                <ExpandMore />
+                                            )}
                                         </Button>
                                     </CardActions>
                                 </CardContent>
