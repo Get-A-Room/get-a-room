@@ -102,9 +102,9 @@ export const createEvent = async (
  * Create an event, will not check if the rooms is free
  * @param client OAuth2Client
  */
-export const getCurrentBooking = async (
+export const getCurrentBookings = async (
     client: OAuth2Client
-): Promise<schema.EventData> => {
+): Promise<schema.EventsData> => {
     // const event: schema.EventData = {
     //     summary: title,
     //     start: startDt,

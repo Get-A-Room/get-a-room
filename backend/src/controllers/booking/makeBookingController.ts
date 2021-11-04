@@ -98,24 +98,35 @@ export const getCurrentBookingMiddleware = () => {
             //     .toISO();
 
             const client: OAuth2Client = res.locals.oAuthClient;
-            const response = await calendar.getCurrentBooking(client);
+            const currentBookings = await calendar.getCurrentBookings(client);
 
-            console.log(
-                'response response response response response response response'
-            );
-            console.log(response);
-            // console.log(response.items);
-            console.log(
-                'response response response response response response response'
-            );
-
-            if (!response.id) {
+            if (!currentBookings.items) {
                 return responses.internalServerError(req, res);
             }
 
-            res.locals.event = response;
-            res.locals.eventId = response.id;
-            res.locals.currentBooking = 'Current booking on tama testi!';
+            // console.log('response response response response response response response');
+            // console.log(currentBookings);
+            // console.log('ALLA currentBookings.items');
+            // console.log(currentBookings.items[0]);
+            // console.log('response response response response response response response');
+
+            // TODO: Laita mahdollisesti omaan funkkariinsa!!!!
+            const simplifiedCurrentBookings = currentBookings.items.map(
+                (booking) => {
+                    console.log(booking);
+                    const simpleEvent = {
+                        id: booking.id,
+                        startTime: booking.start?.dateTime,
+                        endTime: booking.end?.dateTime,
+                        room: {
+                            name: booking.location
+                        }
+                    };
+                    return simpleEvent;
+                }
+            );
+
+            res.locals.currentBooking = simplifiedCurrentBookings;
 
             next();
         } catch (err) {

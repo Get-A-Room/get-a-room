@@ -24,6 +24,8 @@ router.get(
     '/current',
     controller.getCurrentBookingMiddleware(),
     (req: Request, res: Response) => {
+        // console.log('TESTIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII');
+        // console.log(res.locals.currentBooking);
         res.status(200).json(res.locals.currentBooking);
     }
 );
