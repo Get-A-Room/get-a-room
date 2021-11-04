@@ -224,89 +224,91 @@ function BookingView() {
                                         </Collapse>
                                     </CardContent>
                                 ) : null}
-                                <CardContent
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'left',
-                                        maxHeight: '20px'
-                                    }}
-                                >
-                                    <Business />
-                                    <Typography style={{ maxWidth: '2px' }}>
-                                        {' '}
-                                    </Typography>
-                                    <Typography
+                                <div>
+                                    <CardContent
                                         style={{
-                                            fontSize: '16px',
-                                            fontWeight: 'bold'
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            maxHeight: '10px'
                                         }}
                                     >
-                                        {getBuilding(room)}
-                                    </Typography>
-                                </CardContent>
-                                <CardContent
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'left',
-                                        maxHeight: '20px'
-                                    }}
-                                >
-                                    <Group />
-                                    <Typography style={{ maxWidth: '2px' }}>
-                                        {' '}
-                                    </Typography>
-                                    <Typography
-                                        style={{
-                                            fontSize: '16px',
-                                            fontWeight: 'bold'
-                                        }}
+                                        <CardActions disableSpacing>
+                                            <IconButton
+                                                onClick={(e) =>
+                                                    handleFeaturesCollapse(
+                                                        e,
+                                                        room
+                                                    )
+                                                }
+                                                aria-label="Expand"
+                                            >
+                                                {expandedFeatures ===
+                                                room.id ? (
+                                                    <ExpandLess />
+                                                ) : (
+                                                    <ExpandMore />
+                                                )}
+                                            </IconButton>
+                                        </CardActions>
+                                    </CardContent>
+                                    <Collapse
+                                        in={expandedFeatures === room.id}
+                                        timeout="auto"
+                                        unmountOnExit
                                     >
-                                        {getCapacity(room)}
-                                    </Typography>
-                                </CardContent>
-                                {getFeatures(room).length > 0 ? (
-                                    <div>
                                         <CardContent
                                             style={{
                                                 display: 'flex',
-                                                justifyContent: 'center',
-                                                maxHeight: '10px'
+                                                justifyContent: 'left',
+                                                maxHeight: '20px'
                                             }}
                                         >
-                                            <CardActions disableSpacing>
-                                                <IconButton
-                                                    onClick={(e) =>
-                                                        handleFeaturesCollapse(
-                                                            e,
-                                                            room
-                                                        )
-                                                    }
-                                                    aria-label="Expand"
-                                                >
-                                                    {expandedFeatures ===
-                                                    room.id ? (
-                                                        <ExpandLess />
-                                                    ) : (
-                                                        <ExpandMore />
-                                                    )}
-                                                </IconButton>
-                                            </CardActions>
+                                            <Business />
+                                            <Typography
+                                                style={{ maxWidth: '2px' }}
+                                            >
+                                                {' '}
+                                            </Typography>
+                                            <Typography
+                                                style={{
+                                                    fontSize: '16px',
+                                                    fontWeight: 'bold'
+                                                }}
+                                            >
+                                                {getBuilding(room)}
+                                            </Typography>
                                         </CardContent>
-                                        <Collapse
-                                            in={expandedFeatures === room.id}
-                                            timeout="auto"
-                                            unmountOnExit
+                                        <CardContent
+                                            style={{
+                                                display: 'flex',
+                                                justifyContent: 'left',
+                                                maxHeight: '20px'
+                                            }}
                                         >
-                                            <CardContent>
-                                                <Typography
-                                                    style={{ fontSize: '16px' }}
-                                                >
-                                                    {getFeatures(room)}
-                                                </Typography>
-                                            </CardContent>
-                                        </Collapse>
-                                    </div>
-                                ) : null}
+                                            <Group />
+                                            <Typography
+                                                style={{ maxWidth: '2px' }}
+                                            >
+                                                {' '}
+                                            </Typography>
+                                            <Typography
+                                                style={{
+                                                    fontSize: '16px',
+                                                    fontWeight: 'bold'
+                                                }}
+                                            >
+                                                {getCapacity(room)}
+                                            </Typography>
+                                        </CardContent>
+                                        <CardContent>
+                                            <Typography
+                                                style={{ fontSize: '16px' }}
+                                            >
+                                                {getFeatures(room)}
+                                            </Typography>
+                                        </CardContent>
+                                    </Collapse>
+                                </div>
                             </Card>
                         ))}
                 </List>
