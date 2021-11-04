@@ -7,14 +7,14 @@ function getBookingRoomName(booking: Booking) {
 }
 
 function getBookingTimeLeft() {
-    const test = '2021-11-01T14:32:28Z';
+    const test = '2021-11-04T13:32:28Z';
     let endTime = new Date(Date.parse(test));
 
     return getTimeDifference(endTime, new Date());
 }
 
 function getTimeUntilNextBooking() {
-    const test = '2021-11-01T18:32:28Z';
+    const test = '2021-11-03T18:32:28Z';
     let newBooking = new Date(Date.parse(test));
 
     return getTimeDifference(newBooking, new Date());
@@ -34,15 +34,21 @@ function CurrentBooking() {
             <header className="CurrentBooking-header">
                 <h1>Your Booking</h1>
             </header>
-            <Card>
+            <Card
+                sx={{
+                    background:
+                        'linear-gradient(to right bottom, #c9c9c9, #969696)',
+                    backgroundColor: '#c9c9c9',
+                    border: 'success',
+                    borderRadius: 3,
+                    boxShadow: '5px 5px #bcbcbc',
+                    m: 2
+                }}
+            >
                 <CardContent>
                     <Typography> Amor </Typography>
                     <Typography>
                         Time left: {getBookingTimeLeft()} min
-                    </Typography>
-                    <Typography>
-                        Room's next booking starts in{' '}
-                        {getTimeUntilNextBooking()} min
                     </Typography>
                 </CardContent>
             </Card>
