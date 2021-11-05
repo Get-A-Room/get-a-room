@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
-import { Preferences, preferencesSchema } from './preferences';
+import Preferences from '../types/preferences';
+import { preferencesSchema } from './preferences';
 
 export type User = {
     subject: string;

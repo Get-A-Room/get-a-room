@@ -64,10 +64,8 @@ describe('preferencesController', () => {
 
     test('Should add preferences to res.locals if successful', async () => {
         const building = {
-            buildingName: 'building',
-            buildingId: 'id',
-            floorNames: ['1'],
-            description: 'desc'
+            name: 'building',
+            id: 'id'
         };
 
         mockedGetUserWithSubject.mockResolvedValueOnce({

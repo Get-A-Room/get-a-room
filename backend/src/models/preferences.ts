@@ -1,23 +1,11 @@
 import { Schema } from 'mongoose';
-import buildingData from '../interfaces/buildingData';
+import BuildingData from '../types/buildingData';
+import Preferences from '../types/preferences';
 
-export type Preferences = {
-    building?: buildingData;
-};
-
-export type Building = {
-    buildingId: string;
-    buildingName: string;
-    floorNames: string[];
-    description: string;
-};
-
-export const buildingSchema = new Schema<buildingData>(
+export const buildingSchema = new Schema<BuildingData>(
     {
-        buildingId: { required: true, type: String },
-        buildingName: { required: true, type: String },
-        floorNames: { required: false, type: String },
-        description: { required: false, type: String }
+        id: { required: true, type: String },
+        name: { required: true, type: String }
     },
     { _id: false }
 );
