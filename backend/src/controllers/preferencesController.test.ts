@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { getUserWithSubject, updatePreferences } from './userController';
 import { badRequest, internalServerError } from '../utils/responses';
-import User from '../types/user';
 import {
     getPreferences,
     readPrefenceBody,
