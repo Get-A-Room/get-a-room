@@ -1,23 +1,16 @@
 import './CurrentBooking.css';
-import { Card, CardContent, Typography } from '@mui/material';
+import { Card, CardContent, List, Typography } from '@mui/material';
 import { Booking } from '../types';
+import { useState, useEffect } from 'react';
+import { getBookings } from '../services/bookingService';
 
 function getBookingRoomName(booking: Booking) {
     return booking.room.name;
 }
 
-function getBookingTimeLeft() {
-    const test = '2021-11-04T13:32:28Z';
-    let endTime = new Date(Date.parse(test));
-
+function getBookingTimeLeft(booking: Booking) {
+    let endTime = new Date(Date.parse(booking.endTime));
     return getTimeDifference(endTime, new Date());
-}
-
-function getTimeUntilNextBooking() {
-    const test = '2021-11-03T18:32:28Z';
-    let newBooking = new Date(Date.parse(test));
-
-    return getTimeDifference(newBooking, new Date());
 }
 
 function getTimeDifference(startTime: Date, endTime: Date) {
@@ -29,29 +22,57 @@ function areBookingsFetched(bookings: Booking[]) {
 }
 
 function CurrentBooking() {
-    return (
+    const [bookings, setBookings] = useState<Booking[]>([]);
+
+    useEffect(() => {
+        getBookings().then(setBookings);
+    }, []);
+
+    return !areBookingsFetched(bookings) ? null : (
         <div className="CurrentBooking">
             <header className="CurrentBooking-header">
                 <h1>Your Booking</h1>
             </header>
-            <Card
-                sx={{
-                    background:
-                        'linear-gradient(to right bottom, #c9c9c9, #969696)',
-                    backgroundColor: '#c9c9c9',
-                    border: 'success',
-                    borderRadius: 3,
-                    boxShadow: '5px 5px #bcbcbc',
-                    m: 2
-                }}
-            >
-                <CardContent>
-                    <Typography> Amor </Typography>
-                    <Typography>
-                        Time left: {getBookingTimeLeft()} min
-                    </Typography>
-                </CardContent>
-            </Card>
+            <List>
+                {bookings.map((booking) => (
+                    <Card
+                        key={booking.id}
+                        sx={{
+                            background:
+                                'linear-gradient(to right bottom, #c9c9c9, #969696)',
+                            backgroundColor: '#c9c9c9',
+                            border: 'success',
+                            borderRadius: 3,
+                            boxShadow: '5px 5px #bcbcbc',
+                            m: 2
+                        }}
+                    >
+                        <CardContent
+                            style={{
+                                textAlign: 'left',
+                                paddingLeft: '1.5em'
+                            }}
+                        >
+                            <Typography
+                                style={{
+                                    fontSize: '18px',
+                                    fontWeight: 'bold'
+                                }}
+                            >
+                                {' '}
+                                {getBookingRoomName(booking)}{' '}
+                            </Typography>
+                            <Typography
+                                style={{
+                                    fontStyle: 'italic'
+                                }}
+                            >
+                                Time left: {getBookingTimeLeft(booking)} min
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                ))}
+            </List>
         </div>
     );
 }
