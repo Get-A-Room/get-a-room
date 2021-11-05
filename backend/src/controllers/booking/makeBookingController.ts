@@ -107,7 +107,6 @@ export const checkRoomAccepted = () => {
             // few times before giving up (usually it seems to take 300-500ms)
             for (let i = 0; i < 8; i += 1) {
                 const eventData = await calendar.getEventData(client, eventId);
-
                 const attendees = eventData.attendees;
                 res.locals.event = eventData;
 
