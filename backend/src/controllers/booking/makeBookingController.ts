@@ -6,6 +6,7 @@ import { OAuth2Client } from 'google-auth-library';
 import * as schema from '../../utils/googleSchema';
 import _ from 'lodash';
 import currentBookingData from '../../interfaces/currentBookingData';
+import * as admin from '../../controllers/googleAPI/adminAPI';
 
 /**
  * Validates booking body
@@ -96,16 +97,26 @@ export const simplifyCurrentBookingsMiddleware = () => {
             const allBookings: currentBookingData[] =
                 res.locals.currentBookings.items;
 
+            const client = res.locals.oAuthClient;
+            const rooms: schema.CalendarResource[] = await admin.getRoomData(
+                client
+            );
+
             const simplifiedCurrentBookings = allBookings.map(
                 (booking: schema.EventData) => {
                     const simpleEvent: currentBookingData = {
                         id: booking.id,
                         startTime: booking.start?.dateTime,
                         endTime: booking.end?.dateTime,
-                        room: {
-                            name: booking.location
-                        }
+                        room: null
                     };
+
+                    // Finds the room information and includes it inside the simpleEvent
+                    const room = rooms.find((room: schema.CalendarResource) => {
+                        return room.generatedResourceName === booking.location;
+                    });
+                    simpleEvent.room = room;
+
                     return simpleEvent;
                 }
             );
@@ -118,7 +129,7 @@ export const simplifyCurrentBookingsMiddleware = () => {
                         }
 
                         // Checks that the event has a room or other resource
-                        if (_.isEmpty(booking.room.name)) {
+                        if (_.isEmpty(booking.room)) {
                             return false;
                         }
 
@@ -196,6 +207,7 @@ export const checkRoomAccepted = () => {
             // few times before giving up (usually it seems to take 300-500ms)
             for (let i = 0; i < 8; i += 1) {
                 const eventData = await calendar.getEventData(client, eventId);
+
                 const attendees = eventData.attendees;
                 res.locals.event = eventData;
 
