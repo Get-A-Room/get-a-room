@@ -1,5 +1,4 @@
 import express from 'express';
-import * as responses from '../utils/responses';
 import * as controller from '../controllers/preferencesController';
 import { validateBuildingInOrg } from '../controllers/buildingsController';
 

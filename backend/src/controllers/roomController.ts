@@ -40,6 +40,7 @@ export const addAllRooms = () => {
 
             res.locals.rooms = rooms;
             next();
+            /* eslint-disable @typescript-eslint/no-explicit-any */
         } catch (err: any) {
             // Custom error for incorrect building
             if (err.errors[0].message === 'Invalid Input: filter') {
@@ -138,17 +139,19 @@ export const writeReservationData = () => {
  * @returns simplified results
  */
 const simplifyRoomData = (result: schema.CalendarResource[]): roomData[] => {
-    return result.map((x) => {
+    return result.map((x: schema.CalendarResource) => {
         /**
          * Cleans features of unnecessary information
          * @param features featureInstances
          * @returns array of feature names
          */
+        /* eslint-disable @typescript-eslint/no-explicit-any */
         const cleanFeatures = (features: any): string[] => {
             if (!features) {
                 return [];
             }
 
+            /* eslint-disable @typescript-eslint/no-explicit-any */
             return features.map((x: any) => x.feature.name);
         };
 
