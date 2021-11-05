@@ -1,13 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
-import Preferences from '../types/preferences';
 import { preferencesSchema } from './preferences';
-
-export type User = {
-    subject: string;
-    preferences: Preferences;
-    name?: string;
-    refreshToken?: string;
-};
+import User from '../types/user';
 
 export const userSchema = new Schema<User>({
     subject: {

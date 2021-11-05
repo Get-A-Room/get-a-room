@@ -85,6 +85,10 @@ export const updatePreferencesToDatabase = () => {
                 }
             };
 
+            if (!sub) {
+                return responses.badRequest(req, res);
+            }
+
             const user = await updatePreferences(sub, preferences);
 
             if (!user) {

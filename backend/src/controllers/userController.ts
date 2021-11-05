@@ -1,6 +1,7 @@
 import { TokenPayload } from 'google-auth-library';
-import UserModel, { User } from '../models/user';
+import UserModel from '../models/user';
 import Preferences from '../types/preferences';
+import User from '../types/user';
 
 export function createUserFromTokenPayload(
     payload: TokenPayload,
