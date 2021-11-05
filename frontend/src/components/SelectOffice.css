@@ -5,7 +5,6 @@ html {
 .OfficeSelect {
     background-color: #e3e3e3;
     text-align: center;
-    margin-bottom: 7vh;
 }
 
 .OfficeSelect-box {
@@ -23,17 +22,29 @@ html {
 }
 
 .OfficeSelect-confirm {
-    min-width: 200px;
+    min-width: 150px;
     min-height: 50px;
     margin-top: 20vw;
-    outline-width: 10px;
     border-color: #f04e30;
 }
 
 .OfficeSelect-skip {
-    min-width: 200px;
+    min-width: 150px;
     min-height: 50px;
     margin-top: 10px;
     border-style: none;
     background-color: #e3e3e3;
+}
+
+.OfficeSelect-loadingScreen {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    margin-top: -50px;
+    margin-left: -50px;
 }

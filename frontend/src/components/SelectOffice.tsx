@@ -1,27 +1,34 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { Select, FormControl, InputLabel, MenuItem, Box } from '@mui/material';
 import './SelectOffice.css';
-import Select from '@mui/material/Select';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
+import { getBuildings } from '../services/buildingService';
+import { Building } from '../types';
+import { Router } from '@mui/icons-material';
+import BookingView from './BookingView';
+import { render } from '@testing-library/react';
 
-const token = '';
-
-async function getBuilding() {
-    const res = await fetch('/api/buildings', {
-        method: 'GET',
-        headers: {
-            Authorization: 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        }
-    });
-    const building = await res.json();
-    console.log(building);
+// Return room name
+function getName(building: Building) {
+    return building.name;
 }
 
-const CitySelection = () => {
+// Return room name
+function getId(building: Building) {
+    return building.id;
+}
+// Check if rooms are fetched
+function areBuildingsFetched(buildings: Building[]) {
+    console.log(buildings);
+    return Array.isArray(buildings) && buildings.length > 0;
+}
+
+function CitySelection() {
+    const [buildings, setBuildings] = useState<Building[]>([]);
+
+    useEffect(() => {
+        getBuildings().then(setBuildings);
+    }, []);
+
     return (
         <div className="OfficeSelect">
             <header className="OfficeSelect-header">
@@ -36,10 +43,12 @@ const CitySelection = () => {
                         id="office-select"
                         label="Office location"
                     >
-                        <MenuItem value={1}>Helsinki</MenuItem>
-                        <MenuItem value={2}>Oulu</MenuItem>
-                        <MenuItem value={3}>Tampere</MenuItem>
-                        <MenuItem value={4}>Turku</MenuItem>
+                        {areBuildingsFetched(buildings) &&
+                            buildings.map((building) => (
+                                <MenuItem value={getId(building)}>
+                                    {getName(building)}
+                                </MenuItem>
+                            ))}
                     </Select>
                 </FormControl>
             </Box>
@@ -51,6 +60,6 @@ const CitySelection = () => {
             </div>
         </div>
     );
-};
+}
 
 export default CitySelection;
