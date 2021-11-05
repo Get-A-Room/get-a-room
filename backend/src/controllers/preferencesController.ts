@@ -37,3 +37,66 @@ export const getPreferences = () => {
 
     return middleware;
 };
+
+/**
+ * Read body of preferences PUT request
+ * @returns
+ */
+export const readPrefenceBody = () => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const building: BuildingData = req.body.building;
+
+            if (!building || !building.id || !building.name) {
+                return responses.badRequest(req, res);
+            }
+
+            res.locals.buildingId = building.id;
+            res.locals.buildingName = building.name;
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    return middleware;
+};
+
+/**
+ * Updates the preferences to the database
+ * @returns
+ */
+export const updatePreferencesToDatabase = () => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const sub = res.locals.sub;
+            const preferences: Preferences = {
+                building: {
+                    id: res.locals.buildingId,
+                    name: res.locals.buildingName
+                }
+            };
+
+            const user = await updatePreferences(sub, preferences);
+
+            if (!user) {
+                return responses.internalServerError(req, res);
+            }
+
+            res.locals.preferences = preferences;
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    return middleware;
+};

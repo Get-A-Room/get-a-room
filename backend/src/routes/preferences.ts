@@ -13,4 +13,12 @@ router.get('/', controller.getPreferences(), (req, res) => {
 });
 
 // Update preferences
-router.put('/', (req, res) => responses.notImplemented(req, res));
+router.put(
+    '/',
+    controller.readPrefenceBody(),
+    validateBuildingInOrg(),
+    controller.updatePreferencesToDatabase(),
+    (req, res) => {
+        res.status(200).json(res.locals.preferences);
+    }
+);
