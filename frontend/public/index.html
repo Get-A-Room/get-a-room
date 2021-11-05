@@ -56,13 +56,13 @@
                         .register('/serviceworker.js')
                         .then((reg) =>
                             console.log(
-                                'Service workkerin reskiterointi onnistui ja sen scope on: reg.scope:',
+                                'Service workker registration was successfull!',
                                 reg.scope
                             )
                         )
                         .catch((err) =>
                             console.log(
-                                'Service workkerin reskiterointi EPAONNISTUI :( errorilla: ',
+                                'Service worker registration failed with error: ',
                                 err
                             )
                         );
