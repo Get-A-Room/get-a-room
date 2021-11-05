@@ -1,4 +1,4 @@
-import { Booking, BookingDetails, Building } from '../types';
+import { Booking, BookingDetails } from '../types';
 import axios from './axiosConfigurer';
 
 export const makeBooking = async (bookingDetails: BookingDetails) => {
