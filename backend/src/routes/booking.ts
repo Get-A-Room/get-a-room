@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { query } from 'express-validator';
-import * as controller from '../controllers/booking/makeBookingController';
+import * as makeBookingController from '../controllers/booking/makeBookingController';
+import * as currentBookingsController from '../controllers/booking/currentBookingsController';
 import * as responses from '../utils/responses';
 
 export const router = express.Router();
@@ -9,11 +10,11 @@ export const router = express.Router();
 router.post(
     '/',
     query('noConfirmation').toBoolean(true),
-    controller.validateInput(),
-    controller.makeBooking(),
-    controller.checkRoomAccepted(), // This middleware slows things down :(
-    controller.removeDeclinedEvent(),
-    controller.simplifyEventData(),
+    makeBookingController.validateInput(),
+    makeBookingController.makeBooking(),
+    makeBookingController.checkRoomAccepted(), // This middleware slows things down :(
+    makeBookingController.removeDeclinedEvent(),
+    makeBookingController.simplifyEventData(),
     (req: Request, res: Response) => {
         res.status(201).json(res.locals.event);
     }
@@ -22,8 +23,8 @@ router.post(
 // Get the status of the current booking of the user
 router.get(
     '/current',
-    controller.getCurrentBookingsMiddleware(),
-    controller.simplifyCurrentBookingsMiddleware(),
+    currentBookingsController.getCurrentBookingsMiddleware(),
+    currentBookingsController.simplifyCurrentBookingsMiddleware(),
     (req: Request, res: Response) => {
         res.status(200).json(res.locals.currentBookings);
     }

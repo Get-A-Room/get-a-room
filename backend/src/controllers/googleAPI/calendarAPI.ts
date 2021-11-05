@@ -34,7 +34,6 @@ export const freeBusyQuery = async (
     });
 
     const calendars = queryResult.data.calendars;
-
     const results: NextEventById = {};
 
     _.forIn(calendars, (data: schema.FreeBusyCalendar, id: string) => {
@@ -105,8 +104,9 @@ export const createEvent = async (
 export const getCurrentBookings = async (
     client: OAuth2Client
 ): Promise<schema.EventsData> => {
-    // Do not fetch events that have started 30 days ago to reduce traffic
-    const start = DateTime.local().minus({ days: 30 }).toISO();
+    // Do not fetch events that have started over 100 days ago to reduce traffic
+    // It is safe to assume that there is not any events that started 90 days ago and are still running
+    const start = DateTime.local().minus({ days: 100 }).toISO();
 
     const eventsList = await calendar.events.list({
         calendarId: 'primary',
