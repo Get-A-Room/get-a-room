@@ -1,5 +1,3 @@
-import { Schema } from 'express-validator';
-import roomData from './roomData';
 import * as schema from '../utils/googleSchema';
 
 export default interface currentBookingData {
