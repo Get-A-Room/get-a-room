@@ -30,7 +30,7 @@ export const simplifyCurrentBookingsMiddleware = () => {
             );
             const roomsSimplified: roomData[] = simplifyRoomData(rooms);
 
-            const simplifiedCurrentBookings = allBookings.map(
+            const simplifiedBookings = allBookings.map(
                 (booking: schema.EventData) => {
                     const simpleEvent: currentBookingData = {
                         id: booking.id,
@@ -49,27 +49,8 @@ export const simplifyCurrentBookingsMiddleware = () => {
                 }
             );
 
-            // Filters away all bookings that aren't running at the moment
-            const onlyCurrentlyRunningBookings =
-                simplifiedCurrentBookings.filter(
-                    (booking: currentBookingData) => {
-                        if (!booking.startTime || !booking.endTime) {
-                            return false;
-                        }
-
-                        // Checks that the event has a room or other resource
-                        if (_.isEmpty(booking.room)) {
-                            return false;
-                        }
-
-                        const now = DateTime.local().toISO();
-                        return (
-                            booking.startTime <= now && booking.endTime >= now
-                        );
-                    }
-                );
-
-            res.locals.currentBookings = onlyCurrentlyRunningBookings;
+            res.locals.currentBookings =
+                filteCurrentlyRunningBookings(simplifiedBookings);
             next();
         } catch (err) {
             next(err);
@@ -77,6 +58,33 @@ export const simplifyCurrentBookingsMiddleware = () => {
     };
 
     return middleware;
+};
+
+/**
+ * Filters away every booking that is not currently running
+ * @param simplifiedBookings List of simplified bookings
+ * @returns filtered bookings
+ */
+export const filteCurrentlyRunningBookings = (
+    simplifiedBookings: currentBookingData[]
+): currentBookingData[] => {
+    // Filters away all bookings that aren't running at the moment
+    const onlyCurrentlyRunningBookings: currentBookingData[] =
+        simplifiedBookings.filter((booking: currentBookingData) => {
+            if (!booking.startTime || !booking.endTime) {
+                return false;
+            }
+
+            // Checks that the event has a room or other resource
+            if (_.isEmpty(booking.room)) {
+                return false;
+            }
+
+            const now = DateTime.local().toISO();
+            return booking.startTime <= now && booking.endTime >= now;
+        });
+
+    return onlyCurrentlyRunningBookings;
 };
 
 /**
