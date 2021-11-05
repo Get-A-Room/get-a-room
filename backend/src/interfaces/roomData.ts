@@ -7,4 +7,5 @@ export default interface roomData {
     floor: string | null | undefined;
     features: string[] | null | undefined;
     nextCalendarEvent: string | null | undefined;
+    location: string | null | undefined;
 }

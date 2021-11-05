@@ -185,13 +185,16 @@ export const writeReservationData = () => {
  * @param result Results from Google API
  * @returns simplified results
  */
-const simplifyRoomData = (result: schema.CalendarResource[]): roomData[] => {
+export const simplifyRoomData = (
+    result: schema.CalendarResource[]
+): roomData[] => {
     return result.map((x) => {
         /**
          * Cleans features of unnecessary information
          * @param features featureInstances
          * @returns array of feature names
          */
+
         const cleanFeatures = (features: any): string[] => {
             if (!features) {
                 return [];
@@ -208,7 +211,8 @@ const simplifyRoomData = (result: schema.CalendarResource[]): roomData[] => {
             building: x.buildingId,
             floor: x.floorName,
             features: cleanFeatures(x.featureInstances),
-            nextCalendarEvent: '-1'
+            nextCalendarEvent: '-1',
+            location: x.generatedResourceName
         };
     });
 };

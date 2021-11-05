@@ -8,6 +8,8 @@ import * as admin from '../googleAPI/adminAPI';
 import * as calendar from '../googleAPI/calendarAPI';
 import * as responses from '../../utils/responses';
 import { OAuth2Client } from 'google-auth-library';
+import { simplifyRoomData } from '../../controllers/roomController';
+import roomData from '../../interfaces/roomData';
 
 /**
  * Simplifies and filters current bookings
@@ -23,10 +25,10 @@ export const simplifyCurrentBookingsMiddleware = () => {
             const allBookings: currentBookingData[] =
                 res.locals.currentBookings.items;
 
-            const client = res.locals.oAuthClient;
             const rooms: schema.CalendarResource[] = await admin.getRoomData(
-                client
+                res.locals.oAuthClient
             );
+            const roomsSimplified: roomData[] = simplifyRoomData(rooms);
 
             const simplifiedCurrentBookings = allBookings.map(
                 (booking: schema.EventData) => {
@@ -38,8 +40,8 @@ export const simplifyCurrentBookingsMiddleware = () => {
                     };
 
                     // Finds the room information and includes it inside the simpleEvent
-                    const room = rooms.find((room: schema.CalendarResource) => {
-                        return room.generatedResourceName === booking.location;
+                    const room = roomsSimplified.find((room: any) => {
+                        return room.location === booking.location;
                     });
                     simpleEvent.room = room;
 
@@ -47,6 +49,7 @@ export const simplifyCurrentBookingsMiddleware = () => {
                 }
             );
 
+            // Filters away all bookings that aren't running at the moment
             const onlyCurrentlyRunningBookings =
                 simplifiedCurrentBookings.filter(
                     (booking: currentBookingData) => {
