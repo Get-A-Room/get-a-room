@@ -1,6 +1,7 @@
 import { OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
 import _ from 'lodash';
+import { DateTime } from 'luxon';
 import * as schema from '../../utils/googleSchema';
 
 const calendar = google.calendar('v3');
@@ -33,6 +34,7 @@ export const freeBusyQuery = async (
     });
 
     const calendars = queryResult.data.calendars;
+
     const results: NextEventById = {};
 
     _.forIn(calendars, (data: schema.FreeBusyCalendar, id: string) => {
@@ -94,6 +96,25 @@ export const createEvent = async (
     });
 
     return eventResult.data;
+};
+
+/**
+ * Gets current bookings of the user
+ * @param client OAuth2Client
+ */
+export const getCurrentBookings = async (
+    client: OAuth2Client
+): Promise<schema.EventsData> => {
+    // Do not fetch events that have started 30 days ago to reduce traffic
+    const start = DateTime.local().minus({ days: 30 }).toISO();
+
+    const eventsList = await calendar.events.list({
+        calendarId: 'primary',
+        auth: client,
+        timeMin: start
+    });
+
+    return eventsList.data;
 };
 
 /**
