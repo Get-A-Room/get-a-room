@@ -54,12 +54,16 @@ function getFeatures(booking: Booking) {
 
 function CurrentBooking() {
     const [bookings, setBookings] = useState<Booking[]>([]);
+    const [expandedFeatures, setExpandedFeatures] = React.useState('false');
 
     useEffect(() => {
-        getBookings().then(setBookings);
+        //getBookings().then(setBookings);
+        let data = getBookings().then((res) => res);
+        console.log(data);
+        console.log('useEffect helloooo');
+        // @ts-ignore
+        setBookings(data);
     }, []);
-
-    const [expandedFeatures, setExpandedFeatures] = React.useState('false');
 
     const handleFeaturesCollapse = (
         event: React.MouseEvent<HTMLElement>,
@@ -71,13 +75,17 @@ function CurrentBooking() {
     };
 
     return !areBookingsFetched(bookings) ? null : (
-        <div className="CurrentBooking">
-            <header className="CurrentBooking-header">
+        <div className="CurrentBooking" data-testid="CurrentBookingComponent">
+            <header
+                className="CurrentBooking-header"
+                data-test-id="CurrentBookingTitle"
+            >
                 <h1>Your Booking</h1>
             </header>
             <List>
                 {bookings.map((booking) => (
                     <Card
+                        data-test-id="CurrentBookingCard"
                         key={booking.id}
                         sx={{
                             background:
@@ -96,6 +104,7 @@ function CurrentBooking() {
                                 }}
                             >
                                 <Typography
+                                    id="BookingRoomTitle"
                                     style={{
                                         fontSize: '18px',
                                         fontWeight: 'bold'

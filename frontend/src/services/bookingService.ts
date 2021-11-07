@@ -8,5 +8,6 @@ export const makeBooking = async (bookingDetails: BookingDetails) => {
 
 export const getBookings = async (): Promise<Booking[]> => {
     const response = await axios.get('booking/current');
+    console.log(response.data);
     return response.data;
 };
