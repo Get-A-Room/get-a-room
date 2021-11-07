@@ -1,8 +1,19 @@
 import './CurrentBooking.css';
-import { Card, CardContent, List, Typography } from '@mui/material';
+import {
+    Box,
+    Card,
+    CardActions,
+    CardContent,
+    Collapse,
+    Grid,
+    IconButton,
+    List,
+    Typography
+} from '@mui/material';
 import { Booking } from '../types';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getBookings } from '../services/bookingService';
+import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
 
 function getBookingRoomName(booking: Booking) {
     return booking.room.name;
@@ -21,12 +32,43 @@ function areBookingsFetched(bookings: Booking[]) {
     return Array.isArray(bookings) && bookings.length > 0;
 }
 
+function getCapacity(booking: Booking) {
+    return booking.room.capacity;
+}
+
+function getFeatures(booking: Booking) {
+    let featureArray = booking.room.features;
+    let featuresDisplay = [];
+
+    // Format booking.room features
+    if (featureArray) {
+        for (let feature = 0; feature < featureArray.length; feature++) {
+            featuresDisplay.push(featureArray[feature]);
+            if (feature !== featureArray.length - 1) {
+                featuresDisplay.push(', ');
+            }
+        }
+    }
+    return featuresDisplay;
+}
+
 function CurrentBooking() {
     const [bookings, setBookings] = useState<Booking[]>([]);
 
     useEffect(() => {
         getBookings().then(setBookings);
     }, []);
+
+    const [expandedFeatures, setExpandedFeatures] = React.useState('false');
+
+    const handleFeaturesCollapse = (
+        event: React.MouseEvent<HTMLElement>,
+        booking: Booking
+    ) => {
+        setExpandedFeatures(
+            expandedFeatures === booking.id ? 'false' : booking.id
+        );
+    };
 
     return !areBookingsFetched(bookings) ? null : (
         <div className="CurrentBooking">
@@ -47,28 +89,88 @@ function CurrentBooking() {
                             m: 2
                         }}
                     >
-                        <CardContent
-                            style={{
-                                textAlign: 'left',
-                                paddingLeft: '1.5em'
-                            }}
-                        >
-                            <Typography
+                        <CardContent style={{ paddingBottom: 0 }}>
+                            <Box
                                 style={{
-                                    fontSize: '18px',
-                                    fontWeight: 'bold'
+                                    textAlign: 'left'
                                 }}
                             >
-                                {' '}
-                                {getBookingRoomName(booking)}{' '}
-                            </Typography>
-                            <Typography
+                                <Typography
+                                    style={{
+                                        fontSize: '18px',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    {getBookingRoomName(booking)}
+                                </Typography>
+                                <Typography style={{ fontStyle: 'italic' }}>
+                                    Time left: {getBookingTimeLeft(booking)} min
+                                </Typography>
+                            </Box>
+                            <Box
                                 style={{
-                                    fontStyle: 'italic'
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    paddingBottom: 0
                                 }}
                             >
-                                Time left: {getBookingTimeLeft(booking)} min
-                            </Typography>
+                                <CardActions disableSpacing>
+                                    <IconButton
+                                        onClick={(e) =>
+                                            handleFeaturesCollapse(e, booking)
+                                        }
+                                        aria-label="Expand"
+                                    >
+                                        {expandedFeatures === booking.id ? (
+                                            <ExpandLess />
+                                        ) : (
+                                            <ExpandMore />
+                                        )}
+                                    </IconButton>
+                                </CardActions>
+                            </Box>
+                            <Collapse
+                                in={expandedFeatures === booking.id}
+                                timeout="auto"
+                                unmountOnExit
+                            >
+                                <Grid
+                                    container
+                                    spacing={2}
+                                    style={{
+                                        display: 'flex',
+                                        paddingBottom: '1em',
+                                        justifyContent: 'space-around'
+                                    }}
+                                >
+                                    <Grid item>
+                                        <Box
+                                            style={{
+                                                display: 'flex'
+                                            }}
+                                        >
+                                            <Group />
+                                            <Typography
+                                                style={{
+                                                    fontSize: '16px',
+                                                    fontWeight: 'bold'
+                                                }}
+                                            >
+                                                {getCapacity(booking)}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item>
+                                        <Typography
+                                            style={{ fontSize: '16px' }}
+                                        >
+                                            {' '}
+                                            {getFeatures(booking)}{' '}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                            </Collapse>
                         </CardContent>
                     </Card>
                 ))}
