@@ -1,5 +1,7 @@
 import { TokenPayload } from 'google-auth-library';
-import UserModel, { User } from '../models/user';
+import UserModel from '../models/user';
+import Preferences from '../types/preferences';
+import User from '../types/user';
 
 export function createUserFromTokenPayload(
     payload: TokenPayload,
@@ -24,4 +26,11 @@ export function updateRefreshToken(
     refreshToken: string
 ): Promise<User | null> {
     return UserModel.findOneAndUpdate({ subject }, { refreshToken }).exec();
+}
+
+export function updatePreferences(
+    subject: string,
+    preferences: Preferences
+): Promise<User | null> {
+    return UserModel.findOneAndUpdate({ subject }, { preferences }).exec();
 }
