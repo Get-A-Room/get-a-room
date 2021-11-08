@@ -1,43 +1,68 @@
 import { useState, useEffect } from 'react';
-import { Select, FormControl, InputLabel, MenuItem, Box } from '@mui/material';
+import {
+    Select,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Box,
+    SelectChangeEvent
+} from '@mui/material';
 import './SelectOffice.css';
 import { getBuildings } from '../services/buildingService';
-import { Building } from '../types';
-import { Router } from '@mui/icons-material';
-import BookingView from './BookingView';
-import { render } from '@testing-library/react';
+import { Building, Preferences } from '../types';
 
-// Return room name
-function getName(building: Building) {
-    return building.name;
-}
-
-// Return room name
-function getId(building: Building) {
-    return building.id;
-}
 // Check if rooms are fetched
 function areBuildingsFetched(buildings: Building[]) {
-    console.log(buildings);
     return Array.isArray(buildings) && buildings.length > 0;
 }
 
-function CitySelection() {
+type SelectOfficeProps = {
+    currentPreferencesOffice?: string;
+    selectedPreferences?: Preferences;
+    setSelectedPreferences: (preferences?: Preferences) => any;
+};
+
+const SelectOffice = (props: SelectOfficeProps) => {
+    const {
+        selectedPreferences,
+        setSelectedPreferences,
+        currentPreferencesOffice
+    } = props;
     const [buildings, setBuildings] = useState<Building[]>([]);
+    const [selectedOffice, setSelectedOffice] = useState(
+        currentPreferencesOffice || ''
+    );
 
     useEffect(() => {
         getBuildings().then(setBuildings);
     }, []);
 
+    const handleChange = (event: SelectChangeEvent) => {
+        // Set select compoonent state
+        const buildingId = event.target.value;
+        setSelectedOffice(buildingId);
+
+        // if valid building set selected preferences
+        const foundBuilding = buildings.find(
+            (building) => building.id === buildingId
+        );
+        if (foundBuilding) {
+            setSelectedPreferences({
+                ...selectedPreferences,
+                building: foundBuilding
+            });
+        }
+    };
+
     return (
         <div className="OfficeSelect">
-            <header className="OfficeSelect-header">
-                <h1>Preferences</h1>
-            </header>
             <Box>
                 <FormControl variant="outlined">
                     <InputLabel id="office-label">Office location</InputLabel>
                     <Select
+                        onChange={handleChange}
+                        defaultValue=""
+                        value={selectedOffice}
                         className="OfficeSelect-box"
                         labelId="office-label"
                         id="office-select"
@@ -45,21 +70,15 @@ function CitySelection() {
                     >
                         {areBuildingsFetched(buildings) &&
                             buildings.map((building) => (
-                                <MenuItem value={getId(building)}>
-                                    {getName(building)}
+                                <MenuItem key={building.id} value={building.id}>
+                                    {building.name}
                                 </MenuItem>
                             ))}
                     </Select>
                 </FormControl>
             </Box>
-            <div>
-                <button className="OfficeSelect-confirm">CONFIRM</button>
-            </div>
-            <div>
-                <button className="OfficeSelect-skip">SKIP</button>
-            </div>
         </div>
     );
-}
+};
 
-export default CitySelection;
+export default SelectOffice;
