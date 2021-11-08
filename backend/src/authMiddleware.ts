@@ -87,6 +87,7 @@ export const validateAccessToken = () => {
             const tokenInfo = await client.getTokenInfo(res.locals.token);
             res.locals.oAuthClient = client;
             res.locals.email = tokenInfo.email;
+            res.locals.sub = tokenInfo.sub;
             next();
         } catch {
             return responses.invalidToken(req, res);
