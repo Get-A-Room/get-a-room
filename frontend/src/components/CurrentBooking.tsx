@@ -72,7 +72,11 @@ function CurrentBooking() {
         );
     };
 
-    return !areBookingsFetched(bookings) ? null : (
+    if (!areBookingsFetched(bookings)) {
+        return null;
+    }
+
+    return (
         <div className="CurrentBooking">
             <header className="CurrentBooking-header">
                 <h1>Your Booking</h1>
