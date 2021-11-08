@@ -6,55 +6,7 @@ import * as admin from './googleAPI/adminAPI';
 import * as calendar from './googleAPI/calendarAPI';
 import * as responses from '../utils/responses';
 import * as schema from '../utils/googleSchema';
-import roomData from '../interfaces/roomData';
-import { getBuildings } from './buildingsController';
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/**
- * Middleware validates that a building belongs to the organization
- * @param req Express request
- * @param res Express response
- * @param next Next
- * @returns
- */
-export const validateBuildingInOrg = () => {
-    const middleware = (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
-    ) => {
-        try {
-            const building = req.query.building as string;
-
-            if (!building) {
-                return next();
-            }
-
-            getBuildings(res.locals.oAuthClient)
-                .then((result) => {
-                    if (!result || result.length === 0) {
-                        return responses.internalServerError(req, res);
-                    }
-
-                    const ids: string[] = result.map((x: any) => x.buildingId);
-
-                    if (!ids.includes(building)) {
-                        return responses.badRequest(req, res);
-                    }
-
-                    return next();
-                })
-                .catch((err) => {
-                    console.error(err);
-                    return next(err);
-                });
-        } catch (err) {
-            next(err);
-        }
-    };
-
-    return middleware;
-};
+import roomData from '../types/roomData';
 
 /**
  * Middleware that adds all the rooms to the res.locals.rooms
@@ -88,6 +40,7 @@ export const addAllRooms = () => {
 
             res.locals.rooms = rooms;
             next();
+            /* eslint-disable @typescript-eslint/no-explicit-any */
         } catch (err: any) {
             // Custom error for incorrect building
             if (err.errors[0].message === 'Invalid Input: filter') {
@@ -186,17 +139,19 @@ export const writeReservationData = () => {
  * @returns simplified results
  */
 const simplifyRoomData = (result: schema.CalendarResource[]): roomData[] => {
-    return result.map((x) => {
+    return result.map((x: schema.CalendarResource) => {
         /**
          * Cleans features of unnecessary information
          * @param features featureInstances
          * @returns array of feature names
          */
+        /* eslint-disable @typescript-eslint/no-explicit-any */
         const cleanFeatures = (features: any): string[] => {
             if (!features) {
                 return [];
             }
 
+            /* eslint-disable @typescript-eslint/no-explicit-any */
             return features.map((x: any) => x.feature.name);
         };
 
