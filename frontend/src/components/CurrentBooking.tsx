@@ -85,7 +85,8 @@ function CurrentBooking() {
             <List>
                 {bookings.map((booking) => (
                     <Card
-                        data-test-id="CurrentBookingCard"
+                        data-testid="CurrentBookingCard"
+                        className="CurrentBookingCardClass"
                         key={booking.id}
                         sx={{
                             background:
@@ -104,7 +105,7 @@ function CurrentBooking() {
                                 }}
                             >
                                 <Typography
-                                    id="BookingRoomTitle"
+                                    data-testid="BookingRoomTitle"
                                     style={{
                                         fontSize: '18px',
                                         fontWeight: 'bold'

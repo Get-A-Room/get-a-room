@@ -15,7 +15,6 @@ let container = null;
 beforeEach(() => {
     // setup a DOM element as a render target
     container = document.createElement('div');
-    console.log('called beforeEach: ' + container);
     document.body.appendChild(container);
 });
 
@@ -43,23 +42,14 @@ it('renders booking data', async () => {
     ];
 
     jest.spyOn(bookingService, 'getBookings').mockImplementation(() => {
-        console.log('mock test');
         return Promise.resolve(fakeBooking);
     });
 
     render(<CurrentBooking />, container);
 
-    const items = await screen.getByTestId('CurrentBookingCard');
+    const items = await screen.findByTestId('CurrentBookingCard');
+    expect(items).toHaveClass('CurrentBookingCardClass');
 
-    // expect(items).toHaveLength(1);
-    //
-    // console.log(container.children);
-    //
-    // console.log('Row 52 ' + container.querySelector('#BookingRoomTitle'));
-    //
-    // expect(container.querySelector('.CurrentBooking').not.toBeNull);
-    //
-    // expect(container.querySelector('#BookingRoomTitle').textContent).toBe(
-    //     'Amor'
-    // );
+    const title = await screen.findByTestId('BookingRoomTitle');
+    expect(title).toHaveTextContent('Amor');
 });
