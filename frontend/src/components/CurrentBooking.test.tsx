@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM, { unmountComponentAtNode } from 'react-dom';
 import { render, screen } from '@testing-library/react';
 import CurrentBooking from './CurrentBooking';
-import { act } from 'react-dom/test-utils';
+import * as bookingService from '../services/bookingService';
 import { getBookings } from '../services/bookingService';
 
 it('renders CurrentBooking.tsx', () => {
@@ -27,38 +27,39 @@ afterEach(() => {
 });
 
 it('renders booking data', async () => {
-    const fakeBooking = {
-        id: '123',
-        startTime: '2021-10-21T17:32:28Z',
-        endTime: '2021-10-21T19:32:28Z',
-        room: {
-            id: 'c_188fib500s84uis7kcpb6dfm93v25@resource.calendar.google.com',
-            name: 'Amor',
-            capacity: 4,
-            features: ['Jabra', 'TV', 'Webcam'],
-            nextCalendarEvent: '2021-10-21T17:32:28Z'
-        }
-    };
-    jest.spyOn(global, 'fetch').mockImplementation(() =>
-        Promise.resolve({
-            json: () => {
-                console.log('moi');
-                return Promise.resolve(fakeBooking);
+    const fakeBooking = [
+        {
+            id: '123',
+            startTime: '2021-10-21T17:32:28Z',
+            endTime: '2021-10-21T19:32:28Z',
+            room: {
+                id: 'c_188fib500s84uis7kcpb6dfm93v25@resource.calendar.google.com',
+                name: 'Amor',
+                capacity: 4,
+                features: ['Jabra', 'TV', 'Webcam'],
+                nextCalendarEvent: '2021-10-21T17:32:28Z'
             }
-        })
-    );
+        }
+    ];
 
-    await act(async () => {
-        render(<CurrentBooking />, container);
+    jest.spyOn(bookingService, 'getBookings').mockImplementation(() => {
+        console.log('mock test');
+        return Promise.resolve(fakeBooking);
     });
 
-    console.log('From the test: ' + container);
+    render(<CurrentBooking />, container);
 
-    console.log('Row 52 ' + container.querySelector('#BookingRoomTitle'));
+    const items = await screen.getByTestId('CurrentBookingCard');
 
-    console.log('Container children ' + container.children.length);
-
-    expect(container.querySelector('#BookingRoomTitle').textContent).toBe(
-        'Amor'
-    );
+    // expect(items).toHaveLength(1);
+    //
+    // console.log(container.children);
+    //
+    // console.log('Row 52 ' + container.querySelector('#BookingRoomTitle'));
+    //
+    // expect(container.querySelector('.CurrentBooking').not.toBeNull);
+    //
+    // expect(container.querySelector('#BookingRoomTitle').textContent).toBe(
+    //     'Amor'
+    // );
 });

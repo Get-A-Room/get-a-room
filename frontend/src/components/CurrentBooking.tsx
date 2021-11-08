@@ -31,6 +31,8 @@ function getTimeDifference(startTime: Date, endTime: Date) {
 }
 
 function areBookingsFetched(bookings: Booking[]) {
+    console.log(bookings);
+    console.log(Array.isArray(bookings) && bookings.length > 0);
     return Array.isArray(bookings) && bookings.length > 0;
 }
 
