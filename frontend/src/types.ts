@@ -31,4 +31,5 @@ export interface Room {
     capacity?: number;
     features?: Array<string>;
     nextCalendarEvent?: string;
+    email: string;
 }
