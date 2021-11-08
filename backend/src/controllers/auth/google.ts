@@ -67,7 +67,7 @@ export const verifyCode = () => {
             }
 
             res.locals.oAuthClient = client;
-            res.locals.token = accessToken;
+            res.locals.accessToken = accessToken;
             res.locals.refreshToken = refreshToken;
             next();
         } catch (err) {

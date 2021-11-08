@@ -8,7 +8,6 @@ router.use('/google', googleRouter);
 
 // Log out
 router.get('/logout', (req, res) => {
-    res.clearCookie('token');
-    res.clearCookie('refreshToken');
+    res.clearCookie('TOKEN');
     res.status(204).send('No Content');
 });
