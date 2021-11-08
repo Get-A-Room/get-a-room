@@ -1,5 +1,7 @@
 import { Container, Typography } from '@mui/material';
 import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { updatePreferences } from '../services/preferencesService';
 import { Preferences } from '../types';
 import PreferenceButtons from './PreferenceFormButtons';
 import SelectOffice from './SelectOffice';
@@ -15,8 +17,15 @@ const PreferencesView = (props: PreferencesViewProps) => {
         Preferences | undefined
     >(preferences);
 
+    const history = useHistory();
+
     const handlePreferencesSubmit = () => {
-        setPreferences(selectedPreferences);
+        if (selectedPreferences) {
+            updatePreferences(selectedPreferences).then((resultPreferences) => {
+                setPreferences(resultPreferences);
+                history.push('/');
+            });
+        }
     };
 
     return (
@@ -38,12 +47,14 @@ const PreferencesView = (props: PreferencesViewProps) => {
             >
                 Preferences
             </Typography>
-
-            <SelectOffice
-                currentPreferencesOffice={preferences?.building?.id}
-                selectedPreferences={selectedPreferences}
-                setSelectedPreferences={setSelectedPreferences}
-            />
+            {/* Only render when we have result for current city*/}
+            {preferences && (
+                <SelectOffice
+                    currentPreferencesOffice={preferences?.building?.id}
+                    selectedPreferences={selectedPreferences}
+                    setSelectedPreferences={setSelectedPreferences}
+                />
+            )}
             <PreferenceButtons handleSubmit={handlePreferencesSubmit} />
         </Container>
     );

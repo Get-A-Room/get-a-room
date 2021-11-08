@@ -38,7 +38,7 @@ const SelectOffice = (props: SelectOfficeProps) => {
     }, []);
 
     const handleChange = (event: SelectChangeEvent) => {
-        // Set select compoonent state
+        // Set select component state
         const buildingId = event.target.value;
         setSelectedOffice(buildingId);
 
