@@ -125,7 +125,7 @@ export const filterCurrentBookings = (
                 return false;
             }
 
-            const now = DateTime.local().toISO();
+            const now = DateTime.now().toUTC().toISO();
             return booking.startTime <= now && booking.endTime >= now;
         });
 
