@@ -43,28 +43,29 @@ jobs:
                   name: frontend-build
                   path: frontend/build
 
-    frontend-test:
-        name: Test frontend
-        runs-on: ubuntu-latest
-        needs: frontend-build
+    # frontend-test:
+    #     name: Test frontend
+    #     runs-on: ubuntu-latest
+    #     needs: frontend-build
 
-        defaults:
-            run:
-                working-directory: frontend
+    #     defaults:
+    #         run:
+    #             working-directory: frontend
 
-        steps:
-            - uses: actions/checkout@main
-            - uses: actions/setup-node@main
-              with:
-                  node-version: 16
-                  cache: npm
-            - run: npm ci
-            - run: npm run test:ci
+    #     steps:
+    #         - uses: actions/checkout@main
+    #         - uses: actions/setup-node@main
+    #           with:
+    #               node-version: 16
+    #               cache: npm
+    #         - run: npm ci
+    #         - run: npm run test:ci
 
     frontend-deploy:
         name: Deploy React frontend
         if: github.ref == 'refs/heads/dev'
-        needs: frontend-test
+        needs: frontend-build
+        # needs: frontend-test
         runs-on: ubuntu-latest
 
         defaults:

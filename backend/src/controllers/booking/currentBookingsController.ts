@@ -2,14 +2,14 @@ import { DateTime } from 'luxon';
 import _ from 'lodash';
 
 import { Request, Response, NextFunction } from 'express';
-import currentBookingData from '../../interfaces/currentBookingData';
+import currentBookingData from '../../types/currentBookingData';
 import * as schema from '../../utils/googleSchema';
 import * as admin from '../googleAPI/adminAPI';
 import * as calendar from '../googleAPI/calendarAPI';
 import * as responses from '../../utils/responses';
 import { OAuth2Client } from 'google-auth-library';
 import { simplifyRoomData } from '../../controllers/roomController';
-import roomData from '../../interfaces/roomData';
+import roomData from '../../types/roomData';
 
 /**
  * Gets all the users currently active bookings
@@ -46,7 +46,7 @@ export const getCurrentBookingsMiddleware = () => {
  * Simplifies and filters current bookings
  * @returns
  */
-export const simplifyCurrentBookingsMiddleware = () => {
+export const simplifyAndFilterCurrentBookingsMiddleware = () => {
     const middleware = async (
         req: Request,
         res: Response,
@@ -63,7 +63,7 @@ export const simplifyCurrentBookingsMiddleware = () => {
             const simplifiedBookings = simplifyBookings(allBookings, rooms);
 
             res.locals.currentBookings =
-                filteCurrentlyRunningBookings(simplifiedBookings);
+                filterCurrentBookings(simplifiedBookings);
             next();
         } catch (err) {
             next(err);
@@ -94,7 +94,7 @@ export const simplifyBookings = (
         };
 
         // Finds the room information and includes it inside the simpleEvent
-        const room = roomsSimplified.find((room: any) => {
+        const room = roomsSimplified.find((room: roomData) => {
             return room.location === booking.location;
         });
         simpleEvent.room = room;
@@ -110,7 +110,7 @@ export const simplifyBookings = (
  * @param simplifiedBookings List of simplified bookings
  * @returns filtered bookings
  */
-export const filteCurrentlyRunningBookings = (
+export const filterCurrentBookings = (
     simplifiedBookings: currentBookingData[]
 ): currentBookingData[] => {
     // Filters away all bookings that aren't running at the moment
