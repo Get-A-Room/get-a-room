@@ -106,7 +106,7 @@ export const getCurrentBookings = async (
 ): Promise<schema.EventsData> => {
     // Do not fetch events that have started over 100 days ago to reduce traffic
     // It is safe to assume that there is not any events that started 100 days ago and are still running
-    const start = DateTime.local().minus({ days: 100 }).toISO();
+    const start = DateTime.now().toUTC().toISO();
 
     const eventsList = await calendar.events.list({
         calendarId: 'primary',
