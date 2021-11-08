@@ -138,7 +138,9 @@ export const writeReservationData = () => {
  * @param result Results from Google API
  * @returns simplified results
  */
-const simplifyRoomData = (result: schema.CalendarResource[]): roomData[] => {
+export const simplifyRoomData = (
+    result: schema.CalendarResource[]
+): roomData[] => {
     return result.map((x: schema.CalendarResource) => {
         /**
          * Cleans features of unnecessary information
@@ -163,7 +165,8 @@ const simplifyRoomData = (result: schema.CalendarResource[]): roomData[] => {
             building: x.buildingId,
             floor: x.floorName,
             features: cleanFeatures(x.featureInstances),
-            nextCalendarEvent: '-1'
+            nextCalendarEvent: '-1',
+            location: x.generatedResourceName
         };
     });
 };
