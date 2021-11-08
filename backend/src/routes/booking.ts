@@ -24,7 +24,7 @@ router.post(
 router.get(
     '/current',
     currentBookingsController.getCurrentBookingsMiddleware(),
-    currentBookingsController.simplifyCurrentBookingsMiddleware(),
+    currentBookingsController.simplifyAndFilterCurrentBookingsMiddleware(),
     (req: Request, res: Response) => {
         res.status(200).json(res.locals.currentBookings);
     }

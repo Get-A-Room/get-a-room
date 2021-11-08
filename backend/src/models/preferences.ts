@@ -1,18 +1,8 @@
 import { Schema } from 'mongoose';
+import BuildingData from '../types/buildingData';
+import Preferences from '../types/preferences';
 
-export type Preferences = {
-    favouriteBuilding?: {
-        id: string;
-        name: string;
-    };
-};
-
-export type Building = {
-    id: string;
-    name: string;
-};
-
-export const buildingSchema = new Schema<Building>(
+export const buildingSchema = new Schema<BuildingData>(
     {
         id: { required: true, type: String },
         name: { required: true, type: String }
@@ -22,7 +12,7 @@ export const buildingSchema = new Schema<Building>(
 
 export const preferencesSchema = new Schema<Preferences>(
     {
-        favouriteBuilding: {
+        building: {
             required: false,
             type: buildingSchema
         }

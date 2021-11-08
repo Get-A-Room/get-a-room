@@ -25,7 +25,9 @@ function getBookingTimeLeft(booking: Booking) {
 }
 
 function getTimeDifference(startTime: Date, endTime: Date) {
-    return Math.floor((startTime.getTime() - endTime.getTime()) / 1000 / 60);
+    return Math.floor(
+        ((startTime.getTime() - endTime.getTime()) / 1000 / 60) % 60
+    );
 }
 
 function areBookingsFetched(bookings: Booking[]) {
@@ -57,12 +59,7 @@ function CurrentBooking() {
     const [expandedFeatures, setExpandedFeatures] = React.useState('false');
 
     useEffect(() => {
-        //getBookings().then(setBookings);
-        let data = getBookings().then((res) => res);
-        console.log(data);
-        console.log('useEffect helloooo');
-        // @ts-ignore
-        setBookings(data);
+        getBookings().then(setBookings);
     }, []);
 
     const handleFeaturesCollapse = (
@@ -74,12 +71,13 @@ function CurrentBooking() {
         );
     };
 
-    return !areBookingsFetched(bookings) ? null : (
-        <div className="CurrentBooking" data-testid="CurrentBookingComponent">
-            <header
-                className="CurrentBooking-header"
-                data-test-id="CurrentBookingTitle"
-            >
+    if (!areBookingsFetched(bookings)) {
+        return null;
+    }
+
+    return (
+        <div className="CurrentBooking">
+            <header className="CurrentBooking-header">
                 <h1>Your Booking</h1>
             </header>
             <List>

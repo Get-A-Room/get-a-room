@@ -1,4 +1,4 @@
-export default interface roomData {
+type RoomData = {
     id: string | null | undefined;
     name: string | null | undefined;
     email: string | null | undefined;
@@ -8,4 +8,6 @@ export default interface roomData {
     features: string[] | null | undefined;
     nextCalendarEvent: string | null | undefined;
     location: string | null | undefined;
-}
+};
+
+export default RoomData;
