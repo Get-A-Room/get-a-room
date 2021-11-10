@@ -36,7 +36,8 @@ router.get('/', controller.redirectUrl(), (req, res) => {
         return res.redirect(res.locals.authUrl);
     }
 
-    return res.redirect(`${frontendUrl}/auth/failure`);
+    res.clearCookie('TOKEN');
+    return res.redirect(`${frontendUrl}/login`);
 });
 
 router.get(
@@ -46,15 +47,11 @@ router.get(
     createUserMiddleware(),
     createToken(),
     (req, res) => {
-        const payload = res.locals.payload;
-        const name = payload.name;
-        const token = res.locals.token;
-
-        res.cookie('TOKEN', token, {
+        res.cookie('TOKEN', res.locals.token, {
             maxAge: 31556952000, // 1 year
             httpOnly: true
         });
 
-        res.redirect(`${frontendUrl}?name=${name}`);
+        res.redirect(`${frontendUrl}`);
     }
 );

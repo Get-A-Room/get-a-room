@@ -21,7 +21,7 @@ export const redirectUrl = () => {
         try {
             const client = getOAuthClient();
             const url = client.generateAuthUrl({
-                access_type: 'offline', // When we are ready to receive refresh_token change this offline
+                access_type: 'offline',
                 scope: scopes,
                 hd: process.env.HOSTED_DOMAIN
             });
