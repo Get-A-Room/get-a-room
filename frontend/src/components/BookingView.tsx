@@ -122,6 +122,8 @@ function BookingView() {
                         {areRoomsFetched(rooms) &&
                             rooms.map((room) => (
                                 <Card
+                                    data-testid="BookingViewCard"
+                                    className="BookingViewCardClass"
                                     key={room.id}
                                     sx={{
                                         background:
@@ -140,6 +142,7 @@ function BookingView() {
                                         }}
                                     >
                                         <Typography
+                                            data-testid="BookingRoomTitle"
                                             style={{
                                                 fontSize: '18px',
                                                 fontWeight: 'bold'
