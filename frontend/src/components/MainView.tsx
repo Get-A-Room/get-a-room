@@ -7,6 +7,7 @@ import BookingView from './BookingView';
 import PreferencesView from './PreferencesView';
 import { Preferences } from '../types';
 import { getPreferences } from '../services/preferencesService';
+import NavBar from './NavBar';
 
 const MainView = () => {
     const [preferences, setPreferences] = useState<Preferences | undefined>();
@@ -22,9 +23,6 @@ const MainView = () => {
     return (
         <div>
             <Switch>
-                <Route path="/login">
-                    <Login />
-                </Route>
                 <Route path="/preferences">
                     <PreferencesView
                         preferences={preferences}
@@ -34,6 +32,7 @@ const MainView = () => {
                 <Route path="/">
                     <BookingView />
                 </Route>
+                <NavBar />
             </Switch>
         </div>
     );

@@ -1,16 +1,22 @@
 import React from 'react';
 import './App.css';
-import { Router } from 'react-router-dom';
+import { Route, Router, Switch } from 'react-router-dom';
 import { history } from '../services/axiosConfigurer';
-import NavBar from './NavBar';
 import MainView from './MainView';
+import LoginView from './LoginView';
 
 function App() {
     return (
         <Router history={history}>
             <div className="App">
-                <MainView />
-                <NavBar />
+                <Switch>
+                    <Route path="/login">
+                        <LoginView />
+                    </Route>
+                    <Route path="/">
+                        <MainView />
+                    </Route>
+                </Switch>
             </div>
         </Router>
     );
