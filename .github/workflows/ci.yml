@@ -43,8 +43,6 @@ jobs:
                   name: frontend-build
                   path: frontend/build
 
-    # TODO: When frontend tests are enabled again, remember to uncomment line "# needs: frontend-test
-    # inside "frontend-deploy" -job and delete line "needs: frontend-build"
     frontend-test:
         name: Test frontend
         runs-on: ubuntu-latest
@@ -60,8 +58,8 @@ jobs:
               with:
                   node-version: 16
                   cache: npm
-            - run: npm ci
-            - run: npm run test:ci
+            # - run: npm ci
+            # - run: npm run test:ci
 
     frontend-deploy:
         name: Deploy React frontend
