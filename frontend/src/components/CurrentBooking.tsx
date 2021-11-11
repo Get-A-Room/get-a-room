@@ -117,6 +117,7 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
                             >
                                 <CardActions disableSpacing>
                                     <IconButton
+                                        data-testid="ExpansionButton"
                                         onClick={(e) =>
                                             handleFeaturesCollapse(e, booking)
                                         }
