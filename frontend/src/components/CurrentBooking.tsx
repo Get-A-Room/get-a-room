@@ -11,8 +11,7 @@ import {
     Typography
 } from '@mui/material';
 import { Booking } from '../types';
-import React, { useState, useEffect } from 'react';
-import { getBookings } from '../services/bookingService';
+import React from 'react';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
 
 function getBookingRoomName(booking: Booking) {
@@ -25,14 +24,10 @@ function getBookingTimeLeft(booking: Booking) {
 }
 
 function getTimeDifference(startTime: Date, endTime: Date) {
-    return Math.floor(
-        ((startTime.getTime() - endTime.getTime()) / 1000 / 60) % 60
-    );
+    return Math.floor((startTime.getTime() - endTime.getTime()) / 1000 / 60);
 }
 
 function areBookingsFetched(bookings: Booking[]) {
-    console.log(bookings);
-    console.log(Array.isArray(bookings) && bookings.length > 0);
     return Array.isArray(bookings) && bookings.length > 0;
 }
 
@@ -56,13 +51,8 @@ function getFeatures(booking: Booking) {
     return featuresDisplay;
 }
 
-function CurrentBooking() {
-    const [bookings, setBookings] = useState<Booking[]>([]);
+function CurrentBooking({ bookings }: { bookings: Booking[] }) {
     const [expandedFeatures, setExpandedFeatures] = React.useState('false');
-
-    useEffect(() => {
-        getBookings().then(setBookings);
-    }, []);
 
     const handleFeaturesCollapse = (
         event: React.MouseEvent<HTMLElement>,
