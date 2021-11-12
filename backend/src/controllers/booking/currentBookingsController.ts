@@ -125,12 +125,13 @@ export const filterCurrentBookings = (
                 return false;
             }
 
-            const now = DateTime.now()
-                .toUTC()
-                .setZone('Europe/Helsinki')
-                .toISO();
+            const now = getNowDateTime();
             return booking.startTime <= now && booking.endTime >= now;
         });
 
     return onlyCurrentlyRunningBookings;
+};
+
+const getNowDateTime = () => {
+    return DateTime.now().toUTC().setZone('Europe/Helsinki').toISO();
 };
