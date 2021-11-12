@@ -30,6 +30,8 @@ const fakeBookingDetails = {
 };
 */
 
+let container = null;
+
 jest.mock('react-router-dom', () => ({
     ...jest.requireActual('react-router-dom'),
     useLocation: () => ({
@@ -43,83 +45,84 @@ describe('<NavBar />', () => {
     });
 });
 
-let container = null;
-beforeEach(() => {
-    // Setup a DOM element as a render target
-    container = document.createElement('div');
-    document.body.appendChild(container);
-});
-
-afterEach(() => {
-    // Cleanup on exiting
-    unmountComponentAtNode(container);
-    container.remove();
-    container = null;
-});
-
-it('renders room data', async () => {
-    jest.spyOn(roomService, 'getRooms').mockImplementation(() => {
-        return Promise.resolve(fakeRooms);
+describe('BookingView', () => {
+    beforeEach(() => {
+        // Setup a DOM element as a render target
+        container = document.createElement('div');
+        document.body.appendChild(container);
     });
 
-    render(<BookingView />, container);
-
-    const items = screen.queryByTestId('BookingViewCard');
-    waitFor(() => expect(items).toHaveClass('BookingViewCardClass'));
-
-    const title = screen.queryByTestId('BookingRoomTitle');
-    waitFor(() => expect(title).toHaveTextContent('Amor'));
-});
-
-it('tests interaction with rooms expand button', async () => {
-    jest.spyOn(roomService, 'getRooms').mockImplementation(() => {
-        return Promise.resolve(fakeRooms);
+    afterEach(() => {
+        // Cleanup on exiting
+        unmountComponentAtNode(container);
+        container.remove();
+        container = null;
     });
 
-    render(<BookingView />, container);
+    it('renders room data', async () => {
+        jest.spyOn(roomService, 'getRooms').mockImplementation(() => {
+            return Promise.resolve(fakeRooms);
+        });
 
-    const expansionButton = await screen.findByTestId(
-        'ExpansionButtonBookingView'
-    );
-    userEvent.click(expansionButton);
-    await waitFor(() => expect(screen.getByText('15')));
-});
+        render(<BookingView />, container);
 
-it('tests interaction with quick book button', async () => {
-    jest.spyOn(roomService, 'getRooms').mockImplementation(() => {
-        return Promise.resolve(fakeRooms);
+        const items = screen.queryByTestId('BookingViewCard');
+        waitFor(() => expect(items).toHaveClass('BookingViewCardClass'));
+
+        const title = screen.queryByTestId('BookingRoomTitle');
+        waitFor(() => expect(title).toHaveTextContent('Amor'));
     });
 
-    render(<BookingView />, container);
+    it('tests interaction with rooms expand button', async () => {
+        jest.spyOn(roomService, 'getRooms').mockImplementation(() => {
+            return Promise.resolve(fakeRooms);
+        });
 
-    const quickBookButton = await screen.findByTestId('QuickBookButton');
-    userEvent.click(quickBookButton);
-    await waitFor(() => expect(screen.getByText('30 min')));
-    await waitFor(() => expect(screen.getByText('60 min')));
-});
+        render(<BookingView />, container);
 
-/*
-it('tests interaction with booking', async () => {
-    jest.spyOn(roomService, 'getRooms').mockImplementation(() => {
-        return Promise.resolve(fakeRooms);
-    });
-    jest.spyOn(bookingService, 'makeBookings').mockImplementation(() => {
-        return Promise.resolve(fakeBookingDetails);
+        const expansionButton = await screen.findByTestId(
+            'ExpansionButtonBookingView'
+        );
+        userEvent.click(expansionButton);
+        await waitFor(() => expect(screen.getByText('15')));
     });
 
-    render(<BookingView />, container);
+    it('tests interaction with quick book button', async () => {
+        jest.spyOn(roomService, 'getRooms').mockImplementation(() => {
+            return Promise.resolve(fakeRooms);
+        });
 
-    const quickBookButton = await screen.findByTestId(
-        'QuickBookButton'
-    );
+        render(<BookingView />, container);
 
-    userEvent.click(quickBookButton);
+        const quickBookButton = await screen.findByTestId('QuickBookButton');
+        userEvent.click(quickBookButton);
+        await waitFor(() => expect(screen.getByText('30 min')));
+        await waitFor(() => expect(screen.getByText('60 min')));
+    });
 
-    const book30MinButton = await screen.findByTestId(
-        'book30MinButton'
-    );
+    /*
+    it('tests interaction with booking', async () => {
+        jest.spyOn(roomService, 'getRooms').mockImplementation(() => {
+            return Promise.resolve(fakeRooms);
+        });
+        jest.spyOn(bookingService, 'makeBookings').mockImplementation(() => {
+            return Promise.resolve(fakeBookingDetails);
+        });
 
-    userEvent.click(book30MinButton);
-    await waitFor(() => expect());
+        render(<BookingView />, container);
+
+        const quickBookButton = await screen.findByTestId(
+            'QuickBookButton'
+        );
+
+        userEvent.click(quickBookButton);
+
+        const book30MinButton = await screen.findByTestId(
+            'book30MinButton'
+        );
+
+        userEvent.click(book30MinButton);
+        await waitFor(() => expect());
+    });
+    */
 });
-*/
