@@ -11,8 +11,7 @@ import {
     Typography
 } from '@mui/material';
 import { Booking } from '../types';
-import React, { useState, useEffect } from 'react';
-import { getBookings } from '../services/bookingService';
+import React from 'react';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
 
 function getBookingRoomName(booking: Booking) {
@@ -25,9 +24,7 @@ function getBookingTimeLeft(booking: Booking) {
 }
 
 function getTimeDifference(startTime: Date, endTime: Date) {
-    return Math.floor(
-        ((startTime.getTime() - endTime.getTime()) / 1000 / 60) % 60
-    );
+    return Math.floor((startTime.getTime() - endTime.getTime()) / 1000 / 60);
 }
 
 function areBookingsFetched(bookings: Booking[]) {
@@ -54,13 +51,7 @@ function getFeatures(booking: Booking) {
     return featuresDisplay;
 }
 
-function CurrentBooking() {
-    const [bookings, setBookings] = useState<Booking[]>([]);
-
-    useEffect(() => {
-        getBookings().then(setBookings);
-    }, []);
-
+function CurrentBooking({ bookings }: { bookings: Booking[] }) {
     const [expandedFeatures, setExpandedFeatures] = React.useState('false');
 
     const handleFeaturesCollapse = (
@@ -84,6 +75,8 @@ function CurrentBooking() {
             <List>
                 {bookings.map((booking) => (
                     <Card
+                        data-testid="CurrentBookingCard"
+                        className="CurrentBookingCardClass"
                         key={booking.id}
                         sx={{
                             background:
@@ -102,6 +95,7 @@ function CurrentBooking() {
                                 }}
                             >
                                 <Typography
+                                    data-testid="BookingRoomTitle"
                                     style={{
                                         fontSize: '18px',
                                         fontWeight: 'bold'
@@ -123,6 +117,7 @@ function CurrentBooking() {
                             >
                                 <CardActions disableSpacing>
                                     <IconButton
+                                        data-testid="ExpansionButton"
                                         onClick={(e) =>
                                             handleFeaturesCollapse(e, booking)
                                         }
