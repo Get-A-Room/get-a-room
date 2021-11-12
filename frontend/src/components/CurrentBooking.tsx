@@ -75,6 +75,8 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
             <List>
                 {bookings.map((booking) => (
                     <Card
+                        data-testid="CurrentBookingCard"
+                        className="CurrentBookingCardClass"
                         key={booking.id}
                         sx={{
                             background:
@@ -93,6 +95,7 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
                                 }}
                             >
                                 <Typography
+                                    data-testid="BookingRoomTitle"
                                     style={{
                                         fontSize: '18px',
                                         fontWeight: 'bold'
@@ -114,6 +117,7 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
                             >
                                 <CardActions disableSpacing>
                                     <IconButton
+                                        data-testid="ExpansionButton"
                                         onClick={(e) =>
                                             handleFeaturesCollapse(e, booking)
                                         }

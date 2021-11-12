@@ -5,7 +5,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import BookingView from './BookingView';
 import NavBar from './NavBar';
 import * as roomService from '../services/roomService';
+//import * as bookingService from '../services/bookingService';
 import { getRooms } from '../services/roomService';
+//import { makeBooking } from '../services/bookingService';
 import userEvent from '@testing-library/user-event';
 
 const fakeRooms = [
@@ -19,6 +21,14 @@ const fakeRooms = [
         email: 'c_188fib500s84uis7kcpb6dfm93v25@resource.calendar.google.com'
     }
 ];
+
+/*
+const fakeBookingDetails = {
+    duration: 30,
+    title: 'Reservation from Get a Room!',
+    roomId: 'c_188fib500s84uis7kcpb6dfm93v25@resource.calendar.google.com'
+};
+*/
 
 jest.mock('react-router-dom', () => ({
     ...jest.requireActual('react-router-dom'),
@@ -87,3 +97,29 @@ it('tests interaction with quick book button', async () => {
     await waitFor(() => expect(screen.getByText('30 min')));
     await waitFor(() => expect(screen.getByText('60 min')));
 });
+
+/*
+it('tests interaction with booking', async () => {
+    jest.spyOn(roomService, 'getRooms').mockImplementation(() => {
+        return Promise.resolve(fakeRooms);
+    });
+    jest.spyOn(bookingService, 'makeBookings').mockImplementation(() => {
+        return Promise.resolve(fakeBookingDetails);
+    });
+
+    render(<BookingView />, container);
+
+    const quickBookButton = await screen.findByTestId(
+        'QuickBookButton'
+    );
+
+    userEvent.click(quickBookButton);
+
+    const book30MinButton = await screen.findByTestId(
+        'book30MinButton'
+    );
+
+    userEvent.click(book30MinButton);
+    await waitFor(() => expect());
+});
+*/
