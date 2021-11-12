@@ -37,13 +37,8 @@ describe('CurrentBooking', () => {
         container = null;
     });
 
-    it('renders booking data and checks for booked room name', async () => {
-        jest.spyOn(bookingService, 'getBookings').mockImplementation(() => {
-            return Promise.resolve(fakeBooking);
-        });
-
+    it('renders booking data with correct name', async () => {
         render(<CurrentBooking bookings={fakeBooking} />, container);
-
         const items = await screen.queryByTestId('CurrentBookingCard');
         await waitFor(() =>
             expect(items).toHaveClass('CurrentBookingCardClass')
@@ -52,13 +47,8 @@ describe('CurrentBooking', () => {
         await waitFor(() => expect(title).toHaveTextContent('Amor'));
     });
 
-    it('tests interaction with current booking expand button', async () => {
-        jest.spyOn(bookingService, 'getBookings').mockImplementation(() => {
-            return Promise.resolve(fakeBooking);
-        });
-
+    it('shows capacity after expanding', async () => {
         render(<CurrentBooking bookings={fakeBooking} />, container);
-
         const expansionButton = await screen.queryByTestId('ExpansionButton');
         userEvent.click(expansionButton);
         await waitFor(() => expect(screen.getByText('4')));
