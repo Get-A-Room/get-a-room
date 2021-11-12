@@ -5,7 +5,7 @@ import CurrentBooking from './CurrentBooking';
 import * as bookingService from '../services/bookingService';
 import { getBookings } from '../services/bookingService';
 import userEvent from '@testing-library/user-event';
-import ReactDOM, { unmountComponentAtNode } from 'react-dom';
+import { unmountComponentAtNode } from 'react-dom';
 
 const fakeBooking = [
     {
@@ -23,40 +23,44 @@ const fakeBooking = [
 ];
 
 let container = null;
-beforeEach(() => {
-    // setup a DOM element as a render target
-    container = document.createElement('div');
-    document.body.appendChild(container);
-});
-
-afterEach(() => {
-    // cleanup on exiting
-    unmountComponentAtNode(container);
-    container.remove();
-    container = null;
-});
-
-it('renders booking data and checks for booked room name', async () => {
-    jest.spyOn(bookingService, 'getBookings').mockImplementation(() => {
-        return Promise.resolve(fakeBooking);
+describe('CurrentBooking', () => {
+    beforeEach(() => {
+        // setup a DOM element as a render target
+        container = document.createElement('div');
+        document.body.appendChild(container);
     });
 
-    render(<CurrentBooking bookings={fakeBooking} />, container);
-
-    const items = await screen.queryByTestId('CurrentBookingCard');
-    await waitFor(() => expect(items).toHaveClass('CurrentBookingCardClass'));
-    const title = await screen.queryByTestId('BookingRoomTitle');
-    await waitFor(() => expect(title).toHaveTextContent('Amor'));
-});
-
-it('tests interaction with current booking expand button', async () => {
-    jest.spyOn(bookingService, 'getBookings').mockImplementation(() => {
-        return Promise.resolve(fakeBooking);
+    afterEach(() => {
+        // cleanup on exiting
+        unmountComponentAtNode(container);
+        container.remove();
+        container = null;
     });
 
-    render(<CurrentBooking bookings={fakeBooking} />, container);
+    it('renders booking data and checks for booked room name', async () => {
+        jest.spyOn(bookingService, 'getBookings').mockImplementation(() => {
+            return Promise.resolve(fakeBooking);
+        });
 
-    const expansionButton = await screen.queryByTestId('ExpansionButton');
-    userEvent.click(expansionButton);
-    await waitFor(() => expect(screen.getByText('4')));
+        render(<CurrentBooking bookings={fakeBooking} />, container);
+
+        const items = await screen.queryByTestId('CurrentBookingCard');
+        await waitFor(() =>
+            expect(items).toHaveClass('CurrentBookingCardClass')
+        );
+        const title = await screen.queryByTestId('BookingRoomTitle');
+        await waitFor(() => expect(title).toHaveTextContent('Amor'));
+    });
+
+    it('tests interaction with current booking expand button', async () => {
+        jest.spyOn(bookingService, 'getBookings').mockImplementation(() => {
+            return Promise.resolve(fakeBooking);
+        });
+
+        render(<CurrentBooking bookings={fakeBooking} />, container);
+
+        const expansionButton = await screen.queryByTestId('ExpansionButton');
+        userEvent.click(expansionButton);
+        await waitFor(() => expect(screen.getByText('4')));
+    });
 });
