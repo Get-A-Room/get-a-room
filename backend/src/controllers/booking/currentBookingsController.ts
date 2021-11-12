@@ -24,12 +24,12 @@ export const getCurrentBookingsMiddleware = () => {
         try {
             const client: OAuth2Client = res.locals.oAuthClient;
 
-            const currentBookings: schema.EventsData =
+            const allCurrentAndFutureBookings: schema.EventsData =
                 await calendar.getCurrentBookings(client);
 
-            res.locals.currentBookings = currentBookings;
+            res.locals.currentBookings = allCurrentAndFutureBookings;
 
-            if (!currentBookings.items) {
+            if (!allCurrentAndFutureBookings.items) {
                 return responses.internalServerError(req, res);
             }
 
@@ -53,7 +53,7 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
         next: NextFunction
     ) => {
         try {
-            const allBookings: currentBookingData[] =
+            const allBookings: schema.Event[] =
                 res.locals.currentBookings.items;
 
             const rooms: schema.CalendarResource[] = await admin.getRoomData(
@@ -79,7 +79,7 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
  * @returns simplified bookings
  */
 export const simplifyBookings = (
-    allBookings: currentBookingData[],
+    allBookings: schema.Event[],
     rooms: schema.CalendarResource[]
 ): currentBookingData[] => {
     // Filters away all bookings that aren't running at the moment
