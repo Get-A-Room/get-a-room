@@ -74,3 +74,16 @@ it('tests interaction with rooms expand button', async () => {
     userEvent.click(expansionButton);
     await waitFor(() => expect(screen.getByText('15')));
 });
+
+it('tests interaction with quick book button', async () => {
+    jest.spyOn(roomService, 'getRooms').mockImplementation(() => {
+        return Promise.resolve(fakeRooms);
+    });
+
+    render(<BookingView />, container);
+
+    const quickBookButton = await screen.findByTestId('QuickBookButton');
+    userEvent.click(quickBookButton);
+    await waitFor(() => expect(screen.getByText('30 min')));
+    await waitFor(() => expect(screen.getByText('60 min')));
+});

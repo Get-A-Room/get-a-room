@@ -163,6 +163,7 @@ function BookingView() {
                                         <CardActions disableSpacing>
                                             <Button
                                                 id="quickBook-button"
+                                                data-testid="QuickBookButton"
                                                 style={{
                                                     backgroundColor: '#282c34',
                                                     textTransform: 'none',
@@ -209,6 +210,7 @@ function BookingView() {
                                                 <CardContent>
                                                     <Button
                                                         id="book30Min-button"
+                                                        data-testid="book30MinButton"
                                                         style={{
                                                             backgroundColor:
                                                                 '#282c34',
@@ -238,6 +240,7 @@ function BookingView() {
                                                     </Button>
                                                     <Button
                                                         id="book60Min-button"
+                                                        data-testid="book60MinButton"
                                                         style={{
                                                             backgroundColor:
                                                                 '#282c34',
