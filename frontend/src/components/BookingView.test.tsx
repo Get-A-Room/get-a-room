@@ -4,8 +4,21 @@ import ReactDOM, { unmountComponentAtNode } from 'react-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import BookingView from './BookingView';
 import NavBar from './NavBar';
-import * as bookingService from '../services/bookingService';
-import { getBookings } from '../services/bookingService';
+import * as roomService from '../services/roomService';
+import { getRooms } from '../services/roomService';
+import userEvent from '@testing-library/user-event';
+
+const fakeRooms = [
+    {
+        id: '123',
+        name: 'Amor',
+        building: 'Hermia 5',
+        capacity: 15,
+        features: ['TV', 'Whiteboard'],
+        nextCalendarEvent: '2021-10-21T17:32:28Z',
+        email: 'c_188fib500s84uis7kcpb6dfm93v25@resource.calendar.google.com'
+    }
+];
 
 jest.mock('react-router-dom', () => ({
     ...jest.requireActual('react-router-dom'),
@@ -18,11 +31,6 @@ describe('<NavBar />', () => {
     it('should render NavBar', () => {
         render(<NavBar />);
     });
-});
-
-it('renders BookingView.tsx', () => {
-    const div = document.createElement('div');
-    ReactDOM.render(<BookingView></BookingView>, div);
 });
 
 let container = null;
@@ -39,24 +47,9 @@ afterEach(() => {
     container = null;
 });
 
-it('renders booking data', async () => {
-    const fakeBooking = [
-        {
-            id: '123',
-            startTime: '2021-10-21T17:32:28Z',
-            endTime: '2021-10-21T19:32:28Z',
-            room: {
-                id: 'c_188fib500s84uis7kcpb6dfm93v25@resource.calendar.google.com',
-                name: 'Amor',
-                capacity: 4,
-                features: ['Jabra', 'TV', 'Webcam'],
-                nextCalendarEvent: '2021-10-21T17:32:28Z'
-            }
-        }
-    ];
-
-    jest.spyOn(bookingService, 'getBookings').mockImplementation(() => {
-        return Promise.resolve(fakeBooking);
+it('renders room data', async () => {
+    jest.spyOn(roomService, 'getRooms').mockImplementation(() => {
+        return Promise.resolve(fakeRooms);
     });
 
     render(<BookingView />, container);
@@ -66,4 +59,18 @@ it('renders booking data', async () => {
 
     const title = screen.queryByTestId('BookingRoomTitle');
     waitFor(() => expect(title).toHaveTextContent('Amor'));
+});
+
+it('tests interaction with rooms expand button', async () => {
+    jest.spyOn(roomService, 'getRooms').mockImplementation(() => {
+        return Promise.resolve(fakeRooms);
+    });
+
+    render(<BookingView />, container);
+
+    const expansionButton = await screen.findByTestId(
+        'ExpansionButtonBookingView'
+    );
+    userEvent.click(expansionButton);
+    await waitFor(() => expect(screen.getByText('15')));
 });

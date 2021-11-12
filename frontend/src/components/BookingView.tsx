@@ -85,12 +85,18 @@ function BookingView() {
     const [bookings, setBookings] = useState<Booking[]>([]);
 
     useEffect(() => {
+        let isMounted = true;
         getRooms()
-            .then(setRooms)
+            .then((data) => {
+                if (isMounted) setRooms(data);
+            })
             .catch((error) => console.log(error));
         getBookings()
             .then(setBookings)
             .catch((error) => console.log(error));
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const [expandedFeatures, setExpandedFeatures] = React.useState('false');
@@ -273,6 +279,7 @@ function BookingView() {
                                         >
                                             <CardActions disableSpacing>
                                                 <IconButton
+                                                    data-testid="ExpansionButtonBookingView"
                                                     onClick={(e) =>
                                                         handleFeaturesCollapse(
                                                             e,
