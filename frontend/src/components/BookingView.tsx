@@ -85,8 +85,12 @@ function BookingView() {
     const [bookings, setBookings] = useState<Booking[]>([]);
 
     useEffect(() => {
-        getRooms().then(setRooms);
-        getBookings().then(setBookings);
+        getRooms()
+            .then(setRooms)
+            .catch((error) => console.log(error));
+        getBookings()
+            .then(setBookings)
+            .catch((error) => console.log(error));
     }, []);
 
     const [expandedFeatures, setExpandedFeatures] = React.useState('false');
