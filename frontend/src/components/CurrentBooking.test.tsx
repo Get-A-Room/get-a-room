@@ -2,8 +2,6 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import CurrentBooking from './CurrentBooking';
-import * as bookingService from '../services/bookingService';
-import { getBookings } from '../services/bookingService';
 import userEvent from '@testing-library/user-event';
 import { unmountComponentAtNode } from 'react-dom';
 
