@@ -1,10 +1,11 @@
 // @ts-nocheck
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import CurrentBooking from './CurrentBooking';
 import * as bookingService from '../services/bookingService';
 import { getBookings } from '../services/bookingService';
 import userEvent from '@testing-library/user-event';
+import ReactDOM, { unmountComponentAtNode } from 'react-dom';
 
 const fakeBooking = [
     {
@@ -21,17 +22,31 @@ const fakeBooking = [
     }
 ];
 
+let container = null;
+beforeEach(() => {
+    // setup a DOM element as a render target
+    container = document.createElement('div');
+    document.body.appendChild(container);
+});
+
+afterEach(() => {
+    // cleanup on exiting
+    unmountComponentAtNode(container);
+    container.remove();
+    container = null;
+});
+
 it('renders booking data and checks for booked room name', async () => {
     jest.spyOn(bookingService, 'getBookings').mockImplementation(() => {
         return Promise.resolve(fakeBooking);
     });
 
-    render(<CurrentBooking bookings={fakeBooking} />);
+    render(<CurrentBooking bookings={fakeBooking} />, container);
 
-    const items = await screen.findByTestId('CurrentBookingCard');
-    expect(items).toHaveClass('CurrentBookingCardClass');
-    const title = await screen.findByTestId('BookingRoomTitle');
-    expect(title).toHaveTextContent('Amor');
+    const items = await screen.queryByTestId('CurrentBookingCard');
+    await waitFor(() => expect(items).toHaveClass('CurrentBookingCardClass'));
+    const title = await screen.queryByTestId('BookingRoomTitle');
+    await waitFor(() => expect(title).toHaveTextContent('Amor'));
 });
 
 it('tests interaction with current booking expand button', async () => {
@@ -39,9 +54,9 @@ it('tests interaction with current booking expand button', async () => {
         return Promise.resolve(fakeBooking);
     });
 
-    render(<CurrentBooking bookings={fakeBooking} />);
+    render(<CurrentBooking bookings={fakeBooking} />, container);
 
-    const expansionButton = await screen.findByTestId('ExpansionButton');
+    const expansionButton = await screen.queryByTestId('ExpansionButton');
     userEvent.click(expansionButton);
-    expect(screen.getByText('4'));
+    await waitFor(() => expect(screen.getByText('4')));
 });
