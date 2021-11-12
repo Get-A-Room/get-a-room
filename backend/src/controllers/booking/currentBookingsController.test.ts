@@ -4,8 +4,13 @@ import * as schema from '../../utils/googleSchema';
 import { DateTime } from 'luxon';
 import { badRequest, custom, internalServerError } from '../../utils/responses';
 import { query } from 'express-validator';
+import currentBookingData from '../../types/currentBookingData';
 
-import { getCurrentBookingsMiddleware } from './currentBookingsController';
+import {
+    getCurrentBookingsMiddleware,
+    simplifyAndFilterCurrentBookingsMiddleware,
+    simplifyBookings
+} from './currentBookingsController';
 
 import {
     createEvent,
@@ -19,40 +24,56 @@ jest.mock('../googleAPI/calendarAPI');
 // jest.mock('./currentBookingsController');
 
 const mockedGetCurrentBookings = mocked(getCurrentBookings, false);
+const mockedSimplifyBookings = mocked(simplifyBookings, false);
 
 describe('currentBookingsController', () => {
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
     let mockNext: jest.Mock;
 
-    beforeEach(() => {
-        mockRequest = {};
-        mockResponse = {
-            locals: {
-                oAuthClient: 'client'
-            }
-        };
-        mockNext = jest.fn();
+    describe('getCurrentBookingsMiddleware', () => {
+        beforeEach(() => {
+            mockRequest = {};
+            mockResponse = {
+                locals: {
+                    oAuthClient: 'client'
+                }
+            };
+            mockNext = jest.fn();
 
-        jest.resetAllMocks();
+            jest.resetAllMocks();
+        });
+
+        test('Should set data to res.locals.currentBookings', async () => {
+            mockedGetCurrentBookings.mockResolvedValueOnce(allCurrentBookings);
+            // mockedSimplifyBookings.mockResolvedValueOnce(simplifyBookings);
+
+            await getCurrentBookingsMiddleware()(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNext
+            );
+
+            const currentBookings: schema.EventsData =
+                mockResponse?.locals?.currentBookings;
+
+            expect(currentBookings).not.toBeFalsy();
+            expect(currentBookings.items).not.toBeUndefined();
+            expect(currentBookings?.kind).toBe('calendar#events');
+            expect(currentBookings?.items?.length === 5);
+        });
     });
 
-    test('Should set data to res.locals.currentBookings', async () => {
-        mockedGetCurrentBookings.mockResolvedValueOnce(allCurrentBookings);
+    describe('simplifyAndFilterCurrentBookingsMiddleware', () => {
+        test('Should simplify and filter current bookings correctly', async () => {
+            mocked.mockResolvedValueOnce(simplifiedBookings);
 
-        await getCurrentBookingsMiddleware()(
-            mockRequest as Request,
-            mockResponse as Response,
-            mockNext
-        );
-
-        const currentBookings: schema.EventsData =
-            mockResponse?.locals?.currentBookings;
-
-        expect(currentBookings).not.toBeFalsy();
-        expect(currentBookings.items).not.toBeUndefined();
-        expect(currentBookings?.kind).toBe('calendar#events');
-        expect(currentBookings?.items?.length === 5);
+            await simplifyAndFilterCurrentBookingsMiddleware()(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNext
+            );
+        });
     });
 });
 
@@ -71,86 +92,6 @@ const allCurrentBookings: schema.EventsData = {
     ],
     nextSyncToken: 'CKiEpdH1kPQCEKiEpdH1kPQCGAUgpfXcwgE=',
     items: [
-        {
-            kind: 'calendar#event',
-            etag: '"3273304271736000"',
-            id: '1mceh07d3ouhe5grn5qr1q7jm5',
-            status: 'confirmed',
-            htmlLink:
-                'https://www.google.com/calendar/event?eid=MW1jZWgwN2Qzb3VoZTVncm41cXIxcTdqbTUgdGVzdGlAb2lzcGFodW9uZS5jb20',
-            created: '2021-11-11T17:35:32.000Z',
-            updated: '2021-11-11T17:35:35.868Z',
-            summary: 'Tuleva varaus testi',
-            location: '(Conference room)-Mummola-4-Vilpola (1)',
-            creator: {
-                email: 'testi@oispahuone.com',
-                self: true
-            },
-            organizer: {
-                email: 'testi@oispahuone.com',
-                self: true
-            },
-            start: {
-                dateTime: '2021-11-11T21:00:00+02:00',
-                timeZone: 'Europe/Helsinki'
-            },
-            end: {
-                dateTime: '2021-11-11T22:30:00+02:00',
-                timeZone: 'Europe/Helsinki'
-            },
-            iCalUID: '1mceh07d3ouhe5grn5qr1q7jm5@google.com',
-            sequence: 0,
-            attendees: [
-                {
-                    email: 'c_1881u6ri2f46ehvgkdf3t5rklc6ji@resource.calendar.google.com',
-                    displayName: '(Conference room)-Mummola-4-Vilpola (1)',
-                    resource: true,
-                    responseStatus: 'accepted'
-                },
-                {
-                    email: 'testi@oispahuone.com',
-                    organizer: true,
-                    self: true,
-                    responseStatus: 'accepted'
-                }
-            ],
-            hangoutLink: 'https://meet.google.com/zwr-fgpa-wpv',
-            conferenceData: {
-                entryPoints: [
-                    {
-                        entryPointType: 'video',
-                        uri: 'https://meet.google.com/zwr-fgpa-wpv',
-                        label: 'meet.google.com/zwr-fgpa-wpv'
-                    },
-                    {
-                        entryPointType: 'more',
-                        uri: 'https://tel.meet/zwr-fgpa-wpv?pin=7626226443877',
-                        pin: '7626226443877'
-                    },
-                    {
-                        regionCode: 'FI',
-                        entryPointType: 'phone',
-                        uri: 'tel:+358-9-23132983',
-                        label: '+358 9 23132983',
-                        pin: '397194295'
-                    }
-                ],
-                conferenceSolution: {
-                    key: {
-                        type: 'hangoutsMeet'
-                    },
-                    name: 'Google Meet',
-                    iconUri:
-                        'https://fonts.gstatic.com/s/i/productlogos/meet_2020q4/v6/web-512dp/logo_meet_2020q4_color_2x_web_512dp.png'
-                },
-                conferenceId: 'zwr-fgpa-wpv',
-                signature: 'AGirE/LACA6Tj0S7IJEk+qQbUw3e'
-            },
-            reminders: {
-                useDefault: true
-            },
-            eventType: 'default'
-        },
         {
             kind: 'calendar#event',
             etag: '"3273304302668000"',
@@ -362,3 +303,113 @@ const allCurrentBookings: schema.EventsData = {
         }
     ]
 };
+
+const simplifiedBookings: currentBookingData[] = [
+    {
+        id: '66qgtip4grcof34vlo820tibf6',
+        startTime: '2021-11-11T14:45:00+02:00',
+        endTime: '2021-11-12T00:00:00+02:00',
+        room: {
+            id: '3731730710',
+            name: 'Norsunluutorni',
+            email: 'c_1888bqgfcd1g6hmvmka0hk5l6e05u@resource.calendar.google.com',
+            capacity: 4,
+            building: 'Hakaniemi',
+            floor: '9',
+            features: ['Customers', 'Jabra', 'Sauna', 'TV', 'Webcam'],
+            nextCalendarEvent: '-1',
+            location: 'Hakaniemi-9-Norsunluutorni (4) [TV, Webcam]'
+        }
+    },
+    {
+        id: '13d07tf2b1ch3gf7b378u48l26',
+        startTime: '2021-11-11T18:30:00+02:00',
+        endTime: '2021-11-11T21:45:00+02:00',
+        room: undefined
+    },
+    {
+        id: '364vbrjeme18u7590212p6pau4',
+        startTime: '2021-11-11T20:15:00+02:00',
+        endTime: '2021-11-11T20:45:00+02:00',
+        room: {
+            id: '1752049657',
+            name: 'Parlamentti',
+            email: 'c_188beek3947jqia9kf9vjr24u8bkc@resource.calendar.google.com',
+            capacity: 12,
+            building: 'Arkadia',
+            floor: '4',
+            features: ['Jabra', 'TV', 'Whiteboard'],
+            nextCalendarEvent: '-1',
+            location: 'Arkadia-4-Parlamentti (12) [TV]'
+        }
+    },
+    {
+        id: 'l5ct4hovfddiim695934fg3h38',
+        startTime: '2021-11-11T20:00:00+02:00',
+        endTime: '2021-11-11T21:00:00+02:00',
+        room: {
+            id: '37827091674',
+            name: 'Tavu',
+            email: 'c_1881ek7mqrcqmg7ik3k1affbcpsl6@resource.calendar.google.com',
+            capacity: 999,
+            building: 'Arkadia',
+            floor: '4',
+            features: [],
+            nextCalendarEvent: '-1',
+            location: 'Arkadia-4-Tavu (999)'
+        }
+    }
+];
+
+const simplifiedAndFilteredCurrentBookings: currentBookingData[] = [
+    {
+        id: '66qgtip4grcof34vlo820tibf6',
+        startTime: '2021-11-11T14:45:00+02:00',
+        endTime: '2021-11-12T00:00:00+02:00',
+        room: {
+            id: '3731730710',
+            name: 'Norsunluutorni',
+            email: 'c_1888bqgfcd1g6hmvmka0hk5l6e05u@resource.calendar.google.com',
+            capacity: 4,
+            building: 'Hakaniemi',
+            floor: '9',
+            features: ['Customers', 'Jabra', 'Sauna', 'TV', 'Webcam'],
+            nextCalendarEvent: '-1',
+            location: 'Hakaniemi-9-Norsunluutorni (4) [TV, Webcam]'
+        }
+    },
+    {
+        id: '364vbrjeme18u7590212p6pau4',
+        startTime: '2021-11-11T20:15:00+02:00',
+        endTime: '2021-11-11T20:45:00+02:00',
+        room: {
+            id: '1752049657',
+            name: 'Parlamentti',
+            email: 'c_188beek3947jqia9kf9vjr24u8bkc@resource.calendar.google.com',
+            capacity: 12,
+            building: 'Arkadia',
+            floor: '4',
+            features: ['Jabra', 'TV', 'Whiteboard'],
+            nextCalendarEvent: '-1',
+            location: 'Arkadia-4-Parlamentti (12) [TV]'
+        }
+    },
+    {
+        id: 'l5ct4hovfddiim695934fg3h38',
+        startTime: '2021-11-11T20:00:00+02:00',
+        endTime: '2021-11-11T21:00:00+02:00',
+        room: {
+            id: '37827091674',
+            name: 'Tavu',
+            email: 'c_1881ek7mqrcqmg7ik3k1affbcpsl6@resource.calendar.google.com',
+            capacity: 999,
+            building: 'Arkadia',
+            floor: '4',
+            features: [],
+            nextCalendarEvent: '-1',
+            location: 'Arkadia-4-Tavu (999)'
+        }
+    }
+];
+
+const rooms: schema.CalendarResource[] = [];
