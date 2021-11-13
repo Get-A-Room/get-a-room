@@ -34,6 +34,7 @@ const MainView = () => {
                     <PreferencesView
                         preferences={preferences}
                         setPreferences={setPreferences}
+                        buildings={buildings}
                     />
                 </Route>
                 <Route path="/auth/success">

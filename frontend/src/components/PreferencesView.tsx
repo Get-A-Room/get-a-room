@@ -1,57 +1,76 @@
-import { Container, Typography } from '@mui/material';
-import { useState } from 'react';
+import { Stack, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { updatePreferences } from '../services/preferencesService';
-import { Preferences } from '../types';
+import { Building, Preferences } from '../types';
+import BuildingSelect from './BuildingSelect';
+import CenteredProgress from './util/CenteredProgress';
+import FormButtons from './util/FormButtons';
 
 type PreferencesViewProps = {
+    buildings: Building[];
     preferences?: Preferences;
     setPreferences: (preferences?: Preferences) => any;
 };
 
 const PreferencesView = (props: PreferencesViewProps) => {
-    const { preferences, setPreferences } = props;
-    const [selectedPreferences, setSelectedPreferences] = useState<
-        Preferences | undefined
-    >(preferences);
+    const { buildings, preferences, setPreferences } = props;
+
+    const [selectedBuildingId, setSelecedBuildingId] = useState('');
+
+    // If current building found, show it in building select
+    useEffect(() => {
+        const preferencesBuildingId = preferences?.building?.id;
+        const foundBuilding = buildings.find(
+            (building) => building.id === preferencesBuildingId
+        );
+        if (preferencesBuildingId && foundBuilding) {
+            setSelecedBuildingId(preferencesBuildingId);
+        }
+    }, [preferences, buildings]);
 
     const history = useHistory();
 
-    const handlePreferencesSubmit = () => {
-        if (selectedPreferences) {
-            updatePreferences(selectedPreferences).then((resultPreferences) => {
-                setPreferences(resultPreferences);
-                history.push('/');
-            });
-        }
-    };
-
-    const handlePreferencesCancel = () => {
+    const goToMainView = () => {
         history.push('/');
     };
 
+    const handlePreferencesSubmit = () => {
+        const foundBuilding = buildings.find(
+            (building) => building.id === selectedBuildingId
+        );
+        if (foundBuilding) {
+            updatePreferences({ building: foundBuilding })
+                .then((savedPreferences) => {
+                    setPreferences(savedPreferences);
+                    goToMainView();
+                })
+                .catch(() => {
+                    alert('Preferences could not be updated');
+                });
+        }
+    };
+
+    if (!preferences) return <CenteredProgress />;
     return (
-        <Container
-            sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column'
-            }}
-        >
-            <Typography
-                variant="h3"
-                sx={{
-                    alignSelf: 'center',
-                    color: '#f04e30',
-                    pt: 6,
-                    pb: 10
-                }}
-            >
+        <Stack pt={5} justifyContent="space-between" height="80vh">
+            <Typography variant="h3" color="#f04e30">
                 Preferences
             </Typography>
-            {/* Only render when we have result for current city*/}
-            {preferences && <h1>Preference select here</h1>}
-        </Container>
+            {preferences && (
+                <BuildingSelect
+                    buildings={buildings}
+                    selectedBuildingId={selectedBuildingId}
+                    setSelectedBuildingId={setSelecedBuildingId}
+                />
+            )}
+            <FormButtons
+                submitText="Save"
+                handleSubmit={handlePreferencesSubmit}
+                cancelText="Cancel"
+                handleCancel={goToMainView}
+            />
+        </Stack>
     );
 };
 
