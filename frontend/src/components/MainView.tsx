@@ -46,8 +46,8 @@ const MainView = () => {
                 <Route path="/">
                     <BookingView />
                 </Route>
-                <NavBar />
             </Switch>
+            <NavBar />
         </div>
     );
 };
