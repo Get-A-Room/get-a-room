@@ -1,5 +1,5 @@
 import { Stack, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
 import { Building, Preferences } from '../types';
@@ -24,10 +24,17 @@ const PreferencesLoader = (props: PreferencesLoaderProps) => {
 
     const history = useHistory();
 
-    const goToMainView = () => {
+    const goToMainView = useCallback(() => {
         // Use replace in place of push because it's a temporary page and wouln't work if navigated back to
         history.replace('/');
-    };
+    }, [history]);
+
+    useEffect(() => {
+        if (preferences?.building?.id) {
+            // Preferences already set
+            goToMainView();
+        }
+    }, [preferences, goToMainView]);
 
     const savePreferences = () => {
         const foundBuilding = buildings.find(
@@ -48,11 +55,6 @@ const PreferencesLoader = (props: PreferencesLoaderProps) => {
     if (!preferences) {
         // Loading preferences
         return <CenteredProgress />;
-    }
-    if (preferences.building?.id) {
-        // Preferences already set
-        goToMainView();
-        return null;
     }
     /* Height propery should maybe be changed to 100% when css is sorted out,
      so that it can depend on parent component instead of setting its own height */
