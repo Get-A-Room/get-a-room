@@ -1,20 +1,17 @@
 import { Box, Button } from '@mui/material';
-import { useHistory } from 'react-router-dom';
 
 type PreferenceButtonsProps = {
+    submitText: string;
     handleSubmit: () => any;
+    cancelText: string;
+    handleCancel: () => any;
 };
-const PreferenceFormButtons = (props: PreferenceButtonsProps) => {
-    const { handleSubmit } = props;
 
-    const history = useHistory();
-
-    const handleCancel = () => {
-        history.push('/');
-    };
+const FormButtons = (props: PreferenceButtonsProps) => {
+    const { handleSubmit, handleCancel, submitText, cancelText } = props;
 
     return (
-        <Box sx={{ pt: 10 }}>
+        <Box>
             <Box>
                 <Button
                     onClick={handleSubmit}
@@ -25,7 +22,7 @@ const PreferenceFormButtons = (props: PreferenceButtonsProps) => {
                         borderColor: '#f04e30'
                     }}
                 >
-                    CONFIRM
+                    {submitText}
                 </Button>
             </Box>
             <Box>
@@ -36,11 +33,11 @@ const PreferenceFormButtons = (props: PreferenceButtonsProps) => {
                         color: '#000'
                     }}
                 >
-                    SKIP
+                    {cancelText}
                 </Button>
             </Box>
         </Box>
     );
 };
 
-export default PreferenceFormButtons;
+export default FormButtons;

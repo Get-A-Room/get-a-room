@@ -3,8 +3,6 @@ import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { updatePreferences } from '../services/preferencesService';
 import { Preferences } from '../types';
-import PreferenceButtons from './PreferenceFormButtons';
-import SelectOffice from './SelectOffice';
 
 type PreferencesViewProps = {
     preferences?: Preferences;
@@ -28,6 +26,10 @@ const PreferencesView = (props: PreferencesViewProps) => {
         }
     };
 
+    const handlePreferencesCancel = () => {
+        history.push('/');
+    };
+
     return (
         <Container
             sx={{
@@ -48,14 +50,7 @@ const PreferencesView = (props: PreferencesViewProps) => {
                 Preferences
             </Typography>
             {/* Only render when we have result for current city*/}
-            {preferences && (
-                <SelectOffice
-                    currentPreferencesOffice={preferences?.building?.id}
-                    selectedPreferences={selectedPreferences}
-                    setSelectedPreferences={setSelectedPreferences}
-                />
-            )}
-            <PreferenceButtons handleSubmit={handlePreferencesSubmit} />
+            {preferences && <h1>Preference select here</h1>}
         </Container>
     );
 };
