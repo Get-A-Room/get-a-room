@@ -2,11 +2,11 @@ html {
     background-color: #e3e3e3;
 }
 
-.OfficeSelect {
+.BuildingSelect {
     background-color: #e3e3e3;
     text-align: center;
 }
 
-.OfficeSelect-box {
+.BuildingSelect-box {
     min-width: 200px;
 }

@@ -4,7 +4,7 @@ import { useHistory } from 'react-router';
 
 import { Building, Preferences } from '../types';
 import { updatePreferences } from '../services/preferencesService';
-import SelectOffice from './SelectOffice';
+import BuildingSelect from './BuildingSelect';
 import CenteredProgress from './util/CenteredProgress';
 import FormButtons from './util/FormButtons';
 
@@ -20,7 +20,7 @@ type PreferencesLoaderProps = {
  */
 const PreferencesLoader = (props: PreferencesLoaderProps) => {
     const { preferences, setPreferences, buildings } = props;
-    const [selectedOffice, setSelectedOffice] = useState('');
+    const [selectedBuildingId, setSelectedBuildingId] = useState('');
 
     const history = useHistory();
 
@@ -31,7 +31,7 @@ const PreferencesLoader = (props: PreferencesLoaderProps) => {
 
     const savePreferences = () => {
         const foundBuilding = buildings.find(
-            (building) => building.id === selectedOffice
+            (building) => building.id === selectedBuildingId
         );
         if (!foundBuilding) {
             alert('Error occurred while setting building');
@@ -61,10 +61,10 @@ const PreferencesLoader = (props: PreferencesLoaderProps) => {
             <Typography variant="h4" color="#f04e30" fontWeight="bold">
                 Select your office
             </Typography>
-            <SelectOffice
+            <BuildingSelect
                 buildings={buildings}
-                selectedOffice={selectedOffice}
-                setSelectedOffice={setSelectedOffice}
+                selectedBuildingId={selectedBuildingId}
+                setSelectedBuildingId={setSelectedBuildingId}
             />
             <FormButtons
                 submitText="Confirm"

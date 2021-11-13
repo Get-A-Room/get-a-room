@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import {
     Select,
     FormControl,
@@ -7,38 +6,38 @@ import {
     Box,
     SelectChangeEvent
 } from '@mui/material';
-import './SelectOffice.css';
+import './BuildingSelect.css';
 import { Building } from '../types';
 import { isNonEmptyArray } from '../util/objectUtils';
 
-type SelectOfficeProps = {
-    selectedOffice: string;
-    setSelectedOffice: (officeId: string) => any;
+type BuildingSelectProps = {
+    selectedBuildingId: string;
+    setSelectedBuildingId: (buildingId: string) => any;
     buildings: Building[];
 };
 
-const SelectOffice = (props: SelectOfficeProps) => {
-    const { selectedOffice, setSelectedOffice, buildings } = props;
+const BuildingSelect = (props: BuildingSelectProps) => {
+    const { selectedBuildingId, setSelectedBuildingId, buildings } = props;
 
     const handleChange = (event: SelectChangeEvent) => {
         // Set select component state
         const buildingId = event.target.value;
-        setSelectedOffice(buildingId);
+        setSelectedBuildingId(buildingId);
     };
 
     if (!buildings) return null;
     return (
-        <div className="OfficeSelect">
+        <div className="BuildingSelect">
             <Box>
                 <FormControl variant="outlined">
-                    <InputLabel id="office-label">Office location</InputLabel>
+                    <InputLabel id="building-label">Office location</InputLabel>
                     <Select
                         onChange={handleChange}
                         defaultValue=""
-                        value={selectedOffice}
-                        className="OfficeSelect-box"
-                        labelId="office-label"
-                        id="office-select"
+                        value={selectedBuildingId}
+                        className="BuildingSelect-box"
+                        labelId="building-label"
+                        id="building-select"
                         label="Office location"
                     >
                         {isNonEmptyArray(buildings) &&
@@ -54,4 +53,4 @@ const SelectOffice = (props: SelectOfficeProps) => {
     );
 };
 
-export default SelectOffice;
+export default BuildingSelect;
