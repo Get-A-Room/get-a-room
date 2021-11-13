@@ -1,6 +1,6 @@
 import { Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 
 import { Building, Preferences } from '../types';
 import { updatePreferences } from '../services/preferencesService';

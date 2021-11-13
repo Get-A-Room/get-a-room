@@ -21,10 +21,10 @@ const PreferencesView = (props: PreferencesViewProps) => {
     // If current building found, show it in building select
     useEffect(() => {
         const preferencesBuildingId = preferences?.building?.id;
-        const foundBuilding = buildings.find(
+        const isValidBuilding = buildings.some(
             (building) => building.id === preferencesBuildingId
         );
-        if (preferencesBuildingId && foundBuilding) {
+        if (preferencesBuildingId && isValidBuilding) {
             setSelecedBuildingId(preferencesBuildingId);
         }
     }, [preferences, buildings]);
@@ -57,13 +57,11 @@ const PreferencesView = (props: PreferencesViewProps) => {
             <Typography variant="h3" color="#f04e30">
                 Preferences
             </Typography>
-            {preferences && (
-                <BuildingSelect
-                    buildings={buildings}
-                    selectedBuildingId={selectedBuildingId}
-                    setSelectedBuildingId={setSelecedBuildingId}
-                />
-            )}
+            <BuildingSelect
+                buildings={buildings}
+                selectedBuildingId={selectedBuildingId}
+                setSelectedBuildingId={setSelecedBuildingId}
+            />
             <FormButtons
                 submitText="Save"
                 handleSubmit={handlePreferencesSubmit}

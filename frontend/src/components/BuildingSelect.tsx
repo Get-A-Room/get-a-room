@@ -25,7 +25,6 @@ const BuildingSelect = (props: BuildingSelectProps) => {
         setSelectedBuildingId(buildingId);
     };
 
-    if (!buildings) return null;
     return (
         <div className="BuildingSelect">
             <Box>
