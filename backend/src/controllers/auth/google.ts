@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { getOAuthClient } from '../googleController';
 import { OAuth2Client } from 'google-auth-library';
 
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 const scopes = [
     'https://www.googleapis.com/auth/userinfo.email',
