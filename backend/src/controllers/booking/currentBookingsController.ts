@@ -53,17 +53,32 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
         next: NextFunction
     ) => {
         try {
+            console.log('Toimiiko loggaus!');
+
             const allBookings: schema.Event[] =
                 res.locals.currentBookings.items;
+
+            console.log('res.locals.currentBookings');
+            console.log(res.locals.currentBookings);
+            console.log('res.locals.currentBookings');
 
             const rooms: schema.CalendarResource[] = await admin.getRoomData(
                 res.locals.oAuthClient
             );
 
+            console.log('Toimiiko loggaus!3333333333');
+
             const simplifiedBookings = simplifyBookings(allBookings, rooms);
+
+            console.log('Toimiiko loggaus!44444444444444');
+            console.log(JSON.stringify(simplifiedBookings, null, 4));
+            console.log('Toimiiko loggaus!44444444444444');
 
             res.locals.currentBookings =
                 filterCurrentBookings(simplifiedBookings);
+
+            console.log(res.locals.currentBookings);
+
             next();
         } catch (err) {
             next(err);
@@ -82,8 +97,15 @@ export const simplifyBookings = (
     allBookings: schema.Event[],
     rooms: schema.CalendarResource[]
 ): currentBookingData[] => {
+    console.log('Toimiiko loggaus! simplifyBookings sisalta!');
+
     // Filters away all bookings that aren't running at the moment
     const roomsSimplified: roomData[] = simplifyRoomData(rooms);
+
+    console.log('Toimiiko loggaus! simplifyBookings sisalta!XXXXX');
+    // console.log(rooms);
+    console.log(allBookings);
+    console.log('Toimiiko loggaus! simplifyBookings sisalta!XXXXX');
 
     const simplifiedBookings = allBookings.map((booking: schema.EventData) => {
         const simpleEvent: currentBookingData = {
@@ -92,6 +114,9 @@ export const simplifyBookings = (
             endTime: booking.end?.dateTime,
             room: null
         };
+        console.log('RAJA MENEE TASS!');
+
+        console.log('TOIMIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIii');
 
         // Finds the room information and includes it inside the simpleEvent
         const room = roomsSimplified.find((room: roomData) => {
@@ -101,6 +126,10 @@ export const simplifyBookings = (
 
         return simpleEvent;
     });
+
+    console.log('Toimiiko loggaus! simplifyBookings sisalta!2222');
+    console.log(simplifiedBookings);
+    console.log('Toimiiko loggaus! simplifyBookings sisalta!2222');
 
     return simplifiedBookings;
 };
@@ -113,6 +142,14 @@ export const simplifyBookings = (
 export const filterCurrentBookings = (
     simplifiedBookings: currentBookingData[]
 ): currentBookingData[] => {
+    console.log(
+        'filterCurrentBookings filterCurrentBookings filterCurrentBookings'
+    );
+    console.log(simplifiedBookings);
+    console.log(
+        'filterCurrentBookings filterCurrentBookings filterCurrentBookings'
+    );
+
     // Filters away all bookings that aren't running at the moment
     const onlyCurrentlyRunningBookings: currentBookingData[] =
         simplifiedBookings.filter((booking: currentBookingData) => {
@@ -125,13 +162,24 @@ export const filterCurrentBookings = (
                 return false;
             }
 
-            const now = getNowDateTime();
+            const now: string = getNowDateTime();
+            console.log('now now now now');
+            console.log(now);
+            console.log('now now now now');
+
+            // TODO: ONGELMA TÄLLÄ HETKELLÄ SE ETTÄ TÄMÄ NOW PALAUTTAA TÄMÄNHETKISEN AJAN JA
+            // SEN PITÄISI PALAUTTAA MOCKIN TARJOILEMA RETURN VALUE
+
             return booking.startTime <= now && booking.endTime >= now;
         });
+
+    console.log('onlyCurrentlyRunningBookings onlyCurrentlyRunningBookings');
+    console.log(onlyCurrentlyRunningBookings);
+    console.log('onlyCurrentlyRunningBookings onlyCurrentlyRunningBookings');
 
     return onlyCurrentlyRunningBookings;
 };
 
-const getNowDateTime = () => {
+export const getNowDateTime = (): string => {
     return DateTime.now().toUTC().setZone('Europe/Helsinki').toISO();
 };

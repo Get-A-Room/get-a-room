@@ -4,13 +4,15 @@ import * as schema from '../../utils/googleSchema';
 import { DateTime } from 'luxon';
 import { badRequest, custom, internalServerError } from '../../utils/responses';
 import { query } from 'express-validator';
-import currentBookingData from '../../types/currentBookingData';
+import { currentBookingData } from '../../types/currentBookingData';
 import RoomData from '../../types/roomData';
 
 import {
+    filterCurrentBookings,
     getCurrentBookingsMiddleware,
     simplifyAndFilterCurrentBookingsMiddleware,
-    simplifyBookings
+    simplifyBookings,
+    getNowDateTime
 } from './currentBookingsController';
 
 import {
@@ -24,11 +26,16 @@ import { simplifyRoomData } from '../../controllers/roomController';
 
 jest.mock('../../utils/responses');
 jest.mock('../googleAPI/calendarAPI');
-// jest.mock('./currentBookingsController');
+jest.mock('../googleAPI/adminAPI');
 
 const mockedGetCurrentBookings = mocked(getCurrentBookings, false);
-const mockedSimplifyBookings = mocked(simplifyBookings, false);
 const mockedSimplifyRoomData = mocked(simplifyRoomData, false);
+
+const mockedGetRoomData = mocked(getRoomData, false);
+const mockedSimplifyBookings = mocked(simplifyBookings, false);
+const mockedFilterCurrentBookings = mocked(filterCurrentBookings, false);
+
+const mockedGetNowDateTime = jest.fn(getNowDateTime);
 
 const mockedInternalServerError = mocked(internalServerError, false);
 
@@ -88,17 +95,37 @@ describe('currentBookingsController', () => {
         });
     });
 
-    // describe('simplifyAndFilterCurrentBookingsMiddleware', () => {
-    //     test('Should simplify and filter current bookings correctly', async () => {
-    //         mocked.mockResolvedValueOnce(simplifiedBookings);
+    describe('simplifyAndFilterCurrentBookingsMiddleware', () => {
+        beforeEach(() => {
+            mockRequest = {};
+            mockResponse = {
+                locals: {
+                    oAuthClient: 'client',
+                    currentBookings: allCurrentAndFutureBookings
+                }
+            };
+            mockNext = jest.fn();
 
-    //         await simplifyAndFilterCurrentBookingsMiddleware()(
-    //             mockRequest as Request,
-    //             mockResponse as Response,
-    //             mockNext
-    //         );
-    //     });
-    // });
+            jest.resetAllMocks();
+        });
+
+        test('Should simplify and filter current bookings correctly', async () => {
+            mockedGetRoomData.mockResolvedValueOnce(rooms);
+            mockedGetNowDateTime.mockReturnValueOnce(
+                '2021-11-12T11:19:32.746+02:00'
+            );
+            // TODO: ONGELMA TÄLLÄ HETKELLÄ SE ETTÄ TÄMÄ NOW PALAUTTAA TÄMÄNHETKISEN AJAN JA
+            // SEN PITÄISI PALAUTTAA MOCKIN TARJOILEMA RETURN VALUE
+
+            await simplifyAndFilterCurrentBookingsMiddleware()(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNext
+            );
+
+            console.log(mockResponse?.locals);
+        });
+    });
 
     // describe('simplifyBookings', () => {
     //     test('Should simplify and filter current bookings correctly', async () => {
