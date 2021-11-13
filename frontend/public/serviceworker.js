@@ -3,7 +3,7 @@ const urlsToCache = ['/index.html', '/offline.html'];
 
 const self = this;
 
-// Install SW
+// Install the service worker
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -16,12 +16,13 @@ self.addEventListener('install', (event) => {
 
 // Listen for requests
 self.addEventListener('fetch', (event) => {
-    console.log(event.request.url);
-
     // We do not want to cache authenticated related resources because they are canceled anyway
     if (event.request.url.indexOf('/auth/') !== -1) {
         return false;
     }
+
+    // Debug printing of URL:s that will be cached
+    // console.log(event.request.url);
 
     event.respondWith(
         caches.match(event.request).then(function (response) {
@@ -33,7 +34,7 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
-// Activate the SW
+// Activate the service worker
 self.addEventListener('activate', (event) => {
     const cacheWhitelist = [];
     cacheWhitelist.push(CACHE_NAME);

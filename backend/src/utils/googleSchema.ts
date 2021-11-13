@@ -7,5 +7,6 @@ export interface CalendarResource
 export interface FreeBusyRequestItem
     extends calendar_v3.Schema$FreeBusyRequestItem {}
 export interface EventData extends calendar_v3.Schema$Event {}
+export interface EventsData extends calendar_v3.Schema$Events {}
 export interface EventAttendee extends calendar_v3.Schema$EventAttendee {}
 export interface EventDateTime extends calendar_v3.Schema$EventDateTime {}

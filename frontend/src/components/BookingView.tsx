@@ -13,14 +13,16 @@ import {
 import { Business, Group, ExpandMore, ExpandLess } from '@mui/icons-material';
 import './BookingView.css';
 import { getRooms } from '../services/roomService';
-import { makeBooking } from '../services/bookingService';
-import { Room, BookingDetails } from '../types';
+import { makeBooking, getBookings } from '../services/bookingService';
+import { Room, BookingDetails, Booking } from '../types';
 import NavBar from './NavBar';
+import CurrentBooking from './CurrentBooking';
 
 async function book(
     event: React.MouseEvent<HTMLElement>,
     room: Room,
-    duration: number
+    duration: number,
+    setBookings: React.Dispatch<React.SetStateAction<Booking[]>>
 ) {
     let bookingDetails: BookingDetails = {
         duration: duration,
@@ -30,6 +32,8 @@ async function book(
 
     makeBooking(bookingDetails)
         .then(() => {
+            getBookings().then(setBookings);
+            window.scrollTo(0, 0);
             alert('Booking successful!');
         })
         .catch(() => {
@@ -78,8 +82,15 @@ function areRoomsFetched(rooms: Room[]) {
 function BookingView() {
     const [rooms, setRooms] = useState<Room[]>([]);
 
+    const [bookings, setBookings] = useState<Booking[]>([]);
+
     useEffect(() => {
-        getRooms().then(setRooms);
+        getRooms()
+            .then(setRooms)
+            .catch((error) => console.log(error));
+        getBookings()
+            .then(setBookings)
+            .catch((error) => console.log(error));
     }, []);
 
     const [expandedFeatures, setExpandedFeatures] = React.useState('false');
@@ -100,228 +111,246 @@ function BookingView() {
     };
 
     return (
-        <div className="BookingView">
-            <header className="BookingView-header">
-                <h1>Available rooms</h1>
-            </header>
-            {!areRoomsFetched(rooms) ? (
-                <div className="BookingView-loadingScreen">
-                    <CircularProgress style={{ color: '#F04E30' }} />
-                </div>
-            ) : (
-                <List>
-                    {areRoomsFetched(rooms) &&
-                        rooms.map((room) => (
-                            <Card
-                                key={room.id}
-                                sx={{
-                                    background:
-                                        'linear-gradient(to right bottom, #c9c9c9, #969696)',
-                                    backgroundColor: '#c9c9c9',
-                                    border: 'success',
-                                    borderRadius: 3,
-                                    boxShadow: '5px 5px #bcbcbc',
-                                    m: 2
-                                }}
-                            >
-                                <CardContent
-                                    style={{
-                                        justifyContent: 'space-between',
-                                        display: 'flex'
+        <div>
+            <CurrentBooking bookings={bookings} />
+            <div className="BookingView">
+                <header className="BookingView-header">
+                    <h1>Available rooms</h1>
+                </header>
+                {!areRoomsFetched(rooms) ? (
+                    <div className="BookingView-loadingScreen">
+                        <CircularProgress style={{ color: '#F04E30' }} />
+                    </div>
+                ) : (
+                    <List>
+                        {areRoomsFetched(rooms) &&
+                            rooms.map((room) => (
+                                <Card
+                                    key={room.id}
+                                    sx={{
+                                        background:
+                                            'linear-gradient(to right bottom, #c9c9c9, #969696)',
+                                        backgroundColor: '#c9c9c9',
+                                        border: 'success',
+                                        borderRadius: 3,
+                                        boxShadow: '5px 5px #bcbcbc',
+                                        m: 2
                                     }}
                                 >
-                                    <Typography
+                                    <CardContent
                                         style={{
-                                            fontSize: '18px',
-                                            fontWeight: 'bold'
+                                            justifyContent: 'space-between',
+                                            display: 'flex'
                                         }}
                                     >
-                                        {getName(room)}
-                                    </Typography>
-                                    <CardActions disableSpacing>
-                                        <Button
-                                            id="quickBook-button"
+                                        <Typography
                                             style={{
-                                                backgroundColor: '#282c34',
-                                                textTransform: 'none',
-                                                color: 'white',
-                                                fontSize: '16px',
-                                                animation:
-                                                    'ripple 600ms linear',
-                                                minWidth: '130px',
-                                                minHeight: '50px',
-                                                maxWidth: '130px',
-                                                maxHeight: '50px'
+                                                fontSize: '18px',
+                                                fontWeight: 'bold'
                                             }}
-                                            onClick={(e) =>
-                                                handleBookingCollapse(e, room)
-                                            }
-                                            aria-label="Expand"
                                         >
-                                            Quick Book
-                                            {expandedBooking === room.id ? (
-                                                <ExpandLess />
-                                            ) : (
-                                                <ExpandMore />
-                                            )}
-                                        </Button>
-                                    </CardActions>
-                                </CardContent>
-                                {expandedBooking === room.id ? (
-                                    <CardContent
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            maxHeight: '20px'
-                                        }}
-                                    >
-                                        <Collapse
-                                            in={expandedBooking === room.id}
-                                            timeout="auto"
-                                            unmountOnExit
-                                        >
-                                            <CardContent>
-                                                <Button
-                                                    id="book30Min-button"
-                                                    style={{
-                                                        backgroundColor:
-                                                            '#282c34',
-                                                        textTransform: 'none',
-                                                        flex: '1 0 auto',
-                                                        margin: '0 10px',
-                                                        color: 'white',
-                                                        fontSize: '16px',
-                                                        animation:
-                                                            'ripple 600ms linear',
-                                                        minWidth: '100px',
-                                                        minHeight: '50px',
-                                                        maxWidth: '120px',
-                                                        maxHeight: '50px'
-                                                    }}
-                                                    onClick={(e) =>
-                                                        book(e, room, 30)
-                                                    }
-                                                >
-                                                    30 min
-                                                </Button>
-                                                <Button
-                                                    id="book60Min-button"
-                                                    style={{
-                                                        backgroundColor:
-                                                            '#282c34',
-                                                        textTransform: 'none',
-                                                        flex: '1 0 auto',
-                                                        margin: '0 10px',
-                                                        color: 'white',
-                                                        fontSize: '16px',
-                                                        animation:
-                                                            'ripple 600ms linear',
-                                                        minWidth: '100px',
-                                                        minHeight: '50px',
-                                                        maxWidth: '120px',
-                                                        maxHeight: '50px'
-                                                    }}
-                                                    onClick={(e) =>
-                                                        book(e, room, 60)
-                                                    }
-                                                >
-                                                    60 min
-                                                </Button>
-                                            </CardContent>
-                                        </Collapse>
-                                    </CardContent>
-                                ) : null}
-                                <div>
-                                    <CardContent
-                                        style={{
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            maxHeight: '10px'
-                                        }}
-                                    >
+                                            {getName(room)}
+                                        </Typography>
                                         <CardActions disableSpacing>
-                                            <IconButton
+                                            <Button
+                                                id="quickBook-button"
+                                                style={{
+                                                    backgroundColor: '#282c34',
+                                                    textTransform: 'none',
+                                                    color: 'white',
+                                                    fontSize: '16px',
+                                                    animation:
+                                                        'ripple 600ms linear',
+                                                    minWidth: '130px',
+                                                    minHeight: '50px',
+                                                    maxWidth: '130px',
+                                                    maxHeight: '50px'
+                                                }}
                                                 onClick={(e) =>
-                                                    handleFeaturesCollapse(
+                                                    handleBookingCollapse(
                                                         e,
                                                         room
                                                     )
                                                 }
                                                 aria-label="Expand"
                                             >
-                                                {expandedFeatures ===
-                                                room.id ? (
+                                                Quick Book
+                                                {expandedBooking === room.id ? (
                                                     <ExpandLess />
                                                 ) : (
                                                     <ExpandMore />
                                                 )}
-                                            </IconButton>
+                                            </Button>
                                         </CardActions>
                                     </CardContent>
-                                    <Collapse
-                                        in={expandedFeatures === room.id}
-                                        timeout="auto"
-                                        unmountOnExit
-                                    >
+                                    {expandedBooking === room.id ? (
                                         <CardContent
                                             style={{
                                                 display: 'flex',
-                                                justifyContent: 'left',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
                                                 maxHeight: '20px'
                                             }}
                                         >
-                                            <Business />
-                                            <Typography
-                                                style={{ maxWidth: '2px' }}
+                                            <Collapse
+                                                in={expandedBooking === room.id}
+                                                timeout="auto"
+                                                unmountOnExit
                                             >
-                                                {' '}
-                                            </Typography>
-                                            <Typography
-                                                style={{
-                                                    fontSize: '16px',
-                                                    fontWeight: 'bold'
-                                                }}
-                                            >
-                                                {getBuilding(room)}
-                                            </Typography>
+                                                <CardContent>
+                                                    <Button
+                                                        id="book30Min-button"
+                                                        style={{
+                                                            backgroundColor:
+                                                                '#282c34',
+                                                            textTransform:
+                                                                'none',
+                                                            flex: '1 0 auto',
+                                                            margin: '0 10px',
+                                                            color: 'white',
+                                                            fontSize: '16px',
+                                                            animation:
+                                                                'ripple 600ms linear',
+                                                            minWidth: '100px',
+                                                            minHeight: '50px',
+                                                            maxWidth: '120px',
+                                                            maxHeight: '50px'
+                                                        }}
+                                                        onClick={(e) =>
+                                                            book(
+                                                                e,
+                                                                room,
+                                                                30,
+                                                                setBookings
+                                                            )
+                                                        }
+                                                    >
+                                                        30 min
+                                                    </Button>
+                                                    <Button
+                                                        id="book60Min-button"
+                                                        style={{
+                                                            backgroundColor:
+                                                                '#282c34',
+                                                            textTransform:
+                                                                'none',
+                                                            flex: '1 0 auto',
+                                                            margin: '0 10px',
+                                                            color: 'white',
+                                                            fontSize: '16px',
+                                                            animation:
+                                                                'ripple 600ms linear',
+                                                            minWidth: '100px',
+                                                            minHeight: '50px',
+                                                            maxWidth: '120px',
+                                                            maxHeight: '50px'
+                                                        }}
+                                                        onClick={(e) =>
+                                                            book(
+                                                                e,
+                                                                room,
+                                                                60,
+                                                                setBookings
+                                                            )
+                                                        }
+                                                    >
+                                                        60 min
+                                                    </Button>
+                                                </CardContent>
+                                            </Collapse>
                                         </CardContent>
+                                    ) : null}
+                                    <div>
                                         <CardContent
                                             style={{
                                                 display: 'flex',
-                                                justifyContent: 'left',
-                                                maxHeight: '20px'
+                                                justifyContent: 'center',
+                                                maxHeight: '10px'
                                             }}
                                         >
-                                            <Group />
-                                            <Typography
-                                                style={{ maxWidth: '2px' }}
-                                            >
-                                                {' '}
-                                            </Typography>
-                                            <Typography
+                                            <CardActions disableSpacing>
+                                                <IconButton
+                                                    onClick={(e) =>
+                                                        handleFeaturesCollapse(
+                                                            e,
+                                                            room
+                                                        )
+                                                    }
+                                                    aria-label="Expand"
+                                                >
+                                                    {expandedFeatures ===
+                                                    room.id ? (
+                                                        <ExpandLess />
+                                                    ) : (
+                                                        <ExpandMore />
+                                                    )}
+                                                </IconButton>
+                                            </CardActions>
+                                        </CardContent>
+                                        <Collapse
+                                            in={expandedFeatures === room.id}
+                                            timeout="auto"
+                                            unmountOnExit
+                                        >
+                                            <CardContent
                                                 style={{
-                                                    fontSize: '16px',
-                                                    fontWeight: 'bold'
+                                                    display: 'flex',
+                                                    justifyContent: 'left',
+                                                    maxHeight: '20px'
                                                 }}
                                             >
-                                                {getCapacity(room)}
-                                            </Typography>
-                                        </CardContent>
-                                        <CardContent>
-                                            <Typography
-                                                style={{ fontSize: '16px' }}
+                                                <Business />
+                                                <Typography
+                                                    style={{ maxWidth: '2px' }}
+                                                >
+                                                    {' '}
+                                                </Typography>
+                                                <Typography
+                                                    style={{
+                                                        fontSize: '16px',
+                                                        fontWeight: 'bold'
+                                                    }}
+                                                >
+                                                    {getBuilding(room)}
+                                                </Typography>
+                                            </CardContent>
+                                            <CardContent
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'left',
+                                                    maxHeight: '20px'
+                                                }}
                                             >
-                                                {getFeatures(room)}
-                                            </Typography>
-                                        </CardContent>
-                                    </Collapse>
-                                </div>
-                            </Card>
-                        ))}
-                </List>
-            )}
-            <NavBar />
+                                                <Group />
+                                                <Typography
+                                                    style={{ maxWidth: '2px' }}
+                                                >
+                                                    {' '}
+                                                </Typography>
+                                                <Typography
+                                                    style={{
+                                                        fontSize: '16px',
+                                                        fontWeight: 'bold'
+                                                    }}
+                                                >
+                                                    {getCapacity(room)}
+                                                </Typography>
+                                            </CardContent>
+                                            <CardContent>
+                                                <Typography
+                                                    style={{ fontSize: '16px' }}
+                                                >
+                                                    {getFeatures(room)}
+                                                </Typography>
+                                            </CardContent>
+                                        </Collapse>
+                                    </div>
+                                </Card>
+                            ))}
+                    </List>
+                )}
+                <NavBar />
+            </div>
         </div>
     );
 }

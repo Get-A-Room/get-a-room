@@ -1,6 +1,7 @@
 import { OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
 import _ from 'lodash';
+import { DateTime } from 'luxon';
 import * as schema from '../../utils/googleSchema';
 
 const calendar = google.calendar('v3');
@@ -94,6 +95,24 @@ export const createEvent = async (
     });
 
     return eventResult.data;
+};
+
+/**
+ * Gets current bookings of the user
+ * @param client OAuth2Client
+ */
+export const getCurrentBookings = async (
+    client: OAuth2Client
+): Promise<schema.EventsData> => {
+    const now = DateTime.now().toUTC().setZone('Europe/Helsinki').toISO();
+
+    const eventsList = await calendar.events.list({
+        calendarId: 'primary',
+        auth: client,
+        timeMin: now
+    });
+
+    return eventsList.data;
 };
 
 /**

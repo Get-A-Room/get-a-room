@@ -7,6 +7,7 @@ type RoomData = {
     floor: string | null | undefined;
     features: string[] | null | undefined;
     nextCalendarEvent: string | null | undefined;
+    location: string | null | undefined;
 };
 
 export default RoomData;
