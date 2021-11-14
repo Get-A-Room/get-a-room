@@ -62,12 +62,8 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
 
             const simplifiedBookings = simplifyBookings(allBookings, rooms);
 
-            const now: string = getNowDateTime();
-
-            res.locals.currentBookings = filterCurrentBookings(
-                simplifiedBookings,
-                now
-            );
+            res.locals.currentBookings =
+                filterCurrentBookings(simplifiedBookings);
 
             next();
         } catch (err) {
@@ -117,9 +113,10 @@ export const simplifyBookings = (
  * @returns filtered bookings
  */
 export const filterCurrentBookings = (
-    simplifiedBookings: currentBookingData[],
-    now: string
+    simplifiedBookings: currentBookingData[]
 ): currentBookingData[] => {
+    const now: string = getNowDateTime();
+
     // Filters away all bookings that aren't running at the moment
     const onlyCurrentlyRunningBookings: currentBookingData[] =
         simplifiedBookings.filter((booking: currentBookingData) => {
