@@ -77,72 +77,61 @@ describe('currentBookingsController', () => {
     });
 
     describe('simplifyAndFilterCurrentBookingsMiddleware', () => {
-        describe('Should simplify and filter current bookings correctly', () => {
-            beforeEach(() => {
-                mockRequest = {};
-                mockResponse = {
-                    locals: {
-                        oAuthClient: 'client',
-                        currentBookings: allCurrentAndFutureBookings
-                    }
-                };
-                mockNext = jest.fn();
+        test('Should simplify and filter current bookings correctly', async () => {
+            mockRequest = {};
+            mockResponse = {
+                locals: {
+                    oAuthClient: 'client',
+                    currentBookings: allCurrentAndFutureBookings
+                }
+            };
+            mockNext = jest.fn();
+            jest.resetAllMocks();
 
-                jest.resetAllMocks();
-            });
+            mockedGetRoomData.mockResolvedValueOnce(rooms);
 
-            test('Should simplify and filter current bookings correctly', async () => {
-                mockedGetRoomData.mockResolvedValueOnce(rooms);
+            await simplifyAndFilterCurrentBookingsMiddleware()(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNext
+            );
 
-                await simplifyAndFilterCurrentBookingsMiddleware()(
-                    mockRequest as Request,
-                    mockResponse as Response,
-                    mockNext
-                );
-
-                const currentBookings = mockResponse?.locals?.currentBookings;
-                expect(currentBookings.length).toBe(1);
-                expect(currentBookings[0].id).toBe(
-                    '3pt0pdqmgp0c4qa8a7o4ie0an4'
-                );
-                expect(currentBookings[0].room.id).toBe('80430164898');
-                expect(currentBookings[0].room.name).toBe('Höyhen');
-                expect(currentBookings[0].room.building).toBe('Hakaniemi');
-                expect(currentBookings[0].room.features).toEqual([
-                    'Internal Only',
-                    'Jabra',
-                    'TV'
-                ]);
-            });
+            const currentBookings = mockResponse?.locals?.currentBookings;
+            expect(currentBookings.length).toBe(1);
+            expect(currentBookings[0].id).toBe('3pt0pdqmgp0c4qa8a7o4ie0an4');
+            expect(currentBookings[0].room.id).toBe('80430164898');
+            expect(currentBookings[0].room.name).toBe('Höyhen');
+            expect(currentBookings[0].room.building).toBe('Hakaniemi');
+            expect(currentBookings[0].room.features).toEqual([
+                'Internal Only',
+                'Jabra',
+                'TV'
+            ]);
         });
 
-        describe('locals.currentBookings should be empty list if there is not any current or future bookings', () => {
-            beforeEach(() => {
-                mockRequest = {};
-                mockResponse = {
-                    locals: {
-                        oAuthClient: 'client',
-                        currentBookings: { kind: 'calendar#events', items: [] }
-                    }
-                };
-                mockNext = jest.fn();
+        test('locals.currentBookings should be empty list if there is not any current or future bookings', async () => {
+            mockRequest = {};
+            mockResponse = {
+                locals: {
+                    oAuthClient: 'client',
+                    currentBookings: { kind: 'calendar#events', items: [] }
+                }
+            };
+            mockNext = jest.fn();
 
-                jest.resetAllMocks();
-            });
+            jest.resetAllMocks();
 
-            test('locals.currentBookings should be empty list if there is not any current or future bookings', async () => {
-                mockedGetRoomData.mockResolvedValueOnce(rooms);
+            mockedGetRoomData.mockResolvedValueOnce(rooms);
 
-                await simplifyAndFilterCurrentBookingsMiddleware()(
-                    mockRequest as Request,
-                    mockResponse as Response,
-                    mockNext
-                );
+            await simplifyAndFilterCurrentBookingsMiddleware()(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNext
+            );
 
-                const currentBookings = mockResponse?.locals?.currentBookings;
-                expect(currentBookings.length).toBe(0);
-                expect(currentBookings).toEqual([]);
-            });
+            const currentBookings = mockResponse?.locals?.currentBookings;
+            expect(currentBookings.length).toBe(0);
+            expect(currentBookings).toEqual([]);
         });
     });
 });
