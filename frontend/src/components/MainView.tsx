@@ -45,7 +45,7 @@ const MainView = () => {
                     />
                 </Route>
                 <Route path="/">
-                    <BookingView />
+                    <BookingView preferences={preferences} />
                 </Route>
             </Switch>
             <NavBar />
