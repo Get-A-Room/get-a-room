@@ -411,6 +411,12 @@ describe('makeBookingController', () => {
         });
     });
 
+    // id: '1j17pp72bmld5an9abls35p298',
+    // location: 'Hermia 5-2-Namu-Sofas (10) [TV]',
+
+    // id: '3pt0pdqmgp0c4qa8a7o4ie0an4',
+    // location: 'Hakaniemi-7-Höyhen (4) [TV]',
+
     describe('simplifyEventData', () => {
         const TEST_EVENTDATA: schema.EventData = {
             id: 'test id',
