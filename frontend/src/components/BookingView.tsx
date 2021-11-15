@@ -55,7 +55,6 @@ function BookingView(props: BookingViewProps) {
                         setBookings={setBookings}
                     />
                 )}
-                <NavBar />
             </div>
         </div>
     );
