@@ -18,9 +18,6 @@ Environment variables `DB_URL`, `DB_USER` and `DB_PASSWORD` need to be present (
 
 ## Api documentation
 
-To view the api documentation:
+Api documentation on swaggerhub:
 
-In the backend folder
-
-1. `npm start`
-2. <localhost:8080/api-docs>
+[https://app.swaggerhub.com/apis/Mikkooo/api/0.2.0#/]()
