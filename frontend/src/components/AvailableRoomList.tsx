@@ -23,7 +23,7 @@ export async function book(
     let bookingDetails: BookingDetails = {
         duration: duration,
         title: 'Reservation from Get a Room!',
-        roomId: room.email
+        roomId: room.id
     };
 
     makeBooking(bookingDetails)

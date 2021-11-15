@@ -1,4 +1,4 @@
-import express from 'express';
+import { Request, Response, NextFunction } from 'express';
 import _ from 'lodash';
 import { DateTime } from 'luxon';
 
@@ -8,15 +8,17 @@ import * as responses from '../utils/responses';
 import * as schema from '../utils/googleSchema';
 import roomData from '../types/roomData';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * Middleware that adds all the rooms to the res.locals.rooms
  * @returns
  */
 export const addAllRooms = () => {
     const middleware = async (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
+        req: Request,
+        res: Response,
+        next: NextFunction
     ) => {
         const client = res.locals.oAuthClient;
         const building = req.query.building as string;
@@ -32,15 +34,11 @@ export const addAllRooms = () => {
             const rooms = simplifyRoomData(result);
 
             if (rooms.length === 0) {
-                return res.status(204).send({
-                    code: 204,
-                    message: 'No Content'
-                });
+                return responses.noContent(req, res);
             }
 
             res.locals.rooms = rooms;
             next();
-            /* eslint-disable @typescript-eslint/no-explicit-any */
         } catch (err: any) {
             // Custom error for incorrect building
             if (err.errors[0].message === 'Invalid Input: filter') {
@@ -61,9 +59,9 @@ export const addAllRooms = () => {
  */
 export const fetchAvailability = () => {
     const middleware = async (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
+        req: Request,
+        res: Response,
+        next: NextFunction
     ) => {
         try {
             const client = res.locals.oAuthClient;
@@ -71,7 +69,7 @@ export const fetchAvailability = () => {
 
             // Create id objects for freebusy query
             const calendarIds = _.map(rooms, (x: roomData) => {
-                return { id: x.email };
+                return { id: x.id };
             });
 
             // TODO: What should happen when the difference is e.g. 1 minute?
@@ -111,17 +109,16 @@ export const fetchAvailability = () => {
  */
 export const writeReservationData = () => {
     const middleware = async (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
+        req: Request,
+        res: Response,
+        next: NextFunction
     ) => {
         try {
             const rooms: roomData[] = res.locals.rooms;
             const reservations = res.locals.roomReservations;
 
             _.forEach(rooms, (room: roomData) => {
-                const email = room.email as string;
-                room.nextCalendarEvent = reservations[email];
+                room.nextCalendarEvent = reservations[room.id as string];
             });
 
             next();
@@ -147,20 +144,17 @@ export const simplifyRoomData = (
          * @param features featureInstances
          * @returns array of feature names
          */
-        /* eslint-disable @typescript-eslint/no-explicit-any */
         const cleanFeatures = (features: any): string[] => {
             if (!features) {
                 return [];
             }
 
-            /* eslint-disable @typescript-eslint/no-explicit-any */
             return features.map((x: any) => x.feature.name);
         };
 
         return {
-            id: x.resourceId,
+            id: x.resourceEmail,
             name: x.resourceName,
-            email: x.resourceEmail,
             capacity: x.capacity,
             building: x.buildingId,
             floor: x.floorName,
