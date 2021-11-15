@@ -18,6 +18,7 @@ import { Room, BookingDetails, Booking, Preferences } from '../types';
 import NavBar from './NavBar';
 import CurrentBooking from './CurrentBooking';
 
+// Make booking
 async function book(
     event: React.MouseEvent<HTMLElement>,
     room: Room,
@@ -77,6 +78,11 @@ function getFeatures(room: Room) {
 // Check if rooms are fetched
 function areRoomsFetched(rooms: Room[]) {
     return Array.isArray(rooms) && rooms.length > 0;
+}
+
+// Determine if booking is enabled or disabled
+function disableBooking(bookings: Booking[]) {
+    return bookings.length === 0 ? false : true;
 }
 
 type BookingViewProps = {
@@ -167,36 +173,59 @@ function BookingView(props: BookingViewProps) {
                                             {getName(room)}
                                         </Typography>
                                         <CardActions disableSpacing>
-                                            <Button
-                                                id="quickBook-button"
-                                                data-testid="QuickBookButton"
-                                                style={{
-                                                    backgroundColor: '#282c34',
-                                                    textTransform: 'none',
-                                                    color: 'white',
-                                                    fontSize: '16px',
-                                                    animation:
-                                                        'ripple 600ms linear',
-                                                    minWidth: '130px',
-                                                    minHeight: '50px',
-                                                    maxWidth: '130px',
-                                                    maxHeight: '50px'
-                                                }}
-                                                onClick={(e) =>
-                                                    handleBookingCollapse(
-                                                        e,
-                                                        room
-                                                    )
-                                                }
-                                                aria-label="Expand"
-                                            >
-                                                Quick Book
-                                                {expandedBooking === room.id ? (
-                                                    <ExpandLess />
-                                                ) : (
-                                                    <ExpandMore />
-                                                )}
-                                            </Button>
+                                            {!disableBooking(bookings) ? (
+                                                <Button
+                                                    id="quickBook-button"
+                                                    data-testid="QuickBookButton"
+                                                    style={{
+                                                        backgroundColor:
+                                                            '#282c34',
+                                                        textTransform: 'none',
+                                                        color: 'white',
+                                                        fontSize: '16px',
+                                                        animation:
+                                                            'ripple 600ms linear',
+                                                        minWidth: '130px',
+                                                        minHeight: '50px',
+                                                        maxWidth: '130px',
+                                                        maxHeight: '50px'
+                                                    }}
+                                                    onClick={(e) =>
+                                                        handleBookingCollapse(
+                                                            e,
+                                                            room
+                                                        )
+                                                    }
+                                                    aria-label="Expand"
+                                                >
+                                                    Quick Book
+                                                    {expandedBooking ===
+                                                    room.id ? (
+                                                        <ExpandLess />
+                                                    ) : (
+                                                        <ExpandMore />
+                                                    )}
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    id="disabledQuickBook-button"
+                                                    data-testid="disabledQuickBookButton"
+                                                    style={{
+                                                        backgroundColor:
+                                                            '#282c34',
+                                                        textTransform: 'none',
+                                                        color: '#A9A9A9',
+                                                        fontSize: '16px',
+                                                        minWidth: '130px',
+                                                        minHeight: '50px',
+                                                        maxWidth: '130px',
+                                                        maxHeight: '50px'
+                                                    }}
+                                                    disabled={true}
+                                                >
+                                                    Quick Book
+                                                </Button>
+                                            )}
                                         </CardActions>
                                     </CardContent>
                                     {expandedBooking === room.id ? (
@@ -233,14 +262,18 @@ function BookingView(props: BookingViewProps) {
                                                             maxWidth: '120px',
                                                             maxHeight: '50px'
                                                         }}
-                                                        onClick={(e) =>
+                                                        onClick={(e) => {
                                                             book(
                                                                 e,
                                                                 room,
                                                                 30,
                                                                 setBookings
-                                                            )
-                                                        }
+                                                            );
+                                                            handleBookingCollapse(
+                                                                e,
+                                                                room
+                                                            );
+                                                        }}
                                                     >
                                                         30 min
                                                     </Button>
@@ -263,14 +296,18 @@ function BookingView(props: BookingViewProps) {
                                                             maxWidth: '120px',
                                                             maxHeight: '50px'
                                                         }}
-                                                        onClick={(e) =>
+                                                        onClick={(e) => {
                                                             book(
                                                                 e,
                                                                 room,
                                                                 60,
                                                                 setBookings
-                                                            )
-                                                        }
+                                                            );
+                                                            handleBookingCollapse(
+                                                                e,
+                                                                room
+                                                            );
+                                                        }}
                                                     >
                                                         60 min
                                                     </Button>
