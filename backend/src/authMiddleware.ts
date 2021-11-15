@@ -2,6 +2,7 @@ import express from 'express';
 import unless from 'express-unless';
 import { getOAuthClient } from './controllers/googleController';
 import * as responses from './utils/responses';
+import * as tokenTools from './controllers/auth/token';
 
 /**
  * Filter for unless
@@ -28,22 +29,31 @@ export const authFilter = (req: express.Request) => {
  * httpOnly cookie and sets them to res.locals
  * @returns -
  */
-export const parseTokens = () => {
+export const parseToken = () => {
     const middleware = (
         req: express.Request,
         res: express.Response,
         next: express.NextFunction
     ) => {
-        const { refreshToken, token } = req.cookies;
+        try {
+            const { TOKEN } = req.cookies;
 
-        if (!refreshToken) {
+            if (!TOKEN) {
+                return responses.invalidToken(req, res);
+            }
+
+            const payload = tokenTools.readToken(TOKEN);
+
+            res.locals.token = TOKEN;
+            res.locals.sub = payload.sub;
+            res.locals.email = payload.email;
+            res.locals.refreshToken = payload.refreshToken;
+            res.locals.accessToken = payload.accessToken;
+
+            next();
+        } catch (err) {
             return responses.invalidToken(req, res);
         }
-
-        res.locals.refreshToken = refreshToken;
-        res.locals.token = token;
-
-        next();
     };
 
     middleware.unless = unless;
@@ -65,29 +75,29 @@ export const validateAccessToken = () => {
     ) => {
         try {
             const client = getOAuthClient();
-            const token = res.locals.token;
-            const refreshToken = res.locals.refreshToken;
 
             client.setCredentials({
-                access_token: token,
-                refresh_token: refreshToken
+                access_token: res.locals.accessToken,
+                refresh_token: res.locals.refreshToken
             });
 
             const newToken = (await client.getAccessToken()).token;
 
             // Token had expired
-            if (token !== newToken) {
-                res.locals.token = newToken;
-                res.cookie('token', newToken, {
-                    maxAge: 3600000, // 60 minutes
+            if (res.locals.accessToken !== newToken) {
+                res.locals.accessToken = newToken;
+                const jwt = tokenTools.updateToken(
+                    res.locals.token,
+                    newToken as string
+                );
+
+                res.cookie('TOKEN', jwt, {
+                    maxAge: 31556952000, // 1 year
                     httpOnly: true
                 });
             }
 
-            const tokenInfo = await client.getTokenInfo(res.locals.token);
             res.locals.oAuthClient = client;
-            res.locals.email = tokenInfo.email;
-            res.locals.sub = tokenInfo.sub;
             next();
         } catch {
             return responses.invalidToken(req, res);

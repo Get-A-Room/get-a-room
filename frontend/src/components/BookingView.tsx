@@ -24,14 +24,19 @@ function BookingView(props: BookingViewProps) {
     const [bookings, setBookings] = useState<Booking[]>([]);
 
     useEffect(() => {
-        const buildingPreference = preferences?.building?.id;
-        getRooms(buildingPreference)
-            .then(setRooms)
-            .catch((error) => console.log(error));
+        if (preferences) {
+            const buildingPreference = preferences.building?.id;
+            getRooms(buildingPreference)
+                .then(setRooms)
+                .catch((error) => console.log(error));
+        }
+    }, [preferences]);
+
+    useEffect(() => {
         getBookings()
             .then(setBookings)
             .catch((error) => console.log(error));
-    }, [preferences]);
+    }, []);
 
     return (
         <div>
