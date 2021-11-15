@@ -9,7 +9,6 @@ import mongoose from 'mongoose';
 import { checkEnvVariables } from './utils/checkEnvVariables';
 
 import { router as indexRouter } from './routes/index';
-import { router as apiDocsRouter } from './routes/apiDocs';
 import { router as authRouter } from './routes/auth';
 import { router as bookingRouter } from './routes/booking';
 import { router as buildingRouter } from './routes/buildings';
@@ -41,7 +40,6 @@ app.use(parseToken().unless(authFilter));
 app.use(validateAccessToken().unless(authFilter));
 
 app.use('/api', indexRouter);
-app.use('/api/api-docs', apiDocsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/booking', bookingRouter);
 app.use('/api/buildings', buildingRouter);
