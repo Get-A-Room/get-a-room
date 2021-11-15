@@ -105,9 +105,8 @@ describe('BookingView', () => {
         jest.spyOn(roomService, 'getRooms').mockImplementation(() => {
             return Promise.resolve(fakeRooms);
         });
-        jest.spyOn(bookingService, 'makeBookings').mockImplementation(() => {
-            return Promise.resolve(fakeBookingDetails);
-        });
+        
+        jest.spyOn(window, 'alert').mockImplementation(() => {});
 
         render(<BookingView />, container);
 
@@ -122,7 +121,8 @@ describe('BookingView', () => {
         );
 
         userEvent.click(book30MinButton);
-        await waitFor(() => expect());
+        await waitFor(() => expect(window.alert).toHaveBeenCalledWith('Booking successful!') ||
+            (window.alert).toHaveBeenCalledWith('Booking failed.'));
     });
     */
 });

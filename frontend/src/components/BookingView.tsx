@@ -14,7 +14,7 @@ import { Business, Group, ExpandMore, ExpandLess } from '@mui/icons-material';
 import './BookingView.css';
 import { getRooms } from '../services/roomService';
 import { makeBooking, getBookings } from '../services/bookingService';
-import { Room, BookingDetails, Booking } from '../types';
+import { Room, BookingDetails, Booking, Preferences } from '../types';
 import NavBar from './NavBar';
 import CurrentBooking from './CurrentBooking';
 
@@ -79,14 +79,20 @@ function areRoomsFetched(rooms: Room[]) {
     return Array.isArray(rooms) && rooms.length > 0;
 }
 
-function BookingView() {
-    const [rooms, setRooms] = useState<Room[]>([]);
+type BookingViewProps = {
+    preferences?: Preferences;
+};
 
+function BookingView(props: BookingViewProps) {
+    const { preferences } = props;
+
+    const [rooms, setRooms] = useState<Room[]>([]);
     const [bookings, setBookings] = useState<Booking[]>([]);
 
     useEffect(() => {
         let isMounted = true;
-        getRooms()
+        const buildingPreference = preferences?.building?.id;
+        getRooms(buildingPreference)
             .then((data) => {
                 if (isMounted) setRooms(data);
             })
@@ -97,7 +103,7 @@ function BookingView() {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [preferences]);
 
     const [expandedFeatures, setExpandedFeatures] = React.useState('false');
     const [expandedBooking, setExpandedBooking] = React.useState('false');
