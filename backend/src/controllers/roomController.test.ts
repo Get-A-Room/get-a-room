@@ -1,22 +1,10 @@
 import { Request, Response } from 'express';
-import { mocked } from 'ts-jest/utils';
-import { getBuildings } from './buildingsController';
-import { badRequest, internalServerError } from '../utils/responses';
-import { freeBusyQuery } from './googleAPI/calendarAPI';
-import {
-    addAllRooms,
-    fetchAvailability,
-    writeReservationData
-} from './roomController';
 
 jest.mock('./buildingsController');
 jest.mock('./googleAPI/calendarAPI');
 jest.mock('../utils/responses');
 
-const mockedGetBuildings = mocked(getBuildings, false);
-const mockedFreeBusyQuery = mocked(freeBusyQuery, false);
-const mockedBadRequest = mocked(badRequest, false);
-const mockedInternalServerError = mocked(internalServerError, false);
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 describe('roomController', () => {
     let mockRequest: Partial<Request>;
