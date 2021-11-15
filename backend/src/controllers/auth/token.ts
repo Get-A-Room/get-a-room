@@ -4,7 +4,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 import jwtTokenPayload from '../../types/jwtTokenPayload';
 
-const jwtSecret = process.env.JWT_SECRET || 'dummysecret';
+const jwtSecret = process.env.JWT_SECRET as string;
 
 /**
  * Creates a JWT token containing user data and access tokens
