@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import cors, { CorsOptions } from 'cors';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
-import { authFilter, parseTokens, validateAccessToken } from './authMiddleware';
+import { authFilter, parseToken, validateAccessToken } from './authMiddleware';
 import mongoose from 'mongoose';
 import { checkEnvVariables } from './utils/checkEnvVariables';
 
@@ -37,7 +37,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
 
-app.use(parseTokens().unless(authFilter));
+app.use(parseToken().unless(authFilter));
 app.use(validateAccessToken().unless(authFilter));
 
 app.use('/api', indexRouter);

@@ -1,7 +1,7 @@
 import express from 'express';
 import { query } from 'express-validator';
 import * as controller from '../controllers/roomController';
-import { validateBuildingInOrg } from '../controllers/buildingsController';
+import { validateBuildingInOrg } from '../controllers/validateBuildingInOrg';
 
 export const router = express.Router();
 

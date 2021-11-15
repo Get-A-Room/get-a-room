@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
-import { getBuildingsMiddleware } from './buildingsController';
+import { getBuildings, getBuildingsMiddleware } from './buildingsController';
 import { mocked } from 'ts-jest/utils';
 import { getBuildingData } from './googleAPI/adminAPI';
 import { internalServerError } from '../utils/responses';
+import { OAuth2Client } from 'google-auth-library';
 
 jest.mock('../utils/responses');
 jest.mock('./googleAPI/adminAPI');
@@ -53,7 +54,7 @@ describe('buildingsController', () => {
             expect(locals?.buildings.length).toEqual(2);
         });
 
-        test('Should return 500 when no buildings', async () => {
+        test('Should return 500 when no buildings found', async () => {
             mockedGetBuildingData.mockResolvedValueOnce([]);
 
             await getBuildingsMiddleware()(
@@ -69,6 +70,42 @@ describe('buildingsController', () => {
                 mockRequest,
                 mockResponse
             );
+        });
+    });
+    describe('getBuildings', () => {
+        const client: Partial<OAuth2Client> = {};
+
+        beforeEach(() => {
+            jest.resetAllMocks();
+        });
+
+        test('Should return building data', async () => {
+            mockedGetBuildingData.mockResolvedValueOnce([
+                {
+                    buildingId: '1',
+                    buildingName: 'First'
+                },
+                {
+                    buildingId: '2',
+                    buildingName: 'Second'
+                }
+            ]);
+
+            const res = await getBuildings(client as OAuth2Client);
+
+            expect(mockedGetBuildingData).toBeCalledTimes(1);
+            expect(mockedGetBuildingData).toBeCalledWith(client);
+            expect(res.length).toEqual(2);
+        });
+
+        test('Should return empty array when no buildings found', async () => {
+            mockedGetBuildingData.mockResolvedValueOnce([]);
+
+            const res = await getBuildings(client as OAuth2Client);
+
+            expect(mockedGetBuildingData).toBeCalledTimes(1);
+            expect(mockedGetBuildingData).toBeCalledWith(client);
+            expect(res).toEqual([]);
         });
     });
 });

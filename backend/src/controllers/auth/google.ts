@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { getOAuthClient } from '../googleController';
 import { OAuth2Client } from 'google-auth-library';
 
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 const scopes = [
     'https://www.googleapis.com/auth/userinfo.email',
@@ -21,7 +21,7 @@ export const redirectUrl = () => {
         try {
             const client = getOAuthClient();
             const url = client.generateAuthUrl({
-                access_type: 'offline', // When we are ready to receive refresh_token change this offline
+                access_type: 'offline',
                 scope: scopes,
                 hd: process.env.HOSTED_DOMAIN
             });
@@ -67,7 +67,7 @@ export const verifyCode = () => {
             }
 
             res.locals.oAuthClient = client;
-            res.locals.token = accessToken;
+            res.locals.accessToken = accessToken;
             res.locals.refreshToken = refreshToken;
             next();
         } catch (err) {

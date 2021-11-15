@@ -2,6 +2,7 @@ import express from 'express';
 import { OAuth2Client } from 'google-auth-library';
 
 import * as controller from './auth/google';
+import { createToken } from './auth/token';
 import { createUserMiddleware } from './userMiddleware';
 
 export const router = express.Router();
@@ -35,7 +36,8 @@ router.get('/', controller.redirectUrl(), (req, res) => {
         return res.redirect(res.locals.authUrl);
     }
 
-    return res.redirect(`${frontendUrl}/auth/failure`);
+    res.clearCookie('TOKEN');
+    return res.redirect(`${frontendUrl}/login`);
 });
 
 router.get(
@@ -43,21 +45,13 @@ router.get(
     controller.verifyCode(),
     controller.unpackPayload(),
     createUserMiddleware(),
+    createToken(),
     (req, res) => {
-        const payload = res.locals.payload;
-        const name = payload.name;
-        const accessToken = res.locals.token;
-        const refreshToken = res.locals.refreshToken;
-
-        res.cookie('token', accessToken, {
-            maxAge: 3600000, // 60 minutes
-            httpOnly: true
-        });
-        res.cookie('refreshToken', refreshToken, {
-            maxAge: 31556952000, // ~1 year
+        res.cookie('TOKEN', res.locals.token, {
+            maxAge: 31556952000, // 1 year
             httpOnly: true
         });
 
-        res.redirect(`${frontendUrl}/auth/success?name=${name}`);
+        res.redirect(`${frontendUrl}`);
     }
 );
