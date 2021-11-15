@@ -6,7 +6,7 @@ import { getBookings } from '../services/bookingService';
 import { Room, Booking, Preferences } from '../types';
 import NavBar from './NavBar';
 import CurrentBooking from './CurrentBooking';
-import BookingList from './BookingList';
+import AvailableRoomList from './AvailableRoomList';
 
 // Check if rooms are fetched
 function areRoomsFetched(rooms: Room[]) {
@@ -50,7 +50,10 @@ function BookingView(props: BookingViewProps) {
                         <CircularProgress style={{ color: '#F04E30' }} />
                     </div>
                 ) : (
-                    <BookingList rooms={rooms} setBookings={setBookings} />
+                    <AvailableRoomList
+                        rooms={rooms}
+                        setBookings={setBookings}
+                    />
                 )}
                 <NavBar />
             </div>

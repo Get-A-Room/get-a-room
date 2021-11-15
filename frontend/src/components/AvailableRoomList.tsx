@@ -70,7 +70,7 @@ type BookingListProps = {
     setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
 };
 
-const BookingList = (props: BookingListProps) => {
+const AvailableRoomList = (props: BookingListProps) => {
     const { rooms, setBookings } = props;
 
     const [expandedFeatures, setExpandedFeatures] = React.useState('false');
@@ -307,4 +307,4 @@ const BookingList = (props: BookingListProps) => {
     );
 };
 
-export default BookingList;
+export default AvailableRoomList;
