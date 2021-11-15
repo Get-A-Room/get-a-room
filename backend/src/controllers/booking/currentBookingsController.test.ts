@@ -52,10 +52,12 @@ describe('currentBookingsController', () => {
             const currentBookings: schema.EventsData =
                 mockResponse?.locals?.currentBookings;
 
+            expect(mockNext).toBeCalledWith();
+            expect(mockedGetCurrentBookings).toBeCalledTimes(1);
             expect(currentBookings).not.toBeFalsy();
             expect(currentBookings.items).not.toBeUndefined();
             expect(currentBookings?.kind).toBe('calendar#events');
-            expect(currentBookings?.items?.length === 5);
+            expect(currentBookings?.items?.length).toBe(3);
         });
 
         test('Should respond with internal server error if response object is empty', async () => {
