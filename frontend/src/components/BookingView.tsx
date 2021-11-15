@@ -4,7 +4,6 @@ import './BookingView.css';
 import { getRooms } from '../services/roomService';
 import { getBookings } from '../services/bookingService';
 import { Room, Booking, Preferences } from '../types';
-import NavBar from './NavBar';
 import CurrentBooking from './CurrentBooking';
 import AvailableRoomList from './AvailableRoomList';
 
