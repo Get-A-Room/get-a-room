@@ -141,6 +141,10 @@ export const removeReservedRooms = () => {
         next: NextFunction
     ) => {
         try {
+            if (req.query.showReserved) {
+                next();
+            }
+
             const rooms: roomData[] = res.locals.rooms;
             const currentTimePlusOneMinute = DateTime.now()
                 .plus({ minutes: 1 })
