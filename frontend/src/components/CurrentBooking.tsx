@@ -8,11 +8,22 @@ import {
     Grid,
     IconButton,
     List,
-    Typography
+    Typography,
+    Button
 } from '@mui/material';
 import { Booking } from '../types';
 import React from 'react';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
+
+// Add extra time for the reserved room
+function addExtraTime(event: React.MouseEvent<HTMLElement>, booking: Booking) {
+    // TODO
+}
+
+// Delete reserved booking
+function deleteBooking(event: React.MouseEvent<HTMLElement>, booking: Booking) {
+    // TODO
+}
 
 function getBookingRoomName(booking: Booking) {
     return booking.room.name;
@@ -89,24 +100,94 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
                         }}
                     >
                         <CardContent style={{ paddingBottom: 0 }}>
-                            <Box
+                            <Grid
+                                container
+                                spacing={2}
                                 style={{
-                                    textAlign: 'left'
+                                    alignItems: 'stretch',
+                                    display: 'flex'
                                 }}
                             >
-                                <Typography
-                                    data-testid="BookingRoomTitle"
-                                    style={{
-                                        fontSize: '18px',
-                                        fontWeight: 'bold'
-                                    }}
-                                >
-                                    {getBookingRoomName(booking)}
-                                </Typography>
-                                <Typography style={{ fontStyle: 'italic' }}>
-                                    Time left: {getBookingTimeLeft(booking)} min
-                                </Typography>
-                            </Box>
+                                <Grid item xs={6}>
+                                    <Box
+                                        style={{
+                                            textAlign: 'left'
+                                        }}
+                                    >
+                                        <Typography
+                                            data-testid="BookingRoomTitle"
+                                            style={{
+                                                fontSize: '18px',
+                                                fontWeight: 'bold'
+                                            }}
+                                        >
+                                            {getBookingRoomName(booking)}
+                                        </Typography>
+                                    </Box>
+                                    <Box
+                                        style={{
+                                            textAlign: 'left'
+                                        }}
+                                    >
+                                        <Typography
+                                            style={{ fontStyle: 'italic' }}
+                                        >
+                                            Time left:{' '}
+                                            {getBookingTimeLeft(booking)} min
+                                        </Typography>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Button
+                                        id="extraTime-button"
+                                        data-testid="ExtraTimeButton"
+                                        style={{
+                                            backgroundColor: '#282c34',
+                                            textTransform: 'none',
+                                            color: 'white',
+                                            fontSize: '16px',
+                                            animation: 'ripple 600ms linear',
+                                            minWidth: '130px',
+                                            minHeight: '50px',
+                                            maxWidth: '130px',
+                                            maxHeight: '50px'
+                                        }}
+                                        onClick={(e) =>
+                                            addExtraTime(e, booking)
+                                        }
+                                    >
+                                        +15 min
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Typography> </Typography>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Grid item>
+                                        <Button
+                                            id="delete-button"
+                                            data-testid="DeleteButton"
+                                            style={{
+                                                backgroundColor: '#282c34',
+                                                textTransform: 'none',
+                                                color: 'white',
+                                                fontSize: '16px',
+                                                animation:
+                                                    'ripple 600ms linear',
+                                                minWidth: '130px',
+                                                minHeight: '50px',
+                                                maxWidth: '130px',
+                                                maxHeight: '50px'
+                                            }}
+                                            onClick={(e) =>
+                                                deleteBooking(e, booking)
+                                            }
+                                        >
+                                            Delete
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
                             <Box
                                 style={{
                                     display: 'flex',
