@@ -131,6 +131,46 @@ export const writeReservationData = () => {
 };
 
 /**
+ * Remove currently reserved rooms from the results
+ * @returns
+ */
+export const removeReservedRooms = () => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const rooms: roomData[] = res.locals.rooms;
+            const currentTimePlusOneMinute = DateTime.now()
+                .plus({ minutes: 1 })
+                .toUTC();
+
+            // Remove from the list if the event is starting in less than 1 minute or it is ongoing
+            // (start time is equal to current time)
+            const filteredRooms = _.filter(rooms, (room) => {
+                if (
+                    room.nextCalendarEvent &&
+                    DateTime.fromISO(room.nextCalendarEvent) <=
+                        currentTimePlusOneMinute
+                ) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            res.locals.rooms = filteredRooms;
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    return middleware;
+};
+
+/**
  * Simplify results from Google
  * @param result Results from Google API
  * @returns simplified results
