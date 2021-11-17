@@ -185,8 +185,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                         style={{
                                             display: 'flex',
                                             alignItems: 'center',
-                                            justifyContent: 'center',
-                                            maxHeight: '20px'
+                                            justifyContent: 'center'
                                         }}
                                     >
                                         <Collapse
