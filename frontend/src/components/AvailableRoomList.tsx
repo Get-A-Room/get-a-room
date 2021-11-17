@@ -46,10 +46,6 @@ function getName(room: Room) {
     return room.name;
 }
 
-function getBuilding(room: Room) {
-    return room.building;
-}
-
 function getCapacity(room: Room) {
     return room.capacity;
 }
