@@ -8,12 +8,15 @@ import {
     Typography,
     IconButton,
     Collapse,
-    Box
+    Box,
+    CircularProgress
 } from '@mui/material';
 import { Group, ExpandMore, ExpandLess } from '@mui/icons-material';
 import './BookingView.css';
 import { Booking, BookingDetails, Room } from '../types';
 import { getBookings, makeBooking } from '../services/bookingService';
+
+let bookingLoading_: String = 'false';
 
 export async function book(
     event: React.MouseEvent<HTMLElement>,
@@ -27,10 +30,13 @@ export async function book(
         roomId: room.email
     };
 
+    bookingLoading(room.id);
+
     makeBooking(bookingDetails)
         .then(() => {
             getBookings().then(setBookings);
             window.scrollTo(0, 0);
+            bookingLoading('false');
             alert('Booking successful!');
         })
         .catch(() => {
@@ -40,6 +46,11 @@ export async function book(
 
 function disableBooking(bookings: Booking[]) {
     return bookings.length === 0 ? false : true;
+}
+
+function bookingLoading(roomId: String) {
+    bookingLoading_ = roomId;
+    return bookingLoading_;
 }
 
 function getName(room: Room) {
@@ -180,6 +191,13 @@ const AvailableRoomList = (props: BookingListProps) => {
                                         )}
                                     </CardActions>
                                 </Box>
+                                {bookingLoading_ === room.id ? (
+                                    <div className="Booking-loadingScreen">
+                                        <CircularProgress
+                                            style={{ color: '#F04E30' }}
+                                        />
+                                    </div>
+                                ) : null}
                                 {expandedBooking === room.id ? (
                                     <Box
                                         style={{
