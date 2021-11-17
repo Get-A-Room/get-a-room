@@ -116,7 +116,8 @@ const AvailableRoomList = (props: BookingListProps) => {
                             <CardContent
                                 style={{
                                     justifyContent: 'space-between',
-                                    display: 'flex'
+                                    display: 'flex',
+                                    textAlign: 'left'
                                 }}
                             >
                                 <Box>

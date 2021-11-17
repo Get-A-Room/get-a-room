@@ -40,7 +40,7 @@ const TimeLeft = (props: TimeLeftProps) => {
             getTimeLeft(endTime);
         }, 10000);
         return () => clearInterval(interval);
-    }, []);
+    }, [endTime]);
 
     return (
         <Box>
