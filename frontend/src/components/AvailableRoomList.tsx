@@ -199,86 +199,78 @@ const AvailableRoomList = (props: BookingListProps) => {
                                     </div>
                                 ) : null}
                                 {expandedBooking === room.id ? (
-                                    <Box
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
-                                        }}
+                                    <Collapse
+                                        in={expandedBooking === room.id}
+                                        timeout="auto"
+                                        unmountOnExit
                                     >
-                                        <Collapse
-                                            in={expandedBooking === room.id}
-                                            timeout="auto"
-                                            unmountOnExit
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                justifyContent: 'space-evenly',
+                                                mb: 2
+                                            }}
                                         >
-                                            <Box>
-                                                <Button
-                                                    id="book30Min-button"
-                                                    style={{
-                                                        backgroundColor:
-                                                            '#282c34',
-                                                        textTransform: 'none',
-                                                        flex: '1 0 auto',
-                                                        margin: '0 10px',
-                                                        color: 'white',
-                                                        fontSize: '16px',
-                                                        animation:
-                                                            'ripple 600ms linear',
-                                                        minWidth: '100px',
-                                                        minHeight: '50px',
-                                                        maxWidth: '120px',
-                                                        maxHeight: '50px'
-                                                    }}
-                                                    onClick={(e) => {
-                                                        book(
-                                                            e,
-                                                            room,
-                                                            30,
-                                                            setBookings
-                                                        );
-                                                        handleBookingCollapse(
-                                                            e,
-                                                            room
-                                                        );
-                                                    }}
-                                                >
-                                                    30 min
-                                                </Button>
-                                                <Button
-                                                    id="book60Min-button"
-                                                    style={{
-                                                        backgroundColor:
-                                                            '#282c34',
-                                                        textTransform: 'none',
-                                                        flex: '1 0 auto',
-                                                        margin: '0 10px',
-                                                        color: 'white',
-                                                        fontSize: '16px',
-                                                        animation:
-                                                            'ripple 600ms linear',
-                                                        minWidth: '100px',
-                                                        minHeight: '50px',
-                                                        maxWidth: '120px',
-                                                        maxHeight: '50px'
-                                                    }}
-                                                    onClick={(e) => {
-                                                        book(
-                                                            e,
-                                                            room,
-                                                            60,
-                                                            setBookings
-                                                        );
-                                                        handleBookingCollapse(
-                                                            e,
-                                                            room
-                                                        );
-                                                    }}
-                                                >
-                                                    60 min
-                                                </Button>
-                                            </Box>
-                                        </Collapse>
-                                    </Box>
+                                            <Button
+                                                id="book30Min-button"
+                                                style={{
+                                                    backgroundColor: '#282c34',
+                                                    textTransform: 'none',
+                                                    color: 'white',
+                                                    fontSize: '16px',
+                                                    animation:
+                                                        'ripple 600ms linear',
+                                                    minWidth: '100px',
+                                                    minHeight: '50px',
+                                                    maxWidth: '120px',
+                                                    maxHeight: '50px'
+                                                }}
+                                                onClick={(e) => {
+                                                    book(
+                                                        e,
+                                                        room,
+                                                        30,
+                                                        setBookings
+                                                    );
+                                                    handleBookingCollapse(
+                                                        e,
+                                                        room
+                                                    );
+                                                }}
+                                            >
+                                                30 min
+                                            </Button>
+                                            <Button
+                                                id="book60Min-button"
+                                                style={{
+                                                    backgroundColor: '#282c34',
+                                                    textTransform: 'none',
+                                                    color: 'white',
+                                                    fontSize: '16px',
+                                                    animation:
+                                                        'ripple 600ms linear',
+                                                    minWidth: '100px',
+                                                    minHeight: '50px',
+                                                    maxWidth: '120px',
+                                                    maxHeight: '50px'
+                                                }}
+                                                onClick={(e) => {
+                                                    book(
+                                                        e,
+                                                        room,
+                                                        60,
+                                                        setBookings
+                                                    );
+                                                    handleBookingCollapse(
+                                                        e,
+                                                        room
+                                                    );
+                                                }}
+                                            >
+                                                60 min
+                                            </Button>
+                                        </Box>
+                                    </Collapse>
                                 ) : null}
                                 <div>
                                     <Box
