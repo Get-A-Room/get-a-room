@@ -146,17 +146,17 @@ export const removeReservedRooms = () => {
             }
 
             const rooms: roomData[] = res.locals.rooms;
-            const currentTimePlusOneMinute = DateTime.now()
-                .plus({ minutes: 1 })
+            const currentTimeWithBuffer = DateTime.now()
+                .plus({ minutes: 30 })
                 .toUTC();
 
-            // Remove from the list if the event is starting in less than 1 minute or it is ongoing
+            // Remove from the list if the event is starting in less than 30 minutes or it is ongoing
             // (start time is equal to current time)
             const filteredRooms = _.filter(rooms, (room) => {
                 if (
                     room.nextCalendarEvent &&
                     DateTime.fromISO(room.nextCalendarEvent) <=
-                        currentTimePlusOneMinute
+                        currentTimeWithBuffer
                 ) {
                     return false;
                 }
