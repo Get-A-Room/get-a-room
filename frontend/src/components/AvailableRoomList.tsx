@@ -98,6 +98,8 @@ const AvailableRoomList = (props: BookingListProps) => {
                 <List>
                     {rooms.map((room) => (
                         <Card
+                            data-testid="AvailableRoomListCard"
+                            className="AvailableRoomListCardClass"
                             key={room.id}
                             sx={{
                                 background:
@@ -117,6 +119,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                     }}
                                 >
                                     <Typography
+                                        data-testid="BookingRoomTitle"
                                         style={{
                                             fontSize: '18px',
                                             fontWeight: 'bold'
@@ -209,14 +212,18 @@ const AvailableRoomList = (props: BookingListProps) => {
                                                         maxWidth: '120px',
                                                         maxHeight: '50px'
                                                     }}
-                                                    onClick={(e) =>
+                                                    onClick={(e) => {
                                                         book(
                                                             e,
                                                             room,
                                                             30,
                                                             setBookings
-                                                        )
-                                                    }
+                                                        );
+                                                        handleBookingCollapse(
+                                                            e,
+                                                            room
+                                                        );
+                                                    }}
                                                 >
                                                     30 min
                                                 </Button>
@@ -237,14 +244,18 @@ const AvailableRoomList = (props: BookingListProps) => {
                                                         maxWidth: '120px',
                                                         maxHeight: '50px'
                                                     }}
-                                                    onClick={(e) =>
+                                                    onClick={(e) => {
                                                         book(
                                                             e,
                                                             room,
                                                             60,
                                                             setBookings
-                                                        )
-                                                    }
+                                                        );
+                                                        handleBookingCollapse(
+                                                            e,
+                                                            room
+                                                        );
+                                                    }}
                                                 >
                                                     60 min
                                                 </Button>
@@ -262,6 +273,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                     >
                                         <CardActions disableSpacing>
                                             <IconButton
+                                                data-testid="ExpansionButtonAvailableRoomList"
                                                 onClick={(e) =>
                                                     handleFeaturesCollapse(
                                                         e,
