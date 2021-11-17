@@ -9,7 +9,9 @@ import {
     IconButton,
     Collapse,
     Box,
-    CircularProgress
+    CircularProgress,
+    Snackbar,
+    Alert
 } from '@mui/material';
 import { Group, ExpandMore, ExpandLess } from '@mui/icons-material';
 import './BookingView.css';
@@ -17,6 +19,8 @@ import { Booking, BookingDetails, Room } from '../types';
 import { getBookings, makeBooking } from '../services/bookingService';
 
 let bookingLoading_: String = 'false';
+let bookingSuccessful_: boolean = false;
+let bookingFailure_: boolean = false;
 
 export async function book(
     event: React.MouseEvent<HTMLElement>,
@@ -37,10 +41,11 @@ export async function book(
             getBookings().then(setBookings);
             window.scrollTo(0, 0);
             bookingLoading('false');
-            alert('Booking successful!');
+            bookingSuccessful(true);
         })
-        .catch(() => {
-            alert('Booking failed.');
+        .catch((e) => {
+            bookingLoading('false');
+            bookingFailure(true);
         });
 }
 
@@ -48,9 +53,16 @@ function disableBooking(bookings: Booking[]) {
     return bookings.length === 0 ? false : true;
 }
 
-function bookingLoading(roomId: String) {
-    bookingLoading_ = roomId;
-    return bookingLoading_;
+function bookingLoading(status: String) {
+    bookingLoading_ = status;
+}
+
+function bookingSuccessful(status: boolean) {
+    bookingSuccessful_ = status;
+}
+
+function bookingFailure(status: boolean) {
+    bookingFailure_ = status;
 }
 
 function getName(room: Room) {
@@ -106,6 +118,20 @@ const AvailableRoomList = (props: BookingListProps) => {
     return (
         <div>
             <div className="AvailableRoomList">
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}
+                >
+                    <Snackbar open={bookingSuccessful_} autoHideDuration={3000}>
+                        <Alert severity="success">Booking successful!</Alert>
+                    </Snackbar>
+                    <Snackbar open={bookingFailure_} autoHideDuration={3000}>
+                        <Alert severity="error">Booking failed.</Alert>
+                    </Snackbar>
+                </Box>
                 <List>
                     {rooms.map((room) => (
                         <Card
