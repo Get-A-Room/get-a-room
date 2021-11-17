@@ -9,47 +9,6 @@ const calendar = google.calendar('v3');
 type NextEventById = Record<string, string | null | undefined>;
 
 /**
- * Run freeBusyQuery for items and return array containing objects
- * with id and start of next or current event
- * @param client OAuth2Client
- * @param items Items to query
- * @param start Start time
- * @param end End time
- * @returns
- */
-export const freeBusyQuery = async (
-    client: OAuth2Client,
-    items: schema.FreeBusyRequestItem[],
-    start: string,
-    end: string
-): Promise<NextEventById> => {
-    const queryResult = await calendar.freebusy.query({
-        requestBody: {
-            timeMin: start,
-            timeMax: end,
-            items: items,
-            calendarExpansionMax: items.length
-        },
-        auth: client
-    });
-
-    const calendars = queryResult.data.calendars;
-    const results: NextEventById = {};
-
-    _.forIn(calendars, (data: schema.FreeBusyCalendar, id: string) => {
-        let startOfReservation: string | null | undefined = end;
-
-        if (Array.isArray(data.busy) && data.busy.length !== 0) {
-            startOfReservation = data.busy[0].start;
-        }
-
-        results[id] = startOfReservation;
-    });
-
-    return results;
-};
-
-/**
  * Create an event, will not check if the rooms is free
  * @param client OAuth2Client
  * @param room Room email
@@ -98,6 +57,60 @@ export const createEvent = async (
 };
 
 /**
+ * Deletes the event of the current client
+ * @param client OAuth2Client
+ * @param eventId Id of the event to delete
+ */
+export const deleteEvent = async (client: OAuth2Client, eventId: string) => {
+    await calendar.events.delete({
+        calendarId: 'primary',
+        eventId: eventId,
+        sendUpdates: 'none',
+        auth: client
+    });
+};
+
+/**
+ * Run freeBusyQuery for items and return array containing objects
+ * with id and start of next or current event
+ * @param client OAuth2Client
+ * @param items Items to query
+ * @param start Start time
+ * @param end End time
+ */
+export const freeBusyQuery = async (
+    client: OAuth2Client,
+    items: schema.FreeBusyRequestItem[],
+    start: string,
+    end: string
+): Promise<NextEventById> => {
+    const queryResult = await calendar.freebusy.query({
+        requestBody: {
+            timeMin: start,
+            timeMax: end,
+            items: items,
+            calendarExpansionMax: items.length
+        },
+        auth: client
+    });
+
+    const calendars = queryResult.data.calendars;
+    const results: NextEventById = {};
+
+    _.forIn(calendars, (data: schema.FreeBusyCalendar, id: string) => {
+        let startOfReservation: string | null | undefined = end;
+
+        if (Array.isArray(data.busy) && data.busy.length !== 0) {
+            startOfReservation = data.busy[0].start;
+        }
+
+        results[id] = startOfReservation;
+    });
+
+    return results;
+};
+
+/**
  * Gets current bookings of the user
  * @param client OAuth2Client
  */
@@ -116,23 +129,8 @@ export const getCurrentBookings = async (
 };
 
 /**
- * Deletes the event of the current client
+ * Gets event status with eventId
  * @param client OAuth2Client
- * @param eventId Id of the event to delete
- */
-export const deleteEvent = async (client: OAuth2Client, eventId: string) => {
-    await calendar.events.delete({
-        calendarId: 'primary',
-        eventId: eventId,
-        sendUpdates: 'none',
-        auth: client
-    });
-};
-
-/**
- * Gets response status of the room of the event
- * @param client OAuth2Client
- * @param roomId Id of the room (email)
  * @param eventId Id of the event to lookup
  */
 export const getEventData = async (
@@ -146,4 +144,31 @@ export const getEventData = async (
     });
 
     return response.data;
+};
+
+/**
+ * Updates the end time of an event
+ * @param client OAuth2Client
+ * @param eventId Id of the event to update
+ * @param endTime New end time in ISO format
+ */
+export const updateEndTime = async (
+    client: OAuth2Client,
+    eventId: string,
+    endTime: string
+): Promise<schema.EventData> => {
+    const endDt: schema.EventDateTime = {
+        dateTime: endTime
+    };
+
+    const event = await calendar.events.patch({
+        calendarId: 'primary',
+        eventId: eventId,
+        auth: client,
+        requestBody: {
+            end: endDt
+        }
+    });
+
+    return event.data;
 };
