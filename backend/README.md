@@ -20,4 +20,4 @@ Environment variables `DB_URL`, `DB_USER` and `DB_PASSWORD` need to be present (
 
 Api documentation on swaggerhub:
 
-[https://app.swaggerhub.com/apis/Mikkooo/api/0.2.0#/]()
+<https://app.swaggerhub.com/apis/Mikkooo/api/>
