@@ -13,18 +13,14 @@ import {
 import { Booking } from '../types';
 import React from 'react';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
+import TimeLeft from './util/TimeLeft';
 
 function getBookingRoomName(booking: Booking) {
     return booking.room.name;
 }
 
-function getBookingTimeLeft(booking: Booking) {
-    let endTime = new Date(Date.parse(booking.endTime));
-    return getTimeDifference(endTime, new Date());
-}
-
-function getTimeDifference(startTime: Date, endTime: Date) {
-    return Math.floor((startTime.getTime() - endTime.getTime()) / 1000 / 60);
+function getEndTime(booking: Booking) {
+    return booking.endTime;
 }
 
 function areBookingsFetched(bookings: Booking[]) {
@@ -103,9 +99,10 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
                                 >
                                     {getBookingRoomName(booking)}
                                 </Typography>
-                                <Typography style={{ fontStyle: 'italic' }}>
-                                    Time left: {getBookingTimeLeft(booking)} min
-                                </Typography>
+                                <TimeLeft
+                                    endTime={getEndTime(booking)}
+                                    timeLeftText="Time left:"
+                                />
                             </Box>
                             <Box
                                 style={{
