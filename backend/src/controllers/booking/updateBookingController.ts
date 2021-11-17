@@ -4,7 +4,8 @@ import { OAuth2Client } from 'google-auth-library';
 import * as calendar from '../googleAPI/calendarAPI';
 import * as responses from '../../utils/responses';
 import * as schema from '../../utils/googleSchema';
-import _ from 'lodash';
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
  * Add time to current booking
