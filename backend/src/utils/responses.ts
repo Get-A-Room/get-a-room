@@ -3,6 +3,20 @@ import express from 'express';
 // This module contains common responses in consistent format
 
 //
+// Ok
+//
+
+/**
+ * 204 No Content
+ */
+export const noContent = (req: express.Request, res: express.Response) => {
+    return res.status(204).json({
+        code: 204,
+        message: 'No Content'
+    });
+};
+
+//
 // User errors
 //
 

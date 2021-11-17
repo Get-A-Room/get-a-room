@@ -14,6 +14,7 @@ router.get(
     controller.addAllRooms(),
     controller.fetchAvailability(),
     controller.writeReservationData(),
+    controller.removeReservedRooms(),
     (req, res) => {
         return res.json({ rooms: res.locals.rooms });
     }
