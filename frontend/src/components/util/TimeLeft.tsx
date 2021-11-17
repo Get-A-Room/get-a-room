@@ -3,11 +3,19 @@ import React, { useEffect } from 'react';
 import { DateTime, Duration } from 'luxon';
 
 function getTimeLeft(endTime: string) {
-    let end = DateTime.fromISO(endTime);
-    let start = DateTime.now();
+    let endOfDay = DateTime.now().endOf('day');
+    let nextReservationTime = DateTime.fromISO(endTime);
+
+    // If nextReservationTime equals to end of the day, then that means that the
+    // room has no current reservations for that day and is free all day.
+    if (nextReservationTime.equals(endOfDay)) {
+        return 'All day';
+    }
+
+    let currentTime = DateTime.now();
 
     let duration = Duration.fromObject(
-        end.diff(start, ['hours', 'minutes']).toObject()
+        nextReservationTime.diff(currentTime, ['hours', 'minutes']).toObject()
     );
 
     if (duration.hours === 0 && duration.minutes < 1) {
