@@ -1,6 +1,6 @@
 import express from 'express';
 import * as controller from '../controllers/preferencesController';
-import { validateBuildingInOrg } from '../controllers/buildingsController';
+import { validateBuildingInOrg } from '../controllers/validateBuildingInOrg';
 
 export const router = express.Router();
 

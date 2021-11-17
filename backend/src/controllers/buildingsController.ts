@@ -41,60 +41,12 @@ export const getBuildingsMiddleware = () => {
  */
 export const getBuildings = async (client: OAuth2Client) => {
     const buildings = await admin.getBuildingData(client);
+
+    if (!buildings || buildings.length === 0) {
+        return [];
+    }
+
     return simplifyBuildingData(buildings);
-};
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/**
- * Middleware validates that a building belongs to the organization
- * @param req Express request
- * @param res Express response
- * @param next Next
- * @returns
- */
-export const validateBuildingInOrg = () => {
-    const middleware = (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
-    ) => {
-        try {
-            let building = res.locals.buildingId;
-
-            if (!building) {
-                building = req.query.building as string;
-            }
-
-            if (!building) {
-                return next();
-            }
-
-            getBuildings(res.locals.oAuthClient)
-                .then((result) => {
-                    if (!result || result.length === 0) {
-                        return responses.internalServerError(req, res);
-                    }
-
-                    const ids: string[] = result.map(
-                        (x: BuildingData) => x.id as string
-                    );
-
-                    if (!ids.includes(building)) {
-                        return responses.badRequest(req, res);
-                    }
-
-                    return next();
-                })
-                .catch((err) => {
-                    console.error(err);
-                    return next(err);
-                });
-        } catch (err) {
-            next(err);
-        }
-    };
-
-    return middleware;
 };
 
 /**

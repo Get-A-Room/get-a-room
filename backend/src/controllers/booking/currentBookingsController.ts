@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import _ from 'lodash';
 
 import { Request, Response, NextFunction } from 'express';
-import currentBookingData from '../../types/currentBookingData';
+import CurrentBookingData from '../../types/currentBookingData';
 import * as schema from '../../utils/googleSchema';
 import * as admin from '../googleAPI/adminAPI';
 import * as calendar from '../googleAPI/calendarAPI';
@@ -24,12 +24,12 @@ export const getCurrentBookingsMiddleware = () => {
         try {
             const client: OAuth2Client = res.locals.oAuthClient;
 
-            const currentBookings: schema.EventsData =
+            const allCurrentAndFutureBookings: schema.EventsData =
                 await calendar.getCurrentBookings(client);
 
-            res.locals.currentBookings = currentBookings;
+            res.locals.currentBookings = allCurrentAndFutureBookings;
 
-            if (!currentBookings.items) {
+            if (!allCurrentAndFutureBookings.items) {
                 return responses.internalServerError(req, res);
             }
 
@@ -53,7 +53,7 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
         next: NextFunction
     ) => {
         try {
-            const allBookings: currentBookingData[] =
+            const allBookings: schema.Event[] =
                 res.locals.currentBookings.items;
 
             const rooms: schema.CalendarResource[] = await admin.getRoomData(
@@ -64,6 +64,7 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
 
             res.locals.currentBookings =
                 filterCurrentBookings(simplifiedBookings);
+
             next();
         } catch (err) {
             next(err);
@@ -79,14 +80,14 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
  * @returns simplified bookings
  */
 export const simplifyBookings = (
-    allBookings: currentBookingData[],
+    allBookings: schema.Event[],
     rooms: schema.CalendarResource[]
-): currentBookingData[] => {
+): CurrentBookingData[] => {
     // Filters away all bookings that aren't running at the moment
     const roomsSimplified: roomData[] = simplifyRoomData(rooms);
 
     const simplifiedBookings = allBookings.map((booking: schema.EventData) => {
-        const simpleEvent: currentBookingData = {
+        const simpleEvent: CurrentBookingData = {
             id: booking.id,
             startTime: booking.start?.dateTime,
             endTime: booking.end?.dateTime,
@@ -97,6 +98,7 @@ export const simplifyBookings = (
         const room = roomsSimplified.find((room: roomData) => {
             return room.location === booking.location;
         });
+
         simpleEvent.room = room;
 
         return simpleEvent;
@@ -111,11 +113,13 @@ export const simplifyBookings = (
  * @returns filtered bookings
  */
 export const filterCurrentBookings = (
-    simplifiedBookings: currentBookingData[]
-): currentBookingData[] => {
+    simplifiedBookings: CurrentBookingData[]
+): CurrentBookingData[] => {
+    const now: string = getNowDateTime();
+
     // Filters away all bookings that aren't running at the moment
-    const onlyCurrentlyRunningBookings: currentBookingData[] =
-        simplifiedBookings.filter((booking: currentBookingData) => {
+    const onlyCurrentlyRunningBookings: CurrentBookingData[] =
+        simplifiedBookings.filter((booking: CurrentBookingData) => {
             if (!booking.startTime || !booking.endTime) {
                 return false;
             }
@@ -125,12 +129,12 @@ export const filterCurrentBookings = (
                 return false;
             }
 
-            const now = DateTime.now()
-                .toUTC()
-                .setZone('Europe/Helsinki')
-                .toISO();
             return booking.startTime <= now && booking.endTime >= now;
         });
 
     return onlyCurrentlyRunningBookings;
+};
+
+export const getNowDateTime = (): string => {
+    return DateTime.now().toUTC().setZone('Europe/Helsinki').toISO();
 };

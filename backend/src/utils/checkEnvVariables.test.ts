@@ -11,7 +11,8 @@ describe('checkEnvVariables', () => {
         process.env = {
             GOOGLE_CLIENT_ID: 'Test ID',
             GOOGLE_CLIENT_SECRET: 'Test secret',
-            GOOGLE_CUSTOMER_ID: 'Test customer ID'
+            GOOGLE_CUSTOMER_ID: 'Test customer ID',
+            JWT_SECRET: 'Test JWT secret'
         };
     });
 
@@ -57,11 +58,26 @@ describe('checkEnvVariables', () => {
         }).toThrow('Workspace customer id');
     });
 
-    test('Should replace double quotes in env variables', () => {
+    test('Should fail without JWT secret', () => {
+        process.env.JWT_SECRET = undefined;
+        expect(() => {
+            checkEnvVariables();
+        }).toThrow('JWT secret');
+    });
+
+    test('Should fail with empty Google Workspace customer id', () => {
+        process.env.JWT_SECRET = '';
+        expect(() => {
+            checkEnvVariables();
+        }).toThrow('JWT secret');
+    });
+
+    test('Should replace double quotes in Google env variables', () => {
         process.env = {
             GOOGLE_CLIENT_ID: '"Test ID"',
             GOOGLE_CLIENT_SECRET: '"Test secret"',
-            GOOGLE_CUSTOMER_ID: '"Test customer ID"'
+            GOOGLE_CUSTOMER_ID: '"Test customer ID"',
+            JWT_SECRET: 'Test JWT secret'
         };
 
         checkEnvVariables();
