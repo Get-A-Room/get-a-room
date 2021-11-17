@@ -4,6 +4,7 @@ import * as makeBookingController from '../controllers/booking/makeBookingContro
 import * as currentBookingsController from '../controllers/booking/currentBookingsController';
 import * as deleteCurrentBookingController from '../controllers/booking/deleteBookingController';
 import * as responses from '../utils/responses';
+import { simplifyEventData } from '../controllers/booking/bookingUtils';
 
 export const router = express.Router();
 
@@ -15,7 +16,7 @@ router.post(
     makeBookingController.makeBooking(),
     makeBookingController.checkRoomAccepted(), // This middleware slows things down :(
     makeBookingController.removeDeclinedEvent(),
-    makeBookingController.simplifyEventData(),
+    simplifyEventData(),
     (req: Request, res: Response) => {
         res.status(201).json(res.locals.event);
     }

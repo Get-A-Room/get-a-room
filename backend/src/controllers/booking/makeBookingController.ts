@@ -3,7 +3,6 @@ import { DateTime } from 'luxon';
 import * as calendar from '../googleAPI/calendarAPI';
 import * as responses from '../../utils/responses';
 import { OAuth2Client } from 'google-auth-library';
-import * as schema from '../../utils/googleSchema';
 import _ from 'lodash';
 
 /**
@@ -166,51 +165,6 @@ export const removeDeclinedEvent = () => {
                 return responses.custom(req, res, 409, 'Conflict');
             }
 
-            next();
-        } catch (err) {
-            next(err);
-        }
-    };
-
-    return middleware;
-};
-
-/**
- * Simplify the event data to defined type
- * @returns
- */
-export const simplifyEventData = () => {
-    const middleware = async (
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
-        try {
-            const event: schema.EventData = res.locals.event;
-            const roomId: string = res.locals.roomId;
-
-            // TODO: Should we fetch room data from Google here to match defined API?
-
-            const simpleEvent = {
-                id: event.id,
-                startTime: event.start?.dateTime,
-                endTime: event.end?.dateTime,
-                room: {
-                    id: roomId
-                }
-            };
-
-            // Check if any of the properties are undefined
-            if (
-                !simpleEvent.id ||
-                !simpleEvent.startTime ||
-                !simpleEvent.endTime ||
-                !simpleEvent.room.id
-            ) {
-                throw new Error('Property undefined');
-            }
-
-            res.locals.event = simpleEvent;
             next();
         } catch (err) {
             next(err);

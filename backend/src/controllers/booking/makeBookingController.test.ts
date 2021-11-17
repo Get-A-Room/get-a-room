@@ -1,14 +1,11 @@
 import { Request, Response } from 'express';
 import { mocked } from 'ts-jest/utils';
-import * as schema from '../../utils/googleSchema';
-import { DateTime } from 'luxon';
 import { badRequest, custom, internalServerError } from '../../utils/responses';
 import { query } from 'express-validator';
 import {
     makeBooking,
     validateInput,
     removeDeclinedEvent,
-    simplifyEventData,
     checkRoomAccepted
 } from './makeBookingController';
 import {
@@ -408,84 +405,6 @@ describe('makeBookingController', () => {
             expect(mockNext).toBeCalledWith();
             expect(mockedDeleteEvent).not.toBeCalled();
             expect(mockedCustomResponse).not.toBeCalled();
-        });
-    });
-
-    describe('simplifyEventData', () => {
-        const TEST_EVENTDATA: schema.EventData = {
-            id: 'test id',
-            start: {
-                dateTime: DateTime.local().toISO()
-            },
-            end: {
-                dateTime: DateTime.local().plus({ minutes: 60 }).toISO()
-            }
-        };
-
-        beforeEach(() => {
-            mockRequest = {};
-            mockResponse = {
-                locals: {
-                    event: TEST_EVENTDATA,
-                    roomId: 'test room'
-                }
-            };
-            mockNext = jest.fn();
-
-            jest.resetAllMocks();
-        });
-
-        test('Should simplify data', async () => {
-            await simplifyEventData()(
-                mockRequest as Request,
-                mockResponse as Response,
-                mockNext
-            );
-
-            const locals = mockResponse.locals;
-            expect(mockNext).toBeCalledWith();
-            expect(locals).toHaveProperty('event');
-            expect(locals?.event).toHaveProperty('id', TEST_EVENTDATA.id);
-            expect(locals?.event).toHaveProperty(
-                'startTime',
-                TEST_EVENTDATA.start?.dateTime
-            );
-            expect(locals?.event).toHaveProperty(
-                'endTime',
-                TEST_EVENTDATA.end?.dateTime
-            );
-            expect(locals?.event.room).toHaveProperty('id', 'test room');
-        });
-
-        test('Should throw error if roomId property is missing', async () => {
-            if (mockResponse.locals) {
-                mockResponse.locals.roomId = undefined;
-            }
-
-            await simplifyEventData()(
-                mockRequest as Request,
-                mockResponse as Response,
-                mockNext
-            );
-
-            expect(mockNext).toBeCalled();
-            expect(mockNext.mock.calls[0].length).toBe(1);
-        });
-
-        test('Should throw error if start or end are missing', async () => {
-            if (mockResponse.locals) {
-                mockResponse.locals.event.start = undefined;
-                mockResponse.locals.event.end = undefined;
-            }
-
-            await simplifyEventData()(
-                mockRequest as Request,
-                mockResponse as Response,
-                mockNext
-            );
-
-            expect(mockNext).toBeCalled();
-            expect(mockNext.mock.calls[0].length).toBe(1);
         });
     });
 });
