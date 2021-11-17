@@ -5,7 +5,7 @@ import * as currentBookingsController from '../controllers/booking/currentBookin
 import { deleteBooking } from '../controllers/booking/deleteBookingController';
 import { getBooking } from '../controllers/booking/getBookingController';
 import { simplifyEventData } from '../controllers/booking/bookingUtils';
-import { addTimeToBooking } from '../controllers/booking/updateBookingController';
+import * as updateBookingController from '../controllers/booking/updateBookingController';
 
 export const router = express.Router();
 
@@ -14,6 +14,7 @@ router.post(
     '/',
     query('noConfirmation').toBoolean(true),
     makeBookingController.validateInput(),
+    // TODO: Check if room is free
     makeBookingController.makeBooking(),
     makeBookingController.checkRoomAccepted(), // This middleware slows things down :(
     makeBookingController.removeDeclinedEvent(),
@@ -53,9 +54,10 @@ router.patch(
     '/:bookingId/addTime',
     body('timeToAdd').trim().escape().isNumeric(),
     getBooking(),
-    addTimeToBooking(),
+    // TODO: Check if room is free
+    updateBookingController.addTimeToBooking(),
     makeBookingController.checkRoomAccepted(),
-    // Add reservation roll back here
+    updateBookingController.rollBackDeclinedUpdate(),
     simplifyEventData(),
     (req: Request, res: Response) => {
         res.status(200).json(res.locals.event);

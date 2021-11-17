@@ -151,11 +151,13 @@ export const getEventData = async (
  * @param client OAuth2Client
  * @param eventId Id of the event to update
  * @param endTime New end time in ISO format
+ * @param attendees Set attendees again to set room status to needsAction
  */
 export const updateEndTime = async (
     client: OAuth2Client,
     eventId: string,
-    endTime: string
+    endTime: string,
+    attendees: schema.EventAttendee[]
 ): Promise<schema.EventData> => {
     const endDt: schema.EventDateTime = {
         dateTime: endTime
@@ -166,7 +168,8 @@ export const updateEndTime = async (
         eventId: eventId,
         auth: client,
         requestBody: {
-            end: endDt
+            end: endDt,
+            attendees: attendees
         }
     });
 
