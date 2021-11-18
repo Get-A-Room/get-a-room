@@ -13,6 +13,7 @@ import {
 import { Business, Group, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { Booking, BookingDetails, Room } from '../types';
 import { getBookings, makeBooking } from '../services/bookingService';
+import TimeLeft from './util/TimeLeft';
 
 export async function book(
     event: React.MouseEvent<HTMLElement>,
@@ -35,6 +36,10 @@ export async function book(
         .catch(() => {
             alert('Booking failed.');
         });
+}
+
+function getNextCalendarEvent(room: Room) {
+    return room.nextCalendarEvent;
 }
 
 function getName(room: Room) {
@@ -109,17 +114,28 @@ const AvailableRoomList = (props: BookingListProps) => {
                         <CardContent
                             style={{
                                 justifyContent: 'space-between',
-                                display: 'flex'
+                                display: 'flex',
+                                textAlign: 'left'
                             }}
                         >
-                            <Typography
-                                style={{
-                                    fontSize: '18px',
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                {getName(room)}
-                            </Typography>
+                            <Box>
+                                <Box>
+                                    <Typography
+                                        style={{
+                                            fontSize: '18px',
+                                            fontWeight: 'bold'
+                                        }}
+                                    >
+                                        {getName(room)}
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    <TimeLeft
+                                        endTime={getNextCalendarEvent(room)}
+                                        timeLeftText="Free for: "
+                                    />
+                                </Box>
+                            </Box>
                             <CardActions disableSpacing>
                                 <Button
                                     id="quickBook-button"
