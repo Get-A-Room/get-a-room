@@ -62,3 +62,26 @@ export const getRoomData = async (
 
     return rooms;
 };
+
+/**
+ * Gets data of a single room with email address
+ * @param client OAuth2Client
+ * @param email Email address of the room
+ */
+export const getSingleRoomData = async (
+    client: OAuth2Client,
+    email: string
+): Promise<schema.CalendarResource> => {
+    const result = await admin.resources.calendars.list({
+        customer: process.env.GOOGLE_CUSTOMER_ID,
+        orderBy: 'resourceName',
+        query: `resourceEmail=${email}`,
+        auth: client
+    });
+
+    if (!Array.isArray(result.data.items) || result.data.items?.length != 1) {
+        throw new Error('Could not get room');
+    }
+
+    return result.data.items[0];
+};
