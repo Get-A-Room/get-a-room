@@ -44,7 +44,10 @@ const TimeLeft = (props: TimeLeftProps) => {
 
     return (
         <Box>
-            <Typography style={{ fontStyle: 'italic' }}>
+            <Typography
+                data-testid="TimeLeftTest"
+                style={{ fontStyle: 'italic' }}
+            >
                 {timeLeftText} {getTimeLeft(endTime)}
             </Typography>
         </Box>
