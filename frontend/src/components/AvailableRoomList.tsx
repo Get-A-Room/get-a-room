@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Button,
     List,
@@ -19,14 +19,14 @@ import { Booking, BookingDetails, Room } from '../types';
 import { getBookings, makeBooking } from '../services/bookingService';
 
 let bookingLoading_: String = 'false';
-let bookingSuccessful_: boolean = false;
-let bookingFailure_: boolean = false;
 
 export async function book(
     event: React.MouseEvent<HTMLElement>,
     room: Room,
     duration: number,
-    setBookings: React.Dispatch<React.SetStateAction<Booking[]>>
+    setBookings: React.Dispatch<React.SetStateAction<Booking[]>>,
+    setOpenSuccessAlert: React.Dispatch<React.SetStateAction<boolean>>,
+    setOpenErrorAlert: React.Dispatch<React.SetStateAction<boolean>>
 ) {
     let bookingDetails: BookingDetails = {
         duration: duration,
@@ -39,13 +39,13 @@ export async function book(
     makeBooking(bookingDetails)
         .then(() => {
             getBookings().then(setBookings);
+            setOpenSuccessAlert(true);
             window.scrollTo(0, 0);
             bookingLoading('false');
-            bookingSuccessful(true);
         })
         .catch((e) => {
             bookingLoading('false');
-            bookingFailure(true);
+            setOpenErrorAlert(true);
         });
 }
 
@@ -55,14 +55,6 @@ function disableBooking(bookings: Booking[]) {
 
 function bookingLoading(status: String) {
     bookingLoading_ = status;
-}
-
-function bookingSuccessful(status: boolean) {
-    bookingSuccessful_ = status;
-}
-
-function bookingFailure(status: boolean) {
-    bookingFailure_ = status;
 }
 
 function getName(room: Room) {
@@ -98,8 +90,8 @@ type BookingListProps = {
 const AvailableRoomList = (props: BookingListProps) => {
     const { rooms, bookings, setBookings } = props;
 
-    const [expandedFeatures, setExpandedFeatures] = React.useState('false');
-    const [expandedBooking, setExpandedBooking] = React.useState('false');
+    const [expandedFeatures, setExpandedFeatures] = useState('false');
+    const [expandedBooking, setExpandedBooking] = useState('false');
 
     const handleFeaturesCollapse = (
         event: React.MouseEvent<HTMLElement>,
@@ -115,6 +107,16 @@ const AvailableRoomList = (props: BookingListProps) => {
         setExpandedBooking(expandedBooking === room.id ? 'false' : room.id);
     };
 
+    const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
+    const [openErrorAlert, setOpenErrorAlert] = useState(false);
+
+    const handleSuccessAlertClosure = () => {
+        setOpenSuccessAlert(false);
+    };
+    const handleErrorAlertClosure = () => {
+        setOpenErrorAlert(false);
+    };
+
     return (
         <div>
             <div className="AvailableRoomList">
@@ -125,11 +127,19 @@ const AvailableRoomList = (props: BookingListProps) => {
                         justifyContent: 'center'
                     }}
                 >
-                    <Snackbar open={bookingSuccessful_} autoHideDuration={3000}>
+                    <Snackbar
+                        open={openSuccessAlert}
+                        autoHideDuration={3000}
+                        onClose={handleSuccessAlertClosure}
+                    >
                         <Alert severity="success">Booking successful!</Alert>
                     </Snackbar>
-                    <Snackbar open={bookingFailure_} autoHideDuration={3000}>
-                        <Alert severity="error">Booking failed.</Alert>
+                    <Snackbar
+                        open={openErrorAlert}
+                        autoHideDuration={3000}
+                        onClose={handleErrorAlertClosure}
+                    >
+                        <Alert severity="success">Booking successful!</Alert>
                     </Snackbar>
                 </Box>
                 <List>
@@ -256,7 +266,9 @@ const AvailableRoomList = (props: BookingListProps) => {
                                                         e,
                                                         room,
                                                         30,
-                                                        setBookings
+                                                        setBookings,
+                                                        setOpenSuccessAlert,
+                                                        setOpenErrorAlert
                                                     );
                                                     handleBookingCollapse(
                                                         e,
@@ -285,7 +297,9 @@ const AvailableRoomList = (props: BookingListProps) => {
                                                         e,
                                                         room,
                                                         60,
-                                                        setBookings
+                                                        setBookings,
+                                                        setOpenSuccessAlert,
+                                                        setOpenErrorAlert
                                                     );
                                                     handleBookingCollapse(
                                                         e,
