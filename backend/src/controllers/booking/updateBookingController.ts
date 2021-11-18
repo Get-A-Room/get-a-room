@@ -75,7 +75,7 @@ export const checkRoomIsFree = () => {
                 .plus({ minutes: timeToAdd })
                 .toISO();
 
-            const busyStatus = (
+            const freeBusyResult = (
                 await calendar.freeBusyQuery(
                     client,
                     [{ id: roomId }],
@@ -84,11 +84,13 @@ export const checkRoomIsFree = () => {
                 )
             )[roomId];
 
-            if (!busyStatus) {
+            if (!freeBusyResult) {
                 return responses.internalServerError(req, res);
             }
 
-            if (DateTime.fromISO(busyStatus).toISO() !== endTime) {
+            // freeBusyResult is equal to end time when there are no
+            // reservations between now and end time
+            if (DateTime.fromISO(freeBusyResult).toISO() !== endTime) {
                 return responses.custom(req, res, 409, 'Conflict');
             }
 

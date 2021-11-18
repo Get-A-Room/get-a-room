@@ -6,81 +6,6 @@ import { OAuth2Client } from 'google-auth-library';
 import _ from 'lodash';
 
 /**
- * Validates booking body
- * @returns
- */
-export const validateInput = () => {
-    const middleware = async (
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
-        try {
-            if (
-                !req.body.roomId ||
-                !req.body.title ||
-                !req.body.duration ||
-                !Number.isInteger(req.body.duration)
-            ) {
-                return responses.badRequest(req, res);
-            }
-
-            res.locals.roomId = req.body.roomId;
-            res.locals.title = req.body.title;
-            res.locals.duration = req.body.duration;
-
-            next();
-        } catch (err) {
-            next(err);
-        }
-    };
-
-    return middleware;
-};
-
-/**
- * Book a room
- * @returns
- */
-export const makeBooking = () => {
-    const middleware = async (
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
-        try {
-            const startTime = DateTime.now().toISO();
-            const endTime = DateTime.now()
-                .plus({ minutes: req.body.duration })
-                .toISO();
-
-            const client: OAuth2Client = res.locals.oAuthClient;
-            const response = await calendar.createEvent(
-                client,
-                res.locals.roomId,
-                res.locals.email,
-                res.locals.title,
-                startTime,
-                endTime
-            );
-
-            if (!response.id) {
-                return responses.internalServerError(req, res);
-            }
-
-            res.locals.event = response;
-            res.locals.eventId = response.id;
-
-            next();
-        } catch (err) {
-            next(err);
-        }
-    };
-
-    return middleware;
-};
-
-/**
  * Add res.locals.roomAccepted boolean that tells if the room has accepted the event
  * NOTE: If we somehow can get around this, the calls would be 3x faster!
  * @returns
@@ -138,6 +63,94 @@ export const checkRoomAccepted = () => {
 };
 
 /**
+ * Checks if the rooms if free before making a change
+ */
+export const checkRoomIsFree = () => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const client: OAuth2Client = res.locals.oAuthClient;
+            const roomId: string = res.locals.roomId;
+
+            const startTime = DateTime.now().toISO();
+            const endTime = DateTime.now()
+                .plus({ minutes: res.locals.duration })
+                .toISO();
+
+            const freeBusyResult = (
+                await calendar.freeBusyQuery(
+                    client,
+                    [{ id: roomId }],
+                    startTime,
+                    endTime
+                )
+            )[roomId];
+
+            if (!freeBusyResult) {
+                return responses.internalServerError(req, res);
+            }
+
+            // freeBusyResult is equal to end time when there are no
+            // reservations between now and end time
+            if (DateTime.fromISO(freeBusyResult).toISO() !== endTime) {
+                return responses.custom(req, res, 409, 'Conflict');
+            }
+
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    return middleware;
+};
+
+/**
+ * Book a room
+ * @returns
+ */
+export const makeBooking = () => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const startTime = DateTime.now().toISO();
+            const endTime = DateTime.now()
+                .plus({ minutes: res.locals.duration })
+                .toISO();
+
+            const client: OAuth2Client = res.locals.oAuthClient;
+            const response = await calendar.createEvent(
+                client,
+                res.locals.roomId,
+                res.locals.email,
+                res.locals.title,
+                startTime,
+                endTime
+            );
+
+            if (!response.id) {
+                return responses.internalServerError(req, res);
+            }
+
+            res.locals.event = response;
+            res.locals.eventId = response.id;
+
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    return middleware;
+};
+
+/**
  * Removes the event if res.locals.roomAccepted is false
  * @returns
  */
@@ -164,6 +177,39 @@ export const removeDeclinedEvent = () => {
                 await calendar.deleteEvent(client, eventId);
                 return responses.custom(req, res, 409, 'Conflict');
             }
+
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    return middleware;
+};
+
+/**
+ * Validates booking body
+ * @returns
+ */
+export const validateInput = () => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            if (
+                !req.body.roomId ||
+                !req.body.title ||
+                !req.body.duration ||
+                !Number.isInteger(req.body.duration)
+            ) {
+                return responses.badRequest(req, res);
+            }
+
+            res.locals.roomId = req.body.roomId;
+            res.locals.title = req.body.title;
+            res.locals.duration = req.body.duration;
 
             next();
         } catch (err) {

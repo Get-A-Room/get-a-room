@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
 import { body, query } from 'express-validator';
-import * as makeBookingController from '../controllers/booking/makeBookingController';
-import * as currentBookingsController from '../controllers/booking/currentBookingsController';
 import { deleteBooking } from '../controllers/booking/deleteBookingController';
 import { getBooking } from '../controllers/booking/getBookingController';
 import { simplifyEventData } from '../controllers/booking/bookingUtils';
+import * as currentBookingsController from '../controllers/booking/currentBookingsController';
+import * as makeBookingController from '../controllers/booking/makeBookingController';
 import * as updateBookingController from '../controllers/booking/updateBookingController';
 
 export const router = express.Router();
@@ -14,7 +14,7 @@ router.post(
     '/',
     query('noConfirmation').toBoolean(true),
     makeBookingController.validateInput(),
-    // TODO: Check if room is free
+    makeBookingController.checkRoomIsFree(),
     makeBookingController.makeBooking(),
     makeBookingController.checkRoomAccepted(), // This middleware slows things down :(
     makeBookingController.removeDeclinedEvent(),
