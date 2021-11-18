@@ -18,7 +18,7 @@ import './BookingView.css';
 import { Booking, BookingDetails, Room } from '../types';
 import { getBookings, makeBooking } from '../services/bookingService';
 
-let bookingLoading_: String = 'false';
+let bookingLoading: String = 'false';
 
 export async function book(
     event: React.MouseEvent<HTMLElement>,
@@ -34,27 +34,23 @@ export async function book(
         roomId: room.id
     };
 
-    bookingLoading(room.id);
+    bookingLoading = room.id;
 
     makeBooking(bookingDetails)
         .then(() => {
             getBookings().then(setBookings);
             setOpenSuccessAlert(true);
             window.scrollTo(0, 0);
-            bookingLoading('false');
+            bookingLoading = 'false';
         })
         .catch((e) => {
-            bookingLoading('false');
+            bookingLoading = 'false';
             setOpenErrorAlert(true);
         });
 }
 
 function disableBooking(bookings: Booking[]) {
     return bookings.length === 0 ? false : true;
-}
-
-function bookingLoading(status: String) {
-    bookingLoading_ = status;
 }
 
 function getName(room: Room) {
@@ -129,17 +125,17 @@ const AvailableRoomList = (props: BookingListProps) => {
                 >
                     <Snackbar
                         open={openSuccessAlert}
-                        autoHideDuration={3000}
+                        autoHideDuration={5000}
                         onClose={handleSuccessAlertClosure}
                     >
                         <Alert severity="success">Booking successful!</Alert>
                     </Snackbar>
                     <Snackbar
                         open={openErrorAlert}
-                        autoHideDuration={3000}
+                        autoHideDuration={5000}
                         onClose={handleErrorAlertClosure}
                     >
-                        <Alert severity="success">Booking successful!</Alert>
+                        <Alert severity="error">Booking failed.</Alert>
                     </Snackbar>
                 </Box>
                 <List>
@@ -227,7 +223,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                         )}
                                     </CardActions>
                                 </Box>
-                                {bookingLoading_ === room.id ? (
+                                {bookingLoading === room.id ? (
                                     <div className="Booking-loadingScreen">
                                         <CircularProgress
                                             style={{ color: '#F04E30' }}
