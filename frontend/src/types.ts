@@ -30,5 +30,5 @@ export interface Room {
     building: string;
     capacity?: number;
     features?: Array<string>;
-    nextCalendarEvent?: string;
+    nextCalendarEvent: string;
 }
