@@ -101,7 +101,9 @@ describe('currentBookingsController', () => {
             const currentBookings = mockResponse?.locals?.currentBookings;
             expect(currentBookings.length).toBe(1);
             expect(currentBookings[0].id).toBe('3pt0pdqmgp0c4qa8a7o4ie0an4');
-            expect(currentBookings[0].room.id).toBe('80430164898');
+            expect(currentBookings[0].room.id).toBe(
+                'c_188dlqruaau34j82gd69abdo87gs6@resource.calendar.google.com'
+            );
             expect(currentBookings[0].room.name).toBe('Höyhen');
             expect(currentBookings[0].room.building).toBe('Hakaniemi');
             expect(currentBookings[0].room.features).toEqual([
@@ -210,6 +212,8 @@ const rooms: schema.CalendarResource[] = [
     {
         resourceId: '85866896181',
         resourceName: 'Sofas',
+        resourceEmail:
+            'c_188dh3ujphp7ghn8l6udv5v0ilmqq@resource.calendar.google.com',
         generatedResourceName: 'Hermia 5-2-Namu-Sofas (10) [TV]',
         buildingId: 'Hermia 5',
         floorName: '2',
@@ -226,6 +230,8 @@ const rooms: schema.CalendarResource[] = [
     {
         resourceId: '80430164898',
         resourceName: 'Höyhen',
+        resourceEmail:
+            'c_188dlqruaau34j82gd69abdo87gs6@resource.calendar.google.com',
         generatedResourceName: 'Hakaniemi-7-Höyhen (4) [TV]',
         buildingId: 'Hakaniemi',
         featureInstances: [
@@ -255,6 +261,8 @@ const rooms: schema.CalendarResource[] = [
     {
         resourceId: '9389184770',
         resourceName: 'Arkadia',
+        resourceEmail:
+            'c_188fib500s84uis7kcpb6dfm93v24@resource.calendar.google.com',
         generatedResourceName: 'Arkadia-4-Arkadia (6) [TV]',
         buildingId: 'Arkadia',
         featureInstances: [
@@ -270,6 +278,8 @@ const rooms: schema.CalendarResource[] = [
     {
         resourceId: '1752049657',
         resourceName: 'Parlamentti',
+        resourceEmail:
+            'c_188beek3947jqia9kf9vjr24u8bkc@resource.calendar.google.com',
         generatedResourceName: 'Arkadia-4-Parlamentti (12) [TV]',
         buildingId: 'Arkadia',
         featureInstances: []
