@@ -5,7 +5,6 @@ import BookingView from './BookingView';
 import PreferencesView from './PreferencesView';
 import { Building, Preferences } from '../types';
 import { getPreferences } from '../services/preferencesService';
-import NavBar from './NavBar';
 import { getBuildings } from '../services/buildingService';
 import PreferencesLoader from './PreferencesLoader';
 import { Box } from '@mui/material';
@@ -28,7 +27,7 @@ const MainView = () => {
     }, []);
 
     return (
-        <Box flexGrow={1}>
+        <Box sx={{ flexGrow: 1, overflowY: 'scroll' }}>
             <Switch>
                 <Route path="/preferences">
                     <PreferencesView
