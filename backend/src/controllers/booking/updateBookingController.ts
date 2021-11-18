@@ -56,6 +56,52 @@ export const addTimeToBooking = () => {
 };
 
 /**
+ * Checks if the rooms if free before making a change
+ */
+export const checkRoomIsFree = () => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const client: OAuth2Client = res.locals.oAuthClient;
+            const roomId: string = res.locals.roomId;
+            const event: schema.EventData = res.locals.event;
+            const timeToAdd: number = req.body.timeToAdd;
+
+            // New end time
+            const endTime = DateTime.fromISO(event.end?.dateTime as string)
+                .plus({ minutes: timeToAdd })
+                .toISO();
+
+            const busyStatus = (
+                await calendar.freeBusyQuery(
+                    client,
+                    [{ id: roomId }],
+                    event.end?.dateTime as string,
+                    endTime
+                )
+            )[roomId];
+
+            if (!busyStatus) {
+                return responses.internalServerError(req, res);
+            }
+
+            if (DateTime.fromISO(busyStatus).toISO() !== endTime) {
+                return responses.custom(req, res, 409, 'Conflict');
+            }
+
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    return middleware;
+};
+
+/**
  * Roll back the update if required
  * @returns
  */

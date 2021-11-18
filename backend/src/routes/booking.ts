@@ -54,7 +54,7 @@ router.patch(
     '/:bookingId/addTime',
     body('timeToAdd').trim().escape().isNumeric(),
     getBooking(),
-    // TODO: Check if room is free
+    updateBookingController.checkRoomIsFree(),
     updateBookingController.addTimeToBooking(),
     makeBookingController.checkRoomAccepted(),
     updateBookingController.rollBackDeclinedUpdate(),
