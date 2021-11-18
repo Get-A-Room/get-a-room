@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import './MainView.css';
 import BookingView from './BookingView';
 import PreferencesView from './PreferencesView';
 import { Building, Preferences } from '../types';
@@ -9,6 +8,7 @@ import { getPreferences } from '../services/preferencesService';
 import NavBar from './NavBar';
 import { getBuildings } from '../services/buildingService';
 import PreferencesLoader from './PreferencesLoader';
+import { Box } from '@mui/material';
 
 const MainView = () => {
     const [preferences, setPreferences] = useState<Preferences | undefined>();
@@ -28,7 +28,7 @@ const MainView = () => {
     }, []);
 
     return (
-        <div>
+        <Box flexGrow={1}>
             <Switch>
                 <Route path="/preferences">
                     <PreferencesView
@@ -48,8 +48,7 @@ const MainView = () => {
                     <BookingView preferences={preferences} />
                 </Route>
             </Switch>
-            <NavBar />
-        </div>
+        </Box>
     );
 };
 
