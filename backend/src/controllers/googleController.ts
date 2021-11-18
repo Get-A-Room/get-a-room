@@ -52,6 +52,6 @@ router.get(
             httpOnly: true
         });
 
-        res.redirect(`${frontendUrl}`);
+        res.redirect(`${frontendUrl}/auth/success`);
     }
 );

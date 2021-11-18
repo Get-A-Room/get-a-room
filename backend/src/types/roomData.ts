@@ -1,7 +1,6 @@
 type RoomData = {
     id: string | null | undefined;
     name: string | null | undefined;
-    email: string | null | undefined;
     capacity: number | null | undefined;
     building: string | null | undefined;
     floor: string | null | undefined;
