@@ -1,4 +1,4 @@
-import { Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { updatePreferences } from '../services/preferencesService';
@@ -53,8 +53,8 @@ const PreferencesView = (props: PreferencesViewProps) => {
 
     if (!preferences) return <CenteredProgress />;
     return (
-        <Stack pt={5} justifyContent="space-between" height="80vh">
-            <Typography variant="h3" color="#f04e30">
+        <Stack height="100%" justifyContent="space-around">
+            <Typography textAlign="center" variant="h3" color="#f04e30">
                 Preferences
             </Typography>
             <BuildingSelect

@@ -11,7 +11,7 @@ const FormButtons = (props: PreferenceButtonsProps) => {
     const { handleSubmit, handleCancel, submitText, cancelText } = props;
 
     return (
-        <Box>
+        <Box textAlign="center">
             <Box>
                 <Button
                     onClick={handleSubmit}
