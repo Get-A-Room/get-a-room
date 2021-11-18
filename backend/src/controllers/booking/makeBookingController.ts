@@ -3,83 +3,7 @@ import { DateTime } from 'luxon';
 import * as calendar from '../googleAPI/calendarAPI';
 import * as responses from '../../utils/responses';
 import { OAuth2Client } from 'google-auth-library';
-import * as schema from '../../utils/googleSchema';
 import _ from 'lodash';
-
-/**
- * Validates booking body
- * @returns
- */
-export const validateInput = () => {
-    const middleware = async (
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
-        try {
-            if (
-                !req.body.roomId ||
-                !req.body.title ||
-                !req.body.duration ||
-                !Number.isInteger(req.body.duration)
-            ) {
-                return responses.badRequest(req, res);
-            }
-
-            res.locals.roomId = req.body.roomId;
-            res.locals.title = req.body.title;
-            res.locals.duration = req.body.duration;
-
-            next();
-        } catch (err) {
-            next(err);
-        }
-    };
-
-    return middleware;
-};
-
-/**
- * Book a room
- * @returns
- */
-export const makeBooking = () => {
-    const middleware = async (
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
-        try {
-            const startTime = DateTime.now().toISO();
-            const endTime = DateTime.now()
-                .plus({ minutes: req.body.duration })
-                .toISO();
-
-            const client: OAuth2Client = res.locals.oAuthClient;
-            const response = await calendar.createEvent(
-                client,
-                res.locals.roomId,
-                res.locals.email,
-                res.locals.title,
-                startTime,
-                endTime
-            );
-
-            if (!response.id) {
-                return responses.internalServerError(req, res);
-            }
-
-            res.locals.event = response;
-            res.locals.eventId = response.id;
-
-            next();
-        } catch (err) {
-            next(err);
-        }
-    };
-
-    return middleware;
-};
 
 /**
  * Add res.locals.roomAccepted boolean that tells if the room has accepted the event
@@ -139,6 +63,94 @@ export const checkRoomAccepted = () => {
 };
 
 /**
+ * Checks if the rooms if free before making a change
+ */
+export const checkRoomIsFree = () => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const client: OAuth2Client = res.locals.oAuthClient;
+            const roomId: string = res.locals.roomId;
+
+            const startTime = DateTime.now().toISO();
+            const endTime = DateTime.now()
+                .plus({ minutes: res.locals.duration })
+                .toISO();
+
+            const freeBusyResult = (
+                await calendar.freeBusyQuery(
+                    client,
+                    [{ id: roomId }],
+                    startTime,
+                    endTime
+                )
+            )[roomId];
+
+            if (!freeBusyResult) {
+                return responses.internalServerError(req, res);
+            }
+
+            // freeBusyResult is equal to end time when there are no
+            // reservations between now and end time
+            if (DateTime.fromISO(freeBusyResult).toISO() !== endTime) {
+                return responses.custom(req, res, 409, 'Conflict');
+            }
+
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    return middleware;
+};
+
+/**
+ * Book a room
+ * @returns
+ */
+export const makeBooking = () => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const startTime = DateTime.now().toISO();
+            const endTime = DateTime.now()
+                .plus({ minutes: res.locals.duration })
+                .toISO();
+
+            const client: OAuth2Client = res.locals.oAuthClient;
+            const response = await calendar.createEvent(
+                client,
+                res.locals.roomId,
+                res.locals.email,
+                res.locals.title,
+                startTime,
+                endTime
+            );
+
+            if (!response.id) {
+                return responses.internalServerError(req, res);
+            }
+
+            res.locals.event = response;
+            res.locals.eventId = response.id;
+
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    return middleware;
+};
+
+/**
  * Removes the event if res.locals.roomAccepted is false
  * @returns
  */
@@ -176,41 +188,29 @@ export const removeDeclinedEvent = () => {
 };
 
 /**
- * Simplify the event data to defined type
+ * Validates booking body
  * @returns
  */
-export const simplifyEventData = () => {
+export const validateInput = () => {
     const middleware = async (
         req: Request,
         res: Response,
         next: NextFunction
     ) => {
         try {
-            const event: schema.EventData = res.locals.event;
-            const roomId: string = res.locals.roomId;
-
-            // TODO: Should we fetch room data from Google here to match defined API?
-
-            const simpleEvent = {
-                id: event.id,
-                startTime: event.start?.dateTime,
-                endTime: event.end?.dateTime,
-                room: {
-                    id: roomId
-                }
-            };
-
-            // Check if any of the properties are undefined
             if (
-                !simpleEvent.id ||
-                !simpleEvent.startTime ||
-                !simpleEvent.endTime ||
-                !simpleEvent.room.id
+                !req.body.roomId ||
+                !req.body.title ||
+                !req.body.duration ||
+                !Number.isInteger(req.body.duration)
             ) {
-                throw new Error('Property undefined');
+                return responses.badRequest(req, res);
             }
 
-            res.locals.event = simpleEvent;
+            res.locals.roomId = req.body.roomId;
+            res.locals.title = req.body.title;
+            res.locals.duration = req.body.duration;
+
             next();
         } catch (err) {
             next(err);

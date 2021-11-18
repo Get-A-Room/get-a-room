@@ -208,3 +208,31 @@ export const simplifyRoomData = (
         };
     });
 };
+
+export const simplifySingleRoomData = (
+    result: schema.CalendarResource
+): roomData => {
+    /**
+     * Cleans features of unnecessary information
+     * @param features featureInstances
+     * @returns array of feature names
+     */
+    const cleanFeatures = (features: any): string[] => {
+        if (!features) {
+            return [];
+        }
+
+        return features.map((x: any) => x.feature.name);
+    };
+
+    return {
+        id: result.resourceEmail,
+        name: result.resourceName,
+        capacity: result.capacity,
+        building: result.buildingId,
+        floor: result.floorName,
+        features: cleanFeatures(result.featureInstances),
+        nextCalendarEvent: '-1',
+        location: result.generatedResourceName
+    };
+};

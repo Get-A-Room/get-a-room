@@ -1,9 +1,11 @@
 import express, { Request, Response } from 'express';
-import { query } from 'express-validator';
-import * as makeBookingController from '../controllers/booking/makeBookingController';
+import { body, query } from 'express-validator';
+import { deleteBooking } from '../controllers/booking/deleteBookingController';
+import { getBooking } from '../controllers/booking/getBookingController';
+import { simplifyEventData } from '../controllers/booking/bookingUtils';
 import * as currentBookingsController from '../controllers/booking/currentBookingsController';
-import * as deleteCurrentBookingController from '../controllers/booking/deleteBookingController';
-import * as responses from '../utils/responses';
+import * as makeBookingController from '../controllers/booking/makeBookingController';
+import * as updateBookingController from '../controllers/booking/updateBookingController';
 
 export const router = express.Router();
 
@@ -12,10 +14,11 @@ router.post(
     '/',
     query('noConfirmation').toBoolean(true),
     makeBookingController.validateInput(),
+    makeBookingController.checkRoomIsFree(),
     makeBookingController.makeBooking(),
     makeBookingController.checkRoomAccepted(), // This middleware slows things down :(
     makeBookingController.removeDeclinedEvent(),
-    makeBookingController.simplifyEventData(),
+    simplifyEventData(),
     (req: Request, res: Response) => {
         res.status(201).json(res.locals.event);
     }
@@ -32,20 +35,31 @@ router.get(
 );
 
 // Get details of a booking
-router.get('/:bookingId', (req: Request, res: Response) =>
-    responses.notImplemented(req, res)
-);
-
-// Delete a booking
-router.delete(
+router.get(
     '/:bookingId',
-    deleteCurrentBookingController.deleteBooking(),
+    getBooking(),
+    simplifyEventData(),
     (req: Request, res: Response) => {
-        res.status(204).send('No Content');
+        res.status(200).json(res.locals.event);
     }
 );
 
+// Delete a booking
+router.delete('/:bookingId', deleteBooking(), (req: Request, res: Response) => {
+    res.status(204).send('No Content');
+});
+
 // Add time to a booking
-router.patch('/:bookingId/addTime', (req: Request, res: Response) =>
-    responses.notImplemented(req, res)
+router.patch(
+    '/:bookingId/addTime',
+    body('timeToAdd').trim().escape().isNumeric(),
+    getBooking(),
+    updateBookingController.checkRoomIsFree(),
+    updateBookingController.addTimeToBooking(),
+    makeBookingController.checkRoomAccepted(),
+    updateBookingController.rollBackDeclinedUpdate(),
+    simplifyEventData(),
+    (req: Request, res: Response) => {
+        res.status(200).json(res.locals.event);
+    }
 );
