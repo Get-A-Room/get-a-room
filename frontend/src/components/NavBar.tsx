@@ -38,13 +38,7 @@ const NavBar = () => {
     };
 
     return (
-        <AppBar
-            id="app-bar"
-            position="static"
-            sx={{
-                backgroundColor: '#f04e30'
-            }}
-        >
+        <AppBar id="app-bar" position="static" color="primary">
             <Toolbar>
                 <Box flexGrow={1}>
                     <IconButton size="large" onClick={handleHomeClick}>

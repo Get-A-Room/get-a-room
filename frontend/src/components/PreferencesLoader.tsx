@@ -61,15 +61,10 @@ const PreferencesLoader = (props: PreferencesLoaderProps) => {
     return (
         <Stack
             id="preferences-loader"
-            justifyContent="space-around"
             height="100%"
+            justifyContent="space-around"
         >
-            <Typography
-                textAlign="center"
-                variant="h4"
-                color="#f04e30"
-                fontWeight="bold"
-            >
+            <Typography textAlign="center" variant="h4">
                 Select your office
             </Typography>
             <BuildingSelect

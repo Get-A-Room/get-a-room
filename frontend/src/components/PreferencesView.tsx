@@ -58,7 +58,7 @@ const PreferencesView = (props: PreferencesViewProps) => {
             height="100%"
             justifyContent="space-around"
         >
-            <Typography textAlign="center" variant="h3" color="#f04e30">
+            <Typography textAlign="center" variant="h3">
                 Preferences
             </Typography>
             <BuildingSelect

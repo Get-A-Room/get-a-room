@@ -16,11 +16,8 @@ const FormButtons = (props: PreferenceButtonsProps) => {
                 <Button
                     onClick={handleSubmit}
                     variant="outlined"
+                    color="primary"
                     size="large"
-                    sx={{
-                        color: '#f04e30',
-                        borderColor: '#f04e30'
-                    }}
                 >
                     {submitText}
                 </Button>
@@ -30,7 +27,7 @@ const FormButtons = (props: PreferenceButtonsProps) => {
                     onClick={handleCancel}
                     size="large"
                     sx={{
-                        color: '#000'
+                        color: 'black'
                     }}
                 >
                     {cancelText}

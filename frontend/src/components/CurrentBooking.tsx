@@ -1,4 +1,3 @@
-import './CurrentBooking.css';
 import {
     Box,
     Card,
@@ -68,10 +67,10 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
     }
 
     return (
-        <div className="CurrentBooking">
-            <header className="CurrentBooking-header">
-                <h1>Your Booking</h1>
-            </header>
+        <div id="current-booking">
+            <Typography py={2} textAlign="center" variant="h4">
+                Your Booking
+            </Typography>
             <List>
                 {bookings.map((booking) => (
                     <Card

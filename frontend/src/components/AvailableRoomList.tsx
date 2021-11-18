@@ -7,10 +7,10 @@ import {
     CardContent,
     Typography,
     IconButton,
-    Collapse
+    Collapse,
+    Box
 } from '@mui/material';
 import { Business, Group, ExpandMore, ExpandLess } from '@mui/icons-material';
-import './BookingView.css';
 import { Booking, BookingDetails, Room } from '../types';
 import { getBookings, makeBooking } from '../services/bookingService';
 
@@ -91,7 +91,7 @@ const AvailableRoomList = (props: BookingListProps) => {
     };
 
     return (
-        <div className="BookingView">
+        <Box id="available-room-list" textAlign="center">
             <List>
                 {rooms.map((room) => (
                     <Card
@@ -289,7 +289,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                     </Card>
                 ))}
             </List>
-        </div>
+        </Box>
     );
 };
 
