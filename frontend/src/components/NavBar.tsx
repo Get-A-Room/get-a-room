@@ -39,6 +39,7 @@ const NavBar = () => {
 
     return (
         <AppBar
+            id="app-bar"
             position="static"
             sx={{
                 backgroundColor: '#f04e30'

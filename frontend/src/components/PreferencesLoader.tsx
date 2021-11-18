@@ -59,8 +59,17 @@ const PreferencesLoader = (props: PreferencesLoaderProps) => {
     /* Height propery should maybe be changed to 100% when css is sorted out,
      so that it can depend on parent component instead of setting its own height */
     return (
-        <Stack pt={5} justifyContent="space-between" height="80vh">
-            <Typography variant="h4" color="#f04e30" fontWeight="bold">
+        <Stack
+            id="preferences-loader"
+            justifyContent="space-around"
+            height="100%"
+        >
+            <Typography
+                textAlign="center"
+                variant="h4"
+                color="#f04e30"
+                fontWeight="bold"
+            >
                 Select your office
             </Typography>
             <BuildingSelect

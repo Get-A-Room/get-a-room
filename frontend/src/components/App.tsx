@@ -3,12 +3,11 @@ import { Route, Router, Switch } from 'react-router-dom';
 import { history } from '../services/axiosConfigurer';
 import MainView from './MainView';
 import LoginView from './LoginView';
-import { Box, CssBaseline } from '@mui/material';
-import NavBar from './NavBar';
+import { CssBaseline } from '@mui/material';
 
 function App() {
     return (
-        <div>
+        <div id="app">
             <CssBaseline />
             <Router history={history}>
                 <Switch>
@@ -16,14 +15,7 @@ function App() {
                         <LoginView />
                     </Route>
                     <Route path="/">
-                        <Box
-                            display="flex"
-                            flexDirection="column"
-                            height="100vh"
-                        >
-                            <MainView />
-                            <NavBar />
-                        </Box>
+                        <MainView />
                     </Route>
                 </Switch>
             </Router>

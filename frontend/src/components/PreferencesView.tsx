@@ -53,7 +53,11 @@ const PreferencesView = (props: PreferencesViewProps) => {
 
     if (!preferences) return <CenteredProgress />;
     return (
-        <Stack height="100%" justifyContent="space-around">
+        <Stack
+            id="preferences-view"
+            height="100%"
+            justifyContent="space-around"
+        >
             <Typography textAlign="center" variant="h3" color="#f04e30">
                 Preferences
             </Typography>

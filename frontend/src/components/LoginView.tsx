@@ -3,7 +3,7 @@ import GoogleLogin from './GoogleLogin';
 
 const LoginView = () => {
     return (
-        <Stack sx={{ paddingTop: 3 }} spacing={10}>
+        <Stack id="login-view" sx={{ paddingTop: 3 }} spacing={10}>
             <Typography
                 sx={{ color: '#f04e30', fontWeight: 'bold' }}
                 variant="h3"

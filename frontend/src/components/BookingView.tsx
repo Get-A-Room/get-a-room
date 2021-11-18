@@ -38,7 +38,7 @@ function BookingView(props: BookingViewProps) {
     }, []);
 
     return (
-        <div>
+        <div id="booking-view">
             <CurrentBooking bookings={bookings} />
             <div className="BookingView">
                 <header className="BookingView-header">
