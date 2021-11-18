@@ -11,13 +11,18 @@ import {
     Typography,
     Button
 } from '@mui/material';
-import { Booking } from '../types';
+import { Booking, AddTimeDetails } from '../types';
 import React from 'react';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
+import { updateBooking } from '../services/bookingService';
 
 // Add extra time for the reserved room
 function addExtraTime(event: React.MouseEvent<HTMLElement>, booking: Booking) {
-    // TODO
+    let addTimeDetails: AddTimeDetails = {
+        timeToAdd: 15
+    };
+
+    updateBooking(addTimeDetails, booking.id);
 }
 
 // Delete reserved booking

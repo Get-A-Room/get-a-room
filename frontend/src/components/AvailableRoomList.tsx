@@ -207,7 +207,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                                 id="disabledQuickBook-button"
                                                 data-testid="disabledQuickBookButton"
                                                 style={{
-                                                    backgroundColor: '#282c34',
+                                                    backgroundColor: '#333842',
                                                     textTransform: 'none',
                                                     color: '#A9A9A9',
                                                     fontSize: '16px',
