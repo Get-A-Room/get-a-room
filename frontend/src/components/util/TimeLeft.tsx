@@ -39,7 +39,7 @@ const TimeLeft = (props: TimeLeftProps) => {
     useEffect(() => {
         const interval = setInterval(() => {
             setTimeLeft(getTimeLeft(endTime));
-        }, 30000);
+        }, 60000);
         return () => clearInterval(interval);
     }, [endTime]);
 
