@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DateTime, Duration } from 'luxon';
 
 function getTimeLeft(endTime: string) {
@@ -34,18 +34,19 @@ type TimeLeftProps = {
 
 const TimeLeft = (props: TimeLeftProps) => {
     const { endTime, timeLeftText } = props;
+    const [timeLeft, setTimeLeft] = useState(getTimeLeft(endTime));
 
     useEffect(() => {
         const interval = setInterval(() => {
-            getTimeLeft(endTime);
-        }, 10000);
+            setTimeLeft(getTimeLeft(endTime));
+        }, 30000);
         return () => clearInterval(interval);
     }, [endTime]);
 
     return (
         <Box>
             <Typography data-testid="TimeLeftTest" fontStyle="italic">
-                {timeLeftText} {getTimeLeft(endTime)}
+                {timeLeftText} {timeLeft}
             </Typography>
         </Box>
     );
