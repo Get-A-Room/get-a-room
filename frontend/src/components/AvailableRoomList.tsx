@@ -39,9 +39,9 @@ export async function book(
     makeBooking(bookingDetails)
         .then(() => {
             getBookings().then(setBookings);
+            bookingLoading = 'false';
             setOpenSuccessAlert(true);
             window.scrollTo(0, 0);
-            bookingLoading = 'false';
         })
         .catch((e) => {
             bookingLoading = 'false';

@@ -9,20 +9,41 @@ import {
     IconButton,
     List,
     Typography,
-    Button
+    Button,
+    Snackbar,
+    Alert,
+    CircularProgress
 } from '@mui/material';
 import { Booking, AddTimeDetails } from '../types';
-import React from 'react';
+import React, { useState } from 'react';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
 import { updateBooking } from '../services/bookingService';
 
+let updateLoading: String = 'false';
+
 // Add extra time for the reserved room
-function addExtraTime(event: React.MouseEvent<HTMLElement>, booking: Booking) {
+export async function addExtraTime(
+    event: React.MouseEvent<HTMLElement>,
+    booking: Booking,
+    setOpenSuccessAlert: React.Dispatch<React.SetStateAction<boolean>>,
+    setOpenErrorAlert: React.Dispatch<React.SetStateAction<boolean>>
+) {
     let addTimeDetails: AddTimeDetails = {
         timeToAdd: 15
     };
 
-    updateBooking(addTimeDetails, booking.id);
+    updateLoading = booking.id;
+
+    updateBooking(addTimeDetails, booking.id)
+        .then(() => {
+            updateLoading = 'false';
+            setOpenSuccessAlert(true);
+            window.scrollTo(0, 0);
+        })
+        .catch((e) => {
+            updateLoading = 'false';
+            setOpenErrorAlert(true);
+        });
 }
 
 // Delete reserved booking
@@ -67,8 +88,14 @@ function getFeatures(booking: Booking) {
     return featuresDisplay;
 }
 
-function CurrentBooking({ bookings }: { bookings: Booking[] }) {
-    const [expandedFeatures, setExpandedFeatures] = React.useState('false');
+type CurrentBookingProps = {
+    bookings: Booking[];
+};
+
+const CurrentBooking = (props: CurrentBookingProps) => {
+    const { bookings } = props;
+
+    const [expandedFeatures, setExpandedFeatures] = useState('false');
 
     const handleFeaturesCollapse = (
         event: React.MouseEvent<HTMLElement>,
@@ -79,6 +106,16 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
         );
     };
 
+    const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
+    const [openErrorAlert, setOpenErrorAlert] = useState(false);
+
+    const handleSuccessAlertClosure = () => {
+        setOpenSuccessAlert(false);
+    };
+    const handleErrorAlertClosure = () => {
+        setOpenErrorAlert(false);
+    };
+
     if (!areBookingsFetched(bookings)) {
         return null;
     }
@@ -86,6 +123,28 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
     return (
         <div className="CurrentBooking">
             <header className="CurrentBooking-header">
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}
+                >
+                    <Snackbar
+                        open={openSuccessAlert}
+                        autoHideDuration={5000}
+                        onClose={handleSuccessAlertClosure}
+                    >
+                        <Alert severity="success">Update successful!</Alert>
+                    </Snackbar>
+                    <Snackbar
+                        open={openErrorAlert}
+                        autoHideDuration={5000}
+                        onClose={handleErrorAlertClosure}
+                    >
+                        <Alert severity="error">Update failed.</Alert>
+                    </Snackbar>
+                </Box>
                 <h1>Your Booking</h1>
             </header>
             <List>
@@ -158,14 +217,25 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
                                             maxHeight: '50px'
                                         }}
                                         onClick={(e) =>
-                                            addExtraTime(e, booking)
+                                            addExtraTime(
+                                                e,
+                                                booking,
+                                                setOpenSuccessAlert,
+                                                setOpenErrorAlert
+                                            )
                                         }
                                     >
                                         +15 min
                                     </Button>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography> </Typography>
+                                    {updateLoading === booking.id ? (
+                                        <div className="Update-loadingScreen">
+                                            <CircularProgress
+                                                style={{ color: '#F04E30' }}
+                                            />
+                                        </div>
+                                    ) : null}
                                 </Grid>
                                 <Grid item xs={6}>
                                     <Grid item>
@@ -264,6 +334,6 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
             </List>
         </div>
     );
-}
+};
 
 export default CurrentBooking;
