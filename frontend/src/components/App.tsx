@@ -13,9 +13,8 @@ const App = () => {
             <CssBaseline />
             <SnackbarProvider
                 maxSnack={1}
-                domRoot={
-                    document.getElementById('main-view-content') || undefined
-                }
+                dense
+                style={{ marginBottom: '8vh' }}
                 anchorOrigin={{
                     horizontal: 'center',
                     vertical: 'bottom'
