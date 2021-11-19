@@ -36,10 +36,10 @@ describe('bookingUtils', () => {
         const TEST_EVENTDATA: schema.EventData = {
             id: 'test id',
             start: {
-                dateTime: DateTime.local().toISO()
+                dateTime: DateTime.now().toUTC().toISO()
             },
             end: {
-                dateTime: DateTime.local().plus({ minutes: 60 }).toISO()
+                dateTime: DateTime.now().toUTC().plus({ minutes: 60 }).toISO()
             }
         };
 

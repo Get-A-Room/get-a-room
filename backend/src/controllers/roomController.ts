@@ -72,9 +72,24 @@ export const fetchAvailability = () => {
                 return { id: x.id };
             });
 
-            // TODO: What should happen when the difference is e.g. 1 minute?
-            const start = DateTime.now().toUTC().toISO();
-            const end = DateTime.local().endOf('day').toUTC().toISO();
+            let start: string, end: string;
+
+            // TODO: What should happen when the difference between start and end is small
+            if (req.query.until) {
+                const startDt = DateTime.now().toUTC();
+                const endDt = DateTime.fromISO(
+                    req.query.until as string
+                ).toUTC();
+                start = startDt.toISO();
+                end = endDt.toISO();
+
+                if (endDt <= startDt) {
+                    return responses.badRequest(req, res);
+                }
+            } else {
+                start = DateTime.now().toUTC().toISO();
+                end = DateTime.now().toUTC().endOf('day').toISO();
+            }
 
             // Combine all results from freeBusyQuery to this
             const results = {};

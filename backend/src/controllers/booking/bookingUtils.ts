@@ -3,6 +3,7 @@ import * as admin from '../googleAPI/adminAPI';
 import * as schema from '../../utils/googleSchema';
 import * as responses from '../../utils/responses';
 import { simplifySingleRoomData } from '../roomController';
+import { DateTime } from 'luxon';
 
 /**
  * Simplify the event data to defined type
@@ -27,10 +28,17 @@ export const simplifyEventData = () => {
                 roomId
             );
             const roomData = simplifySingleRoomData(roomResource);
+            const start = DateTime.fromISO(event.start?.dateTime as string)
+                .toUTC()
+                .toISO();
+            const end = DateTime.fromISO(event.end?.dateTime as string)
+                .toUTC()
+                .toISO();
+
             const simpleEvent = {
                 id: event.id,
-                startTime: event.start?.dateTime,
-                endTime: event.end?.dateTime,
+                startTime: start,
+                endTime: end,
                 room: roomData
             };
 
