@@ -17,6 +17,7 @@ import { Group, ExpandMore, ExpandLess } from '@mui/icons-material';
 import './BookingView.css';
 import { Booking, BookingDetails, Room } from '../types';
 import { getBookings, makeBooking } from '../services/bookingService';
+import TimeLeft from './util/TimeLeft';
 
 let bookingLoading: String = 'false';
 
@@ -51,6 +52,9 @@ export async function book(
 
 function disableBooking(bookings: Booking[]) {
     return bookings.length === 0 ? false : true;
+
+function getNextCalendarEvent(room: Room) {
+    return room.nextCalendarEvent;
 }
 
 function getName(room: Room) {
@@ -154,15 +158,34 @@ const AvailableRoomList = (props: BookingListProps) => {
                                 m: 2
                             }}
                         >
-                            <CardContent>
-                                <Box
-                                    style={{
-                                        justifyContent: 'space-between',
-                                        display: 'flex'
-                                    }}
-                                >
-                                    <Typography
-                                        data-testid="BookingRoomTitle"
+                            <CardContent
+                                style={{
+                                    justifyContent: 'space-between',
+                                    display: 'flex',
+                                    textAlign: 'left'
+                                }}
+                            >
+                                <Box>
+                                    <Box>
+                                        <Typography
+                                            style={{
+                                                fontSize: '18px',
+                                                fontWeight: 'bold'
+                                            }}
+                                        >
+                                            {getName(room)}
+                                        </Typography>
+                                    </Box>
+                                    <Box>
+                                        <TimeLeft
+                                            endTime={getNextCalendarEvent(room)}
+                                            timeLeftText="Free for: "
+                                        />
+                                    </Box>
+                                </Box>
+                                <CardActions disableSpacing>
+                                    <Button
+                                        id="quickBook-button"
                                         style={{
                                             fontSize: '18px',
                                             fontWeight: 'bold'

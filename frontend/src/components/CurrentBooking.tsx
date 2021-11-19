@@ -18,6 +18,7 @@ import { Booking, AddTimeDetails } from '../types';
 import React, { useState } from 'react';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
 import { updateBooking } from '../services/bookingService';
+import TimeLeft from './util/TimeLeft';
 
 let updateLoading: String = 'false';
 
@@ -55,13 +56,8 @@ function getBookingRoomName(booking: Booking) {
     return booking.room.name;
 }
 
-function getBookingTimeLeft(booking: Booking) {
-    let endTime = new Date(Date.parse(booking.endTime));
-    return getTimeDifference(endTime, new Date());
-}
-
-function getTimeDifference(startTime: Date, endTime: Date) {
-    return Math.floor((startTime.getTime() - endTime.getTime()) / 1000 / 60);
+function getEndTime(booking: Booking) {
+    return booking.endTime;
 }
 
 function areBookingsFetched(bookings: Booking[]) {
@@ -187,6 +183,10 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                         >
                                             {getBookingRoomName(booking)}
                                         </Typography>
+                                        <TimeLeft
+                                            endTime={getEndTime(booking)}
+                                            timeLeftText="Time left:"
+                                        />
                                     </Box>
                                     <Box
                                         style={{
