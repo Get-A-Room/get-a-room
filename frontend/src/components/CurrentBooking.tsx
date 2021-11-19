@@ -8,19 +8,64 @@ import {
     Grid,
     IconButton,
     List,
-    Typography
+    Typography,
+    Button,
+    Snackbar,
+    Alert,
+    CircularProgress
 } from '@mui/material';
-import { Booking } from '../types';
-import React from 'react';
+import { Booking, AddTimeDetails } from '../types';
+import React, { useState } from 'react';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
-import TimeLeft from './util/TimeLeft';
+import { updateBooking, deleteBooking } from '../services/bookingService';
+import AvailableRoomList from './AvailableRoomList';
+
+let updateLoading: String = 'false';
+
+// Add extra time for the reserved room
+export async function addExtraTime(
+    event: React.MouseEvent<HTMLElement>,
+    booking: Booking,
+    setOpenSuccessAlert: React.Dispatch<React.SetStateAction<boolean>>,
+    setOpenErrorAlert: React.Dispatch<React.SetStateAction<boolean>>
+) {
+    let addTimeDetails: AddTimeDetails = {
+        timeToAdd: 15
+    };
+
+    updateLoading = booking.id;
+
+    updateBooking(addTimeDetails, booking.id)
+        .then(() => {
+            updateLoading = 'false';
+            setOpenSuccessAlert(true);
+            window.scrollTo(0, 0);
+        })
+        .catch((e) => {
+            updateLoading = 'false';
+            setOpenErrorAlert(true);
+        });
+}
+
+// Delete reserved booking
+function deleteBookings(
+    event: React.MouseEvent<HTMLElement>,
+    booking: Booking
+) {
+    deleteBooking(booking.id).then(() => {});
+}
 
 function getBookingRoomName(booking: Booking) {
     return booking.room.name;
 }
 
-function getEndTime(booking: Booking) {
-    return booking.endTime;
+function getBookingTimeLeft(booking: Booking) {
+    let endTime = new Date(Date.parse(booking.endTime));
+    return getTimeDifference(endTime, new Date());
+}
+
+function getTimeDifference(startTime: Date, endTime: Date) {
+    return Math.floor((startTime.getTime() - endTime.getTime()) / 1000 / 60);
 }
 
 function areBookingsFetched(bookings: Booking[]) {
@@ -47,8 +92,14 @@ function getFeatures(booking: Booking) {
     return featuresDisplay;
 }
 
-function CurrentBooking({ bookings }: { bookings: Booking[] }) {
-    const [expandedFeatures, setExpandedFeatures] = React.useState('false');
+type CurrentBookingProps = {
+    bookings: Booking[];
+};
+
+const CurrentBooking = (props: CurrentBookingProps) => {
+    const { bookings } = props;
+
+    const [expandedFeatures, setExpandedFeatures] = useState('false');
 
     const handleFeaturesCollapse = (
         event: React.MouseEvent<HTMLElement>,
@@ -59,6 +110,16 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
         );
     };
 
+    const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
+    const [openErrorAlert, setOpenErrorAlert] = useState(false);
+
+    const handleSuccessAlertClosure = () => {
+        setOpenSuccessAlert(false);
+    };
+    const handleErrorAlertClosure = () => {
+        setOpenErrorAlert(false);
+    };
+
     if (!areBookingsFetched(bookings)) {
         return null;
     }
@@ -66,6 +127,28 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
     return (
         <div className="CurrentBooking">
             <header className="CurrentBooking-header">
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}
+                >
+                    <Snackbar
+                        open={openSuccessAlert}
+                        autoHideDuration={5000}
+                        onClose={handleSuccessAlertClosure}
+                    >
+                        <Alert severity="success">Update successful!</Alert>
+                    </Snackbar>
+                    <Snackbar
+                        open={openErrorAlert}
+                        autoHideDuration={5000}
+                        onClose={handleErrorAlertClosure}
+                    >
+                        <Alert severity="error">Update failed.</Alert>
+                    </Snackbar>
+                </Box>
                 <h1>Your Booking</h1>
             </header>
             <List>
@@ -85,25 +168,105 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
                         }}
                     >
                         <CardContent style={{ paddingBottom: 0 }}>
-                            <Box
+                            <Grid
+                                container
+                                spacing={2}
                                 style={{
-                                    textAlign: 'left'
+                                    alignItems: 'stretch',
+                                    display: 'flex'
                                 }}
                             >
-                                <Typography
-                                    data-testid="BookingRoomTitle"
-                                    style={{
-                                        fontSize: '18px',
-                                        fontWeight: 'bold'
-                                    }}
-                                >
-                                    {getBookingRoomName(booking)}
-                                </Typography>
-                                <TimeLeft
-                                    endTime={getEndTime(booking)}
-                                    timeLeftText="Time left:"
-                                />
-                            </Box>
+                                <Grid item xs={6}>
+                                    <Box
+                                        style={{
+                                            textAlign: 'left'
+                                        }}
+                                    >
+                                        <Typography
+                                            data-testid="BookingRoomTitle"
+                                            style={{
+                                                fontSize: '18px',
+                                                fontWeight: 'bold'
+                                            }}
+                                        >
+                                            {getBookingRoomName(booking)}
+                                        </Typography>
+                                    </Box>
+                                    <Box
+                                        style={{
+                                            textAlign: 'left'
+                                        }}
+                                    >
+                                        <Typography
+                                            style={{ fontStyle: 'italic' }}
+                                        >
+                                            Time left:{' '}
+                                            {getBookingTimeLeft(booking)} min
+                                        </Typography>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Button
+                                        id="extraTime-button"
+                                        data-testid="ExtraTimeButton"
+                                        style={{
+                                            backgroundColor: '#282c34',
+                                            textTransform: 'none',
+                                            color: 'white',
+                                            fontSize: '16px',
+                                            animation: 'ripple 600ms linear',
+                                            minWidth: '130px',
+                                            minHeight: '50px',
+                                            maxWidth: '130px',
+                                            maxHeight: '50px'
+                                        }}
+                                        onClick={(e) =>
+                                            addExtraTime(
+                                                e,
+                                                booking,
+                                                setOpenSuccessAlert,
+                                                setOpenErrorAlert
+                                            )
+                                        }
+                                    >
+                                        +15 min
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    {updateLoading === booking.id ? (
+                                        <div className="Update-loadingScreen">
+                                            <CircularProgress
+                                                style={{ color: '#F04E30' }}
+                                            />
+                                        </div>
+                                    ) : null}
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Grid item>
+                                        <Button
+                                            id="delete-button"
+                                            data-testid="DeleteButton"
+                                            style={{
+                                                backgroundColor: '#282c34',
+                                                textTransform: 'none',
+                                                color: 'white',
+                                                fontSize: '16px',
+                                                animation:
+                                                    'ripple 600ms linear',
+                                                minWidth: '130px',
+                                                minHeight: '50px',
+                                                maxWidth: '130px',
+                                                maxHeight: '50px'
+                                            }}
+                                            onClick={(e) =>
+                                                deleteBookings(e, booking)
+                                            }
+                                        >
+                                            Delete
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
                             <Box
                                 style={{
                                     display: 'flex',
@@ -175,6 +338,6 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
             </List>
         </div>
     );
-}
+};
 
 export default CurrentBooking;

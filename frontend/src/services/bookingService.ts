@@ -22,7 +22,7 @@ export const updateBooking = async (
     return response.data;
 };
 
-export const deleteBooking = async () => {
-    const response = await axios.delete('/booking');
+export const deleteBooking = async (bookingId: string) => {
+    const response = await axios.delete('booking/' + bookingId);
     return response.data;
 };
