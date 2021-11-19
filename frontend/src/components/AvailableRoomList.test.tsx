@@ -21,6 +21,13 @@ const fakeRooms = [
     }
 ];
 
+jest.mock('../hooks/useCreateNotification', () => () => {
+    return {
+        createSuccessNotification: jest.fn(),
+        createErrorNotification: jest.fn()
+    };
+});
+
 const fakeBookings = [];
 
 let container = null;

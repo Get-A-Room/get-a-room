@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
     Box,
     Card,
@@ -12,12 +13,10 @@ import {
     CircularProgress
 } from '@mui/material';
 import { Booking, AddTimeDetails } from '../types';
-import React, { useState } from 'react';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
 import { updateBooking } from '../services/bookingService';
 import TimeLeft from './util/TimeLeft';
 import useCreateNotification from '../hooks/useCreateNotification';
-import CenteredProgress from './util/CenteredProgress';
 
 // Delete reserved booking
 function deleteBooking(booking: Booking) {
