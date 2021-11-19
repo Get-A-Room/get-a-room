@@ -4,6 +4,14 @@ import { render, screen, waitFor } from '@testing-library/react';
 import CurrentBooking from './CurrentBooking';
 import userEvent from '@testing-library/user-event';
 import { unmountComponentAtNode } from 'react-dom';
+import useCreateNotification from '../hooks/useCreateNotification';
+
+jest.mock('../hooks/useCreateNotification', () => () => {
+    return {
+        createSuccessNotification: jest.fn(),
+        createErrorNotification: jest.fn()
+    };
+});
 
 const fakeBooking = [
     {

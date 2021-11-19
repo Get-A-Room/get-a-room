@@ -18,6 +18,13 @@ jest.mock('react-router-dom', () => ({
     })
 }));
 
+jest.mock('../hooks/useCreateNotification', () => () => {
+    return {
+        createSuccessNotification: jest.fn(),
+        createErrorNotification: jest.fn()
+    };
+});
+
 jest.mock('../services/preferencesService');
 
 const TEST_BUILDINGS = [

@@ -148,60 +148,30 @@ const allCurrentAndFutureBookings: schema.EventsData = {
             id: '1j17pp72bmld5an9abls35p298',
             location: 'Hermia 5-2-Namu-Sofas (10) [TV]',
             start: {
-                dateTime: DateTime.now()
-                    .toUTC()
-                    .setZone('Europe/Helsinki')
-                    .minus({ minutes: 61 })
-                    .toISO(),
-                timeZone: 'Europe/Helsinki'
+                dateTime: DateTime.now().toUTC().minus({ minutes: 61 }).toISO()
             },
             end: {
-                dateTime: DateTime.now()
-                    .toUTC()
-                    .setZone('Europe/Helsinki')
-                    .minus({ minutes: 1 })
-                    .toISO(),
-                timeZone: 'Europe/Helsinki'
+                dateTime: DateTime.now().toUTC().minus({ minutes: 1 }).toISO()
             }
         },
         {
             id: '3pt0pdqmgp0c4qa8a7o4ie0an4',
             location: 'Hakaniemi-7-Höyhen (4) [TV]',
             start: {
-                dateTime: DateTime.now()
-                    .toUTC()
-                    .setZone('Europe/Helsinki')
-                    .minus({ minutes: 30 })
-                    .toISO(),
-                timeZone: 'Europe/Helsinki'
+                dateTime: DateTime.now().toUTC().minus({ minutes: 30 }).toISO()
             },
             end: {
-                dateTime: DateTime.now()
-                    .toUTC()
-                    .setZone('Europe/Helsinki')
-                    .plus({ minutes: 30 })
-                    .toISO(),
-                timeZone: 'Europe/Helsinki'
+                dateTime: DateTime.now().toUTC().plus({ minutes: 30 }).toISO()
             }
         },
         {
             id: '1j17pp72bmld5dsksrpl5jewrt',
             location: 'Arkadia-4-Parlamentti (12) [TV]',
             start: {
-                dateTime: DateTime.now()
-                    .toUTC()
-                    .setZone('Europe/Helsinki')
-                    .plus({ minutes: 1 })
-                    .toISO(),
-                timeZone: 'Europe/Helsinki'
+                dateTime: DateTime.now().toUTC().plus({ minutes: 1 }).toISO()
             },
             end: {
-                dateTime: DateTime.now()
-                    .toUTC()
-                    .setZone('Europe/Helsinki')
-                    .plus({ minutes: 61 })
-                    .toISO(),
-                timeZone: 'Europe/Helsinki'
+                dateTime: DateTime.now().toUTC().plus({ minutes: 61 }).toISO()
             }
         }
     ]

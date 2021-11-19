@@ -1,4 +1,4 @@
-import './CurrentBooking.css';
+import React, { useState } from 'react';
 import {
     Box,
     Card,
@@ -98,15 +98,37 @@ type CurrentBookingProps = {
 const CurrentBooking = (props: CurrentBookingProps) => {
     const { bookings } = props;
 
+
     const [expandedFeatures, setExpandedFeatures] = useState('false');
 
-    const handleFeaturesCollapse = (
-        event: React.MouseEvent<HTMLElement>,
-        booking: Booking
-    ) => {
+    const { createSuccessNotification, createErrorNotification } =
+        useCreateNotification();
+    const [expandedFeatures, setExpandedFeatures] = useState('false');
+    const [addTimeLoading, setAddTimeLoading] = useState('false');
+
+    const handleFeaturesCollapse = (booking: Booking) => {
         setExpandedFeatures(
             expandedFeatures === booking.id ? 'false' : booking.id
         );
+    };
+    // Add extra time for the reserved room
+    const addExtraTime = (booking: Booking, minutes: number) => {
+        let addTimeDetails: AddTimeDetails = {
+            timeToAdd: minutes
+        };
+
+        setAddTimeLoading(booking.id);
+
+        updateBooking(addTimeDetails, booking.id)
+            .then(() => {
+                setAddTimeLoading('false');
+                createSuccessNotification('Time added to booking');
+                window.scrollTo(0, 0);
+            })
+            .catch(() => {
+                setAddTimeLoading('false');
+                createErrorNotification('Could not add time to booking');
+            });
     };
 
     const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
@@ -219,6 +241,7 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                             maxWidth: '130px',
                                             maxHeight: '50px'
                                         }}
+
                                         onClick={(e) =>
                                             addExtraTime(
                                                 e,
@@ -277,8 +300,8 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                 <CardActions disableSpacing>
                                     <IconButton
                                         data-testid="ExpansionButton"
-                                        onClick={(e) =>
-                                            handleFeaturesCollapse(e, booking)
+                                        onClick={() =>
+                                            handleFeaturesCollapse(booking)
                                         }
                                         aria-label="Expand"
                                     >
