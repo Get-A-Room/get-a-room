@@ -18,7 +18,6 @@ import { Booking, AddTimeDetails } from '../types';
 import React, { useState } from 'react';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
 import { updateBooking, deleteBooking } from '../services/bookingService';
-import AvailableRoomList from './AvailableRoomList';
 
 let updateLoading: String = 'false';
 
