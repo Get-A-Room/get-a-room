@@ -15,33 +15,7 @@ import { Group, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { getBookings, makeBooking } from '../services/bookingService';
 import TimeLeft from './util/TimeLeft';
 import { Booking, BookingDetails, Room } from '../types';
-
-let bookingLoading: String = 'false';
-
-export async function book(
-    event: React.MouseEvent<HTMLElement>,
-    room: Room,
-    duration: number,
-    setBookings: React.Dispatch<React.SetStateAction<Booking[]>>
-) {
-    let bookingDetails: BookingDetails = {
-        duration: duration,
-        title: 'Reservation from Get a Room!',
-        roomId: room.id
-    };
-
-    bookingLoading = room.id;
-
-    makeBooking(bookingDetails)
-        .then(() => {
-            getBookings().then(setBookings);
-            bookingLoading = 'false';
-            window.scrollTo(0, 0);
-        })
-        .catch((e) => {
-            bookingLoading = 'false';
-        });
-}
+import useCreateNotification from '../hooks/useCreateNotification';
 
 function disableBooking(bookings: Booking[]) {
     return bookings.length === 0 ? false : true;
@@ -84,23 +58,42 @@ type BookingListProps = {
 const AvailableRoomList = (props: BookingListProps) => {
     const { rooms, bookings, setBookings } = props;
 
+    const { createSuccessNotification, createErrorNotification } =
+        useCreateNotification();
+
+    const [bookingLoading, setBookingLoading] = useState('false');
     const [expandedFeatures, setExpandedFeatures] = useState('false');
     const [expandedBooking, setExpandedBooking] = useState('false');
 
-    const handleFeaturesCollapse = (
-        event: React.MouseEvent<HTMLElement>,
-        room: Room
-    ) => {
+    const handleFeaturesCollapse = (room: Room) => {
         setExpandedFeatures(expandedFeatures === room.id ? 'false' : room.id);
     };
 
-    const handleBookingCollapse = (
-        event: React.MouseEvent<HTMLElement>,
-        room: Room
-    ) => {
+    const handleBookingCollapse = (room: Room) => {
         setExpandedBooking(expandedBooking === room.id ? 'false' : room.id);
     };
 
+    const book = (room: Room, duration: number) => {
+        let bookingDetails: BookingDetails = {
+            duration: duration,
+            title: 'Reservation from Get a Room!',
+            roomId: room.id
+        };
+
+        setBookingLoading(room.id);
+
+        makeBooking(bookingDetails)
+            .then(() => {
+                getBookings().then(setBookings);
+                createSuccessNotification('Booking was succesful');
+                setBookingLoading('false');
+                window.scrollTo(0, 0);
+            })
+            .catch(() => {
+                createErrorNotification('Could not create booking');
+                setBookingLoading('false');
+            });
+    };
     return (
         <Box id="available-room-list" textAlign="center">
             <List>
@@ -160,8 +153,8 @@ const AvailableRoomList = (props: BookingListProps) => {
                                                 maxWidth: '130px',
                                                 maxHeight: '50px'
                                             }}
-                                            onClick={(e) =>
-                                                handleBookingCollapse(e, room)
+                                            onClick={() =>
+                                                handleBookingCollapse(room)
                                             }
                                             aria-label="Expand"
                                         >
@@ -194,11 +187,13 @@ const AvailableRoomList = (props: BookingListProps) => {
                                 </CardActions>
                             </Box>
                             {bookingLoading === room.id ? (
-                                <div className="Booking-loadingScreen">
-                                    <CircularProgress
-                                        style={{ color: '#F04E30' }}
-                                    />
-                                </div>
+                                <Box
+                                    py={2}
+                                    display="flex"
+                                    justifyContent="center"
+                                >
+                                    <CircularProgress color="primary" />
+                                </Box>
                             ) : null}
                             {expandedBooking === room.id ? (
                                 <Collapse
@@ -227,9 +222,9 @@ const AvailableRoomList = (props: BookingListProps) => {
                                                 maxWidth: '120px',
                                                 maxHeight: '50px'
                                             }}
-                                            onClick={(e) => {
-                                                book(e, room, 30, setBookings);
-                                                handleBookingCollapse(e, room);
+                                            onClick={() => {
+                                                book(room, 30);
+                                                handleBookingCollapse(room);
                                             }}
                                         >
                                             30 min
@@ -248,9 +243,9 @@ const AvailableRoomList = (props: BookingListProps) => {
                                                 maxWidth: '120px',
                                                 maxHeight: '50px'
                                             }}
-                                            onClick={(e) => {
-                                                book(e, room, 60, setBookings);
-                                                handleBookingCollapse(e, room);
+                                            onClick={() => {
+                                                book(room, 60);
+                                                handleBookingCollapse(room);
                                             }}
                                         >
                                             60 min
@@ -269,8 +264,8 @@ const AvailableRoomList = (props: BookingListProps) => {
                                     <CardActions disableSpacing>
                                         <IconButton
                                             data-testid="ExpansionButtonAvailableRoomList"
-                                            onClick={(e) =>
-                                                handleFeaturesCollapse(e, room)
+                                            onClick={() =>
+                                                handleFeaturesCollapse(room)
                                             }
                                             aria-label="Expand"
                                         >

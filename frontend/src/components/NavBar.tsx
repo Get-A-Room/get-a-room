@@ -6,6 +6,7 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 
 import { logout } from '../services/authService';
 import ProfileMenu from './ProfileMenu';
+import useCreateNotification from '../hooks/useCreateNotification';
 
 const NavBar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,6 +14,8 @@ const NavBar = () => {
         HTMLElement | undefined
     >();
     const history = useHistory();
+    const { createSuccessNotification, createErrorNotification } =
+        useCreateNotification();
 
     const goToPreferences = () => {
         history.push('/preferences');
@@ -21,9 +24,11 @@ const NavBar = () => {
     const doLogout = () => {
         logout()
             .then(() => {
+                createSuccessNotification('Logout succesful');
                 history.push('/login');
             })
             .catch(() => {
+                createErrorNotification('Error in logout, try again later');
                 history.push('/login');
             });
     };

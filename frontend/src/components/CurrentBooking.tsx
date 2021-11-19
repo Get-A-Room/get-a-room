@@ -16,32 +16,11 @@ import React, { useState } from 'react';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
 import { updateBooking } from '../services/bookingService';
 import TimeLeft from './util/TimeLeft';
-
-let updateLoading: String = 'false';
-
-// Add extra time for the reserved room
-export async function addExtraTime(
-    event: React.MouseEvent<HTMLElement>,
-    booking: Booking
-) {
-    let addTimeDetails: AddTimeDetails = {
-        timeToAdd: 15
-    };
-
-    updateLoading = booking.id;
-
-    updateBooking(addTimeDetails, booking.id)
-        .then(() => {
-            updateLoading = 'false';
-            window.scrollTo(0, 0);
-        })
-        .catch((e) => {
-            updateLoading = 'false';
-        });
-}
+import useCreateNotification from '../hooks/useCreateNotification';
+import CenteredProgress from './util/CenteredProgress';
 
 // Delete reserved booking
-function deleteBooking(event: React.MouseEvent<HTMLElement>, booking: Booking) {
+function deleteBooking(booking: Booking) {
     // TODO
 }
 
@@ -84,15 +63,34 @@ type CurrentBookingProps = {
 const CurrentBooking = (props: CurrentBookingProps) => {
     const { bookings } = props;
 
+    const { createSuccessNotification, createErrorNotification } =
+        useCreateNotification();
     const [expandedFeatures, setExpandedFeatures] = useState('false');
+    const [addTimeLoading, setAddTimeLoading] = useState('false');
 
-    const handleFeaturesCollapse = (
-        event: React.MouseEvent<HTMLElement>,
-        booking: Booking
-    ) => {
+    const handleFeaturesCollapse = (booking: Booking) => {
         setExpandedFeatures(
             expandedFeatures === booking.id ? 'false' : booking.id
         );
+    };
+    // Add extra time for the reserved room
+    const addExtraTime = (booking: Booking, minutes: number) => {
+        let addTimeDetails: AddTimeDetails = {
+            timeToAdd: minutes
+        };
+
+        setAddTimeLoading(booking.id);
+
+        updateBooking(addTimeDetails, booking.id)
+            .then(() => {
+                setAddTimeLoading('false');
+                createSuccessNotification('Time added to booking');
+                window.scrollTo(0, 0);
+            })
+            .catch(() => {
+                setAddTimeLoading('false');
+                createErrorNotification('Could not add time to booking');
+            });
     };
 
     if (!areBookingsFetched(bookings)) {
@@ -165,20 +163,21 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                             maxWidth: '130px',
                                             maxHeight: '50px'
                                         }}
-                                        onClick={(e) =>
-                                            addExtraTime(e, booking)
+                                        onClick={() =>
+                                            addExtraTime(booking, 15)
                                         }
                                     >
                                         +15 min
                                     </Button>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    {updateLoading === booking.id ? (
-                                        <div className="Update-loadingScreen">
-                                            <CircularProgress
-                                                style={{ color: '#F04E30' }}
-                                            />
-                                        </div>
+                                    {addTimeLoading === booking.id ? (
+                                        <Box
+                                            display="flex"
+                                            justifyContent="center"
+                                        >
+                                            <CircularProgress color="primary" />
+                                        </Box>
                                     ) : null}
                                 </Grid>
                                 <Grid item xs={6}>
@@ -198,8 +197,8 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                                 maxWidth: '130px',
                                                 maxHeight: '50px'
                                             }}
-                                            onClick={(e) =>
-                                                deleteBooking(e, booking)
+                                            onClick={() =>
+                                                deleteBooking(booking)
                                             }
                                         >
                                             Delete
@@ -218,8 +217,8 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                 <CardActions disableSpacing>
                                     <IconButton
                                         data-testid="ExpansionButton"
-                                        onClick={(e) =>
-                                            handleFeaturesCollapse(e, booking)
+                                        onClick={() =>
+                                            handleFeaturesCollapse(booking)
                                         }
                                         aria-label="Expand"
                                     >

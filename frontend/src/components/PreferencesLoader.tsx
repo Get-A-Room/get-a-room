@@ -7,6 +7,7 @@ import { updatePreferences } from '../services/preferencesService';
 import BuildingSelect from './BuildingSelect';
 import CenteredProgress from './util/CenteredProgress';
 import FormButtons from './util/FormButtons';
+import useCreateNotification from '../hooks/useCreateNotification';
 
 type PreferencesLoaderProps = {
     preferences?: Preferences;
@@ -23,6 +24,7 @@ const PreferencesLoader = (props: PreferencesLoaderProps) => {
     const [selectedBuildingId, setSelectedBuildingId] = useState('');
 
     const history = useHistory();
+    const { createErrorNotification } = useCreateNotification();
 
     const goToMainView = useCallback(() => {
         // Use replace in place of push because it's a temporary page and wouln't work if navigated back to
@@ -41,23 +43,23 @@ const PreferencesLoader = (props: PreferencesLoaderProps) => {
             (building) => building.id === selectedBuildingId
         );
         if (!foundBuilding) {
-            alert('Error occurred while setting building');
+            createErrorNotification('Invalid office');
             return;
         }
-        updatePreferences({ building: foundBuilding }).then(
-            (savedPreferences) => {
+        updatePreferences({ building: foundBuilding })
+            .then((savedPreferences) => {
                 setPreferences(savedPreferences);
                 goToMainView();
-            }
-        );
+            })
+            .catch(() => {
+                createErrorNotification('Could not update preferences');
+            });
     };
 
     if (!preferences) {
         // Loading preferences
         return <CenteredProgress />;
     }
-    /* Height propery should maybe be changed to 100% when css is sorted out,
-     so that it can depend on parent component instead of setting its own height */
     return (
         <Stack
             id="preferences-loader"
