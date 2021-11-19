@@ -1,7 +1,8 @@
 import express from 'express';
-import { query } from 'express-validator';
-import * as controller from '../controllers/roomController';
+import { query, validationResult } from 'express-validator';
 import { validateBuildingInOrg } from '../controllers/validateBuildingInOrg';
+import * as controller from '../controllers/roomController';
+import * as responses from '../utils/responses';
 
 export const router = express.Router();
 
@@ -9,7 +10,14 @@ export const router = express.Router();
 router.get(
     '/',
     query('showReserved').toBoolean(),
-    query('building').trim().escape(),
+    query('building').trim().escape().isString().optional({ nullable: true }),
+    query('until').trim().escape().isISO8601().optional({ nullable: true }),
+    (req, res, next) => {
+        if (!validationResult(req).isEmpty()) {
+            return responses.badRequest(req, res);
+        }
+        next();
+    },
     validateBuildingInOrg(),
     controller.addAllRooms(),
     controller.fetchAvailability(),

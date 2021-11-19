@@ -1,4 +1,3 @@
-import './CurrentBooking.css';
 import {
     Box,
     Card,
@@ -10,8 +9,6 @@ import {
     List,
     Typography,
     Button,
-    Snackbar,
-    Alert,
     CircularProgress
 } from '@mui/material';
 import { Booking, AddTimeDetails } from '../types';
@@ -25,9 +22,7 @@ let updateLoading: String = 'false';
 // Add extra time for the reserved room
 export async function addExtraTime(
     event: React.MouseEvent<HTMLElement>,
-    booking: Booking,
-    setOpenSuccessAlert: React.Dispatch<React.SetStateAction<boolean>>,
-    setOpenErrorAlert: React.Dispatch<React.SetStateAction<boolean>>
+    booking: Booking
 ) {
     let addTimeDetails: AddTimeDetails = {
         timeToAdd: 15
@@ -38,12 +33,10 @@ export async function addExtraTime(
     updateBooking(addTimeDetails, booking.id)
         .then(() => {
             updateLoading = 'false';
-            setOpenSuccessAlert(true);
             window.scrollTo(0, 0);
         })
         .catch((e) => {
             updateLoading = 'false';
-            setOpenErrorAlert(true);
         });
 }
 
@@ -102,47 +95,15 @@ const CurrentBooking = (props: CurrentBookingProps) => {
         );
     };
 
-    const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
-    const [openErrorAlert, setOpenErrorAlert] = useState(false);
-
-    const handleSuccessAlertClosure = () => {
-        setOpenSuccessAlert(false);
-    };
-    const handleErrorAlertClosure = () => {
-        setOpenErrorAlert(false);
-    };
-
     if (!areBookingsFetched(bookings)) {
         return null;
     }
 
     return (
-        <div className="CurrentBooking">
-            <header className="CurrentBooking-header">
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}
-                >
-                    <Snackbar
-                        open={openSuccessAlert}
-                        autoHideDuration={5000}
-                        onClose={handleSuccessAlertClosure}
-                    >
-                        <Alert severity="success">Update successful!</Alert>
-                    </Snackbar>
-                    <Snackbar
-                        open={openErrorAlert}
-                        autoHideDuration={5000}
-                        onClose={handleErrorAlertClosure}
-                    >
-                        <Alert severity="error">Update failed.</Alert>
-                    </Snackbar>
-                </Box>
-                <h1>Your Booking</h1>
-            </header>
+        <div id="current-booking">
+            <Typography py={2} textAlign="center" variant="h4">
+                Your Booking
+            </Typography>
             <List>
                 {bookings.map((booking) => (
                     <Card
@@ -188,18 +149,6 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                             timeLeftText="Time left:"
                                         />
                                     </Box>
-                                    <Box
-                                        style={{
-                                            textAlign: 'left'
-                                        }}
-                                    >
-                                        <Typography
-                                            style={{ fontStyle: 'italic' }}
-                                        >
-                                            Time left:{' '}
-                                            {getBookingTimeLeft(booking)} min
-                                        </Typography>
-                                    </Box>
                                 </Grid>
                                 <Grid item xs={6}>
                                     <Button
@@ -217,12 +166,7 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                             maxHeight: '50px'
                                         }}
                                         onClick={(e) =>
-                                            addExtraTime(
-                                                e,
-                                                booking,
-                                                setOpenSuccessAlert,
-                                                setOpenErrorAlert
-                                            )
+                                            addExtraTime(e, booking)
                                         }
                                     >
                                         +15 min

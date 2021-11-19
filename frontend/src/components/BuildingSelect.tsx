@@ -6,7 +6,6 @@ import {
     Box,
     SelectChangeEvent
 } from '@mui/material';
-import './BuildingSelect.css';
 import { Building } from '../types';
 import { isNonEmptyArray } from '../util/objectUtils';
 
@@ -26,29 +25,27 @@ const BuildingSelect = (props: BuildingSelectProps) => {
     };
 
     return (
-        <div className="BuildingSelect">
-            <Box>
-                <FormControl variant="outlined">
-                    <InputLabel id="building-label">Office location</InputLabel>
-                    <Select
-                        onChange={handleChange}
-                        defaultValue=""
-                        value={selectedBuildingId}
-                        className="BuildingSelect-box"
-                        labelId="building-label"
-                        id="building-select"
-                        label="Office location"
-                    >
-                        {isNonEmptyArray(buildings) &&
-                            buildings.map((building) => (
-                                <MenuItem key={building.id} value={building.id}>
-                                    {building.name}
-                                </MenuItem>
-                            ))}
-                    </Select>
-                </FormControl>
-            </Box>
-        </div>
+        <Box textAlign="center">
+            <FormControl variant="outlined">
+                <InputLabel id="building-label">Office location</InputLabel>
+                <Select
+                    value={selectedBuildingId}
+                    defaultValue=""
+                    onChange={handleChange}
+                    labelId="building-label"
+                    id="building-select"
+                    label="Office location"
+                    sx={{ minWidth: '200px' }}
+                >
+                    {isNonEmptyArray(buildings) &&
+                        buildings.map((building) => (
+                            <MenuItem key={building.id} value={building.id}>
+                                {building.name}
+                            </MenuItem>
+                        ))}
+                </Select>
+            </FormControl>
+        </Box>
     );
 };
 

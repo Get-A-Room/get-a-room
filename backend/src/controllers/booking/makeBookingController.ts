@@ -75,9 +75,10 @@ export const checkRoomIsFree = () => {
             const client: OAuth2Client = res.locals.oAuthClient;
             const roomId: string = res.locals.roomId;
 
-            const startTime = DateTime.now().toISO();
+            const startTime = DateTime.now().toUTC().toISO();
             const endTime = DateTime.now()
                 .plus({ minutes: res.locals.duration })
+                .toUTC()
                 .toISO();
 
             const freeBusyResult = (
@@ -95,7 +96,7 @@ export const checkRoomIsFree = () => {
 
             // freeBusyResult is equal to end time when there are no
             // reservations between now and end time
-            if (DateTime.fromISO(freeBusyResult).toISO() !== endTime) {
+            if (DateTime.fromISO(freeBusyResult).toUTC().toISO() !== endTime) {
                 return responses.custom(req, res, 409, 'Conflict');
             }
 
@@ -119,9 +120,10 @@ export const makeBooking = () => {
         next: NextFunction
     ) => {
         try {
-            const startTime = DateTime.now().toISO();
+            const startTime = DateTime.now().toUTC().toISO();
             const endTime = DateTime.now()
                 .plus({ minutes: res.locals.duration })
+                .toUTC()
                 .toISO();
 
             const client: OAuth2Client = res.locals.oAuthClient;
