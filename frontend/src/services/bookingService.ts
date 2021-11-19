@@ -21,3 +21,8 @@ export const updateBooking = async (
     );
     return response.data;
 };
+
+export const deleteBooking = async (bookingId: string) => {
+    const response = await axios.delete('booking/' + bookingId);
+    return response.data;
+};

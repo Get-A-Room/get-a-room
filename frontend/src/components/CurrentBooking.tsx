@@ -14,13 +14,16 @@ import {
 } from '@mui/material';
 import { Booking, AddTimeDetails } from '../types';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
-import { updateBooking } from '../services/bookingService';
+import { updateBooking, deleteBooking } from '../services/bookingService';
 import TimeLeft from './util/TimeLeft';
 import useCreateNotification from '../hooks/useCreateNotification';
 
 // Delete reserved booking
-function deleteBooking(booking: Booking) {
-    // TODO
+function deleteBookings(
+    event: React.MouseEvent<HTMLElement>,
+    booking: Booking
+) {
+    deleteBooking(booking.id).then(() => {});
 }
 
 function getBookingRoomName(booking: Booking) {
@@ -196,8 +199,8 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                                 maxWidth: '130px',
                                                 maxHeight: '50px'
                                             }}
-                                            onClick={() =>
-                                                deleteBooking(booking)
+                                            onClick={(e) =>
+                                                deleteBookings(e, booking)
                                             }
                                         >
                                             Delete
