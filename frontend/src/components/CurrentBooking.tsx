@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
     Box,
     Card,
@@ -7,12 +8,20 @@ import {
     Grid,
     IconButton,
     List,
-    Typography
+    Typography,
+    Button,
+    CircularProgress
 } from '@mui/material';
-import { Booking } from '../types';
-import React from 'react';
+import { Booking, AddTimeDetails } from '../types';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
+import { updateBooking } from '../services/bookingService';
 import TimeLeft from './util/TimeLeft';
+import useCreateNotification from '../hooks/useCreateNotification';
+
+// Delete reserved booking
+function deleteBooking(booking: Booking) {
+    // TODO
+}
 
 function getBookingRoomName(booking: Booking) {
     return booking.room.name;
@@ -46,16 +55,41 @@ function getFeatures(booking: Booking) {
     return featuresDisplay;
 }
 
-function CurrentBooking({ bookings }: { bookings: Booking[] }) {
-    const [expandedFeatures, setExpandedFeatures] = React.useState('false');
+type CurrentBookingProps = {
+    bookings: Booking[];
+};
 
-    const handleFeaturesCollapse = (
-        event: React.MouseEvent<HTMLElement>,
-        booking: Booking
-    ) => {
+const CurrentBooking = (props: CurrentBookingProps) => {
+    const { bookings } = props;
+
+    const { createSuccessNotification, createErrorNotification } =
+        useCreateNotification();
+    const [expandedFeatures, setExpandedFeatures] = useState('false');
+    const [addTimeLoading, setAddTimeLoading] = useState('false');
+
+    const handleFeaturesCollapse = (booking: Booking) => {
         setExpandedFeatures(
             expandedFeatures === booking.id ? 'false' : booking.id
         );
+    };
+    // Add extra time for the reserved room
+    const addExtraTime = (booking: Booking, minutes: number) => {
+        let addTimeDetails: AddTimeDetails = {
+            timeToAdd: minutes
+        };
+
+        setAddTimeLoading(booking.id);
+
+        updateBooking(addTimeDetails, booking.id)
+            .then(() => {
+                setAddTimeLoading('false');
+                createSuccessNotification('Time added to booking');
+                window.scrollTo(0, 0);
+            })
+            .catch(() => {
+                setAddTimeLoading('false');
+                createErrorNotification('Could not add time to booking');
+            });
     };
 
     if (!areBookingsFetched(bookings)) {
@@ -84,25 +118,93 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
                         }}
                     >
                         <CardContent style={{ paddingBottom: 0 }}>
-                            <Box
+                            <Grid
+                                container
+                                spacing={2}
                                 style={{
-                                    textAlign: 'left'
+                                    alignItems: 'stretch',
+                                    display: 'flex'
                                 }}
                             >
-                                <Typography
-                                    data-testid="BookingRoomTitle"
-                                    style={{
-                                        fontSize: '18px',
-                                        fontWeight: 'bold'
-                                    }}
-                                >
-                                    {getBookingRoomName(booking)}
-                                </Typography>
-                                <TimeLeft
-                                    endTime={getEndTime(booking)}
-                                    timeLeftText="Time left:"
-                                />
-                            </Box>
+                                <Grid item xs={6}>
+                                    <Box
+                                        style={{
+                                            textAlign: 'left'
+                                        }}
+                                    >
+                                        <Typography
+                                            data-testid="BookingRoomTitle"
+                                            style={{
+                                                fontSize: '18px',
+                                                fontWeight: 'bold'
+                                            }}
+                                        >
+                                            {getBookingRoomName(booking)}
+                                        </Typography>
+                                        <TimeLeft
+                                            endTime={getEndTime(booking)}
+                                            timeLeftText="Time left:"
+                                        />
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Button
+                                        id="extraTime-button"
+                                        data-testid="ExtraTimeButton"
+                                        style={{
+                                            backgroundColor: '#282c34',
+                                            textTransform: 'none',
+                                            color: 'white',
+                                            fontSize: '16px',
+                                            animation: 'ripple 600ms linear',
+                                            minWidth: '130px',
+                                            minHeight: '50px',
+                                            maxWidth: '130px',
+                                            maxHeight: '50px'
+                                        }}
+                                        onClick={() =>
+                                            addExtraTime(booking, 15)
+                                        }
+                                    >
+                                        +15 min
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    {addTimeLoading === booking.id ? (
+                                        <Box
+                                            display="flex"
+                                            justifyContent="center"
+                                        >
+                                            <CircularProgress color="primary" />
+                                        </Box>
+                                    ) : null}
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Grid item>
+                                        <Button
+                                            id="delete-button"
+                                            data-testid="DeleteButton"
+                                            style={{
+                                                backgroundColor: '#282c34',
+                                                textTransform: 'none',
+                                                color: 'white',
+                                                fontSize: '16px',
+                                                animation:
+                                                    'ripple 600ms linear',
+                                                minWidth: '130px',
+                                                minHeight: '50px',
+                                                maxWidth: '130px',
+                                                maxHeight: '50px'
+                                            }}
+                                            onClick={() =>
+                                                deleteBooking(booking)
+                                            }
+                                        >
+                                            Delete
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
                             <Box
                                 style={{
                                     display: 'flex',
@@ -114,8 +216,8 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
                                 <CardActions disableSpacing>
                                     <IconButton
                                         data-testid="ExpansionButton"
-                                        onClick={(e) =>
-                                            handleFeaturesCollapse(e, booking)
+                                        onClick={() =>
+                                            handleFeaturesCollapse(booking)
                                         }
                                         aria-label="Expand"
                                     >
@@ -174,6 +276,6 @@ function CurrentBooking({ bookings }: { bookings: Booking[] }) {
             </List>
         </div>
     );
-}
+};
 
 export default CurrentBooking;

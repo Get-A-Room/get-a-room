@@ -1,6 +1,7 @@
 import { Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import useCreateNotification from '../hooks/useCreateNotification';
 import { updatePreferences } from '../services/preferencesService';
 import { Building, Preferences } from '../types';
 import BuildingSelect from './BuildingSelect';
@@ -17,6 +18,8 @@ const PreferencesView = (props: PreferencesViewProps) => {
     const { buildings, preferences, setPreferences } = props;
 
     const [selectedBuildingId, setSelecedBuildingId] = useState('');
+    const { createSuccessNotification, createErrorNotification } =
+        useCreateNotification();
 
     // If current building found, show it in building select
     useEffect(() => {
@@ -43,10 +46,13 @@ const PreferencesView = (props: PreferencesViewProps) => {
             updatePreferences({ building: foundBuilding })
                 .then((savedPreferences) => {
                     setPreferences(savedPreferences);
+                    createSuccessNotification(
+                        'Preferences updated successfully'
+                    );
                     goToMainView();
                 })
                 .catch(() => {
-                    alert('Preferences could not be updated');
+                    createErrorNotification('Could not update preferences');
                 });
         }
     };

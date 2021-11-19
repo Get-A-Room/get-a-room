@@ -108,7 +108,6 @@ jobs:
                     --image "gcr.io/$PROJECT_ID/$REACT_FRONTEND_CLOUD_RUN_SERVICE_NAME:$GITHUB_SHA" \
                     --platform "managed" \
                     --allow-unauthenticated
-
     backend-build:
         name: Build backend
         needs: check-style
@@ -179,7 +178,6 @@ jobs:
                   gcloud builds submit \
                     --quiet \
                     --tag "gcr.io/$PROJECT_ID/$NODE_BACKEND_CLOUD_RUN_SERVICE_NAME:$GITHUB_SHA"
-
             # Deploy Node backend image to Cloud Run
             - name: Deploy Node backend to Cloud Run
               run: |-

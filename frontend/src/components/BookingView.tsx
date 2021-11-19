@@ -46,7 +46,11 @@ function BookingView(props: BookingViewProps) {
             {!areRoomsFetched(rooms) ? (
                 <CenteredProgress />
             ) : (
-                <AvailableRoomList rooms={rooms} setBookings={setBookings} />
+                <AvailableRoomList
+                    rooms={rooms}
+                    bookings={bookings}
+                    setBookings={setBookings}
+                />
             )}
         </div>
     );
