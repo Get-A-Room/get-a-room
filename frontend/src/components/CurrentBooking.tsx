@@ -18,14 +18,6 @@ import { updateBooking, deleteBooking } from '../services/bookingService';
 import TimeLeft from './util/TimeLeft';
 import useCreateNotification from '../hooks/useCreateNotification';
 
-// Delete reserved booking
-function deleteBookings(
-    event: React.MouseEvent<HTMLElement>,
-    booking: Booking
-) {
-    deleteBooking(booking.id).then(() => {});
-}
-
 function getBookingRoomName(booking: Booking) {
     return booking.room.name;
 }
@@ -60,15 +52,17 @@ function getFeatures(booking: Booking) {
 
 type CurrentBookingProps = {
     bookings: Booking[];
+    setBookings: (bookings: Booking[]) => void;
 };
 
 const CurrentBooking = (props: CurrentBookingProps) => {
-    const { bookings } = props;
+    const { bookings, setBookings } = props;
 
     const { createSuccessNotification, createErrorNotification } =
         useCreateNotification();
+
     const [expandedFeatures, setExpandedFeatures] = useState('false');
-    const [addTimeLoading, setAddTimeLoading] = useState('false');
+    const [bookingProcessing, setBookingProcessing] = useState('false');
 
     const handleFeaturesCollapse = (booking: Booking) => {
         setExpandedFeatures(
@@ -76,22 +70,43 @@ const CurrentBooking = (props: CurrentBookingProps) => {
         );
     };
     // Add extra time for the reserved room
-    const addExtraTime = (booking: Booking, minutes: number) => {
+    const handleAddExtraTime = (booking: Booking, minutes: number) => {
         let addTimeDetails: AddTimeDetails = {
             timeToAdd: minutes
         };
 
-        setAddTimeLoading(booking.id);
+        setBookingProcessing(booking.id);
 
         updateBooking(addTimeDetails, booking.id)
-            .then(() => {
-                setAddTimeLoading('false');
+            .then((updatedBooking) => {
+                setBookingProcessing('false');
+                // replace updated booking
+                setBookings(
+                    bookings.map((b) =>
+                        b.id === booking.id ? updatedBooking : b
+                    )
+                );
                 createSuccessNotification('Time added to booking');
                 window.scrollTo(0, 0);
             })
             .catch(() => {
-                setAddTimeLoading('false');
+                setBookingProcessing('false');
                 createErrorNotification('Could not add time to booking');
+            });
+    };
+
+    const handleDeleteBooking = (booking: Booking) => {
+        setBookingProcessing(booking.id);
+
+        deleteBooking(booking.id)
+            .then(() => {
+                setBookingProcessing('false');
+                setBookings(bookings.filter((b) => b.id !== booking.id));
+                createSuccessNotification('Booking deleted succesfully');
+            })
+            .catch(() => {
+                setBookingProcessing('false');
+                createErrorNotification('Could not delete booking');
             });
     };
 
@@ -166,14 +181,14 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                             maxHeight: '50px'
                                         }}
                                         onClick={() =>
-                                            addExtraTime(booking, 15)
+                                            handleAddExtraTime(booking, 15)
                                         }
                                     >
                                         +15 min
                                     </Button>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    {addTimeLoading === booking.id ? (
+                                    {bookingProcessing === booking.id ? (
                                         <Box
                                             display="flex"
                                             justifyContent="center"
@@ -199,8 +214,8 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                                 maxWidth: '130px',
                                                 maxHeight: '50px'
                                             }}
-                                            onClick={(e) =>
-                                                deleteBookings(e, booking)
+                                            onClick={() =>
+                                                handleDeleteBooking(booking)
                                             }
                                         >
                                             Delete
