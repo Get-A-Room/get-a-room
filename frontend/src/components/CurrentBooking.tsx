@@ -60,13 +60,15 @@ function getFeatures(booking: Booking) {
 
 type CurrentBookingProps = {
     bookings: Booking[];
+    setBookings: (bookings: Booking[]) => void;
 };
 
 const CurrentBooking = (props: CurrentBookingProps) => {
-    const { bookings } = props;
+    const { bookings, setBookings } = props;
 
     const { createSuccessNotification, createErrorNotification } =
         useCreateNotification();
+
     const [expandedFeatures, setExpandedFeatures] = useState('false');
     const [addTimeLoading, setAddTimeLoading] = useState('false');
 
@@ -84,8 +86,14 @@ const CurrentBooking = (props: CurrentBookingProps) => {
         setAddTimeLoading(booking.id);
 
         updateBooking(addTimeDetails, booking.id)
-            .then(() => {
+            .then((updatedBooking) => {
                 setAddTimeLoading('false');
+                // replace updated booking
+                setBookings(
+                    bookings.map((b) =>
+                        b.id === booking.id ? updatedBooking : b
+                    )
+                );
                 createSuccessNotification('Time added to booking');
                 window.scrollTo(0, 0);
             })
