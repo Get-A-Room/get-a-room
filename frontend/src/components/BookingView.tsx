@@ -48,6 +48,7 @@ function BookingView(props: BookingViewProps) {
             ) : (
                 <AvailableRoomList
                     rooms={rooms}
+                    setRooms={setRooms}
                     bookings={bookings}
                     setBookings={setBookings}
                 />

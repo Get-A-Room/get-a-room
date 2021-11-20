@@ -12,7 +12,7 @@ import {
     CircularProgress
 } from '@mui/material';
 import { Group, ExpandMore, ExpandLess } from '@mui/icons-material';
-import { getBookings, makeBooking } from '../services/bookingService';
+import { makeBooking } from '../services/bookingService';
 import TimeLeft from './util/TimeLeft';
 import { Booking, BookingDetails, Room } from '../types';
 import useCreateNotification from '../hooks/useCreateNotification';
@@ -51,12 +51,13 @@ function getFeatures(room: Room) {
 
 type BookingListProps = {
     rooms: Room[];
+    setRooms: (rooms: Room[]) => void;
     bookings: Booking[];
-    setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
+    setBookings: (bookings: Booking[]) => void;
 };
 
 const AvailableRoomList = (props: BookingListProps) => {
-    const { rooms, bookings, setBookings } = props;
+    const { rooms, setRooms, bookings, setBookings } = props;
 
     const { createSuccessNotification, createErrorNotification } =
         useCreateNotification();
@@ -83,8 +84,9 @@ const AvailableRoomList = (props: BookingListProps) => {
         setBookingLoading(room.id);
 
         makeBooking(bookingDetails)
-            .then(() => {
-                getBookings().then(setBookings);
+            .then((madeBooking) => {
+                setBookings([...bookings, madeBooking]);
+                setRooms(rooms.filter((r) => r.id !== room.id));
                 createSuccessNotification('Booking was succesful');
                 setBookingLoading('false');
                 window.scrollTo(0, 0);
