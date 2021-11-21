@@ -97,7 +97,7 @@ const AvailableRoomList = (props: BookingListProps) => {
             });
     };
     return (
-        <Box id="available-room-list" textAlign="center">
+        <Box id="available-room-list" textAlign="center" mb={8}>
             <List>
                 {rooms
                     .sort((a, b) => (a.name < b.name ? -1 : 1))
