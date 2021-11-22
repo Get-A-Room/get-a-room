@@ -89,7 +89,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                 setRooms(rooms.filter((r) => r.id !== room.id));
                 createSuccessNotification('Booking was succesful');
                 setBookingLoading('false');
-                window.scrollTo(0, 0);
+                document.getElementById('main-view-content')?.scrollTo(0, 0);
             })
             .catch(() => {
                 createErrorNotification('Could not create booking');
