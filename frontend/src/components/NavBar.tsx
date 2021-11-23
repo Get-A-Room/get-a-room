@@ -43,7 +43,12 @@ const NavBar = () => {
     };
 
     return (
-        <AppBar id="app-bar" position="static" color="primary">
+        <AppBar
+            id="app-bar"
+            position="sticky"
+            color="primary"
+            sx={{ bottom: 0, top: 'auto' }}
+        >
             <Toolbar>
                 <Box flexGrow={1}>
                     <IconButton size="large" onClick={handleHomeClick}>
