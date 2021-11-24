@@ -14,6 +14,7 @@ import { router as bookingRouter } from './routes/booking';
 import { router as buildingRouter } from './routes/buildings';
 import { router as preferenceRouter } from './routes/preferences';
 import { router as roomRouter } from './routes/rooms';
+import { gaxiosErrorHandler } from './utils/GaxiosErrorHandler';
 import { getDatabaseUrl } from './utils/config';
 
 const app = express();
@@ -45,6 +46,7 @@ app.use('/api/booking', bookingRouter);
 app.use('/api/buildings', buildingRouter);
 app.use('/api/preferences', preferenceRouter);
 app.use('/api/rooms', roomRouter);
+app.use(gaxiosErrorHandler());
 
 app.listen(port, () => {
     console.log(`Get A Room! API listening at port ${port}`);

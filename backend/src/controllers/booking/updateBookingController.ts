@@ -48,8 +48,8 @@ export const addTimeToBooking = () => {
             res.locals.event = result;
 
             next();
-        } catch (err: any) {
-            return responses.internalServerError(req, res);
+        } catch (err) {
+            next(err);
         }
     };
 
@@ -150,8 +150,8 @@ export const rollBackDeclinedUpdate = () => {
             );
 
             return responses.custom(req, res, 409, 'Conflict');
-        } catch (err: any) {
-            return responses.internalServerError(req, res);
+        } catch (err) {
+            next(err);
         }
     };
 
