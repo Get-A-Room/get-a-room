@@ -64,7 +64,7 @@ export const updateToken = (
  */
 export const readToken = (token: string): jwtTokenPayload => {
     const payload = jwt.verify(token, jwtSecret, {
-        issuer: 'oispahuone.com'
+        issuer: process.env.HOSTED_DOMAIN
     }) as JwtPayload;
 
     return {
@@ -83,7 +83,7 @@ export const readToken = (token: string): jwtTokenPayload => {
  */
 export const writeToken = (payload: jwtTokenPayload): string => {
     const token = jwt.sign(payload, jwtSecret, {
-        issuer: 'oispahuone.com',
+        issuer: process.env.HOSTED_DOMAIN,
         expiresIn: '365 days'
     });
 
