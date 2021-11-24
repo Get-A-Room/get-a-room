@@ -95,8 +95,8 @@ export const unpackPayload = () => {
             const ticket = await client.verifyIdToken({ idToken: idToken });
             const payload = ticket.getPayload();
 
-            if (payload?.hd !== 'oispahuone.com') {
-                return res.redirect(`${frontendUrl}/auth/failure?code=400`);
+            if (payload?.hd !== process.env.HOSTED_DOMAIN) {
+                return res.redirect(`${frontendUrl}/auth/failure?code=401`);
             }
 
             res.locals.payload = payload;
