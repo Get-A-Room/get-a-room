@@ -7,7 +7,7 @@
         "node": ">=16.0.0"
     },
     "scripts": {
-        "test": "jest",
+        "test": "jest --watchAll",
         "test:ci": "jest --ci",
         "lint": "eslint .",
         "lint:ci": "eslint . --max-warnings 0",

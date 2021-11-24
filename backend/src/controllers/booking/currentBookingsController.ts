@@ -56,6 +56,8 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
             const allBookings: schema.Event[] =
                 res.locals.currentBookings.items;
 
+            console.log(allBookings);
+
             const rooms: schema.CalendarResource[] = await admin.getRoomData(
                 res.locals.oAuthClient
             );
