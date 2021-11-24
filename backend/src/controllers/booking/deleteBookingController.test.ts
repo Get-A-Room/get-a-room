@@ -84,35 +84,5 @@ describe('deleteBookingController', () => {
                 mockResponse
             );
         });
-
-        // test('Should throw 404 if booking not found', async () => {
-        //     mockRequest = {
-        //         params: {
-        //             bookingId: 'a7fiofhfgdio4938YYYYYXXXXX'
-        //         }
-        //     };
-
-        //     mockResponse = {
-        //         locals: {
-        //             oAuthClient: 'client'
-        //         }
-        //     };
-
-        //     mockedDeleteEvent.mockImplementation(() => {
-        //         throw new Error('{ err: { response: { data: { error: { err: { code: { 410 }}}}}} }');
-        //     });
-
-        //     mockNext = jest.fn();
-
-        //     jest.resetAllMocks();
-
-        //     await deleteBooking()(
-        //         mockRequest as Request,
-        //         mockResponse as Response,
-        //         mockNext
-        //     );
-
-        //     expect(mockNext).toBeCalled();
-        // });
     });
 });
