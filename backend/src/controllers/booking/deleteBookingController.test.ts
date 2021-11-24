@@ -18,7 +18,7 @@ describe('deleteBookingController', () => {
     let mockNext: jest.Mock;
 
     describe('deleteBooking', () => {
-        test('Should return bad request because bookingId lenght is invalid', async () => {
+        test('Should return Bad request 400 because bookingId length is invalid', async () => {
             mockRequest = {
                 params: {
                     bookingId: 'XXXX'
@@ -48,7 +48,7 @@ describe('deleteBookingController', () => {
             expect(mockedBadRequest).toBeCalledWith(mockRequest, mockResponse);
         });
 
-        test('Should delete booking with valid bookingId', async () => {
+        test('Should delete booking', async () => {
             mockRequest = {
                 params: {
                     bookingId: 'a7fiofhfgdio4938YYYYYXXXXX'
