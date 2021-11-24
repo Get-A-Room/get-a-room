@@ -26,6 +26,7 @@ export const addTimeToBooking = () => {
             // New end time
             const endTime = DateTime.fromISO(eventData.end?.dateTime as string)
                 .plus({ minutes: timeToAdd })
+                .toUTC()
                 .toISO();
 
             // Pretty hacky and there probably is a better way to do this
@@ -73,6 +74,7 @@ export const checkRoomIsFree = () => {
             // New end time
             const endTime = DateTime.fromISO(event.end?.dateTime as string)
                 .plus({ minutes: timeToAdd })
+                .toUTC()
                 .toISO();
 
             const freeBusyResult = (
@@ -90,7 +92,7 @@ export const checkRoomIsFree = () => {
 
             // freeBusyResult is equal to end time when there are no
             // reservations between now and end time
-            if (DateTime.fromISO(freeBusyResult).toISO() !== endTime) {
+            if (DateTime.fromISO(freeBusyResult).toUTC().toISO() !== endTime) {
                 return responses.custom(req, res, 409, 'Conflict');
             }
 
@@ -127,6 +129,7 @@ export const rollBackDeclinedUpdate = () => {
             // Original end time
             const endTime = DateTime.fromISO(eventData.end?.dateTime as string)
                 .minus({ minutes: timeToAdd })
+                .toUTC()
                 .toISO();
 
             // Pretty hacky and there probably is a better way to do this

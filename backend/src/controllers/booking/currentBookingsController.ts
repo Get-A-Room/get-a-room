@@ -136,5 +136,5 @@ export const filterCurrentBookings = (
 };
 
 export const getNowDateTime = (): string => {
-    return DateTime.now().toUTC().setZone('Europe/Helsinki').toISO();
+    return DateTime.now().toUTC().toISO();
 };

@@ -95,6 +95,11 @@ export const validateAccessToken = () => {
                     maxAge: 31556952000, // 1 year
                     httpOnly: true
                 });
+
+                client.setCredentials({
+                    access_token: res.locals.accessToken,
+                    refresh_token: res.locals.refreshToken
+                });
             }
 
             res.locals.oAuthClient = client;

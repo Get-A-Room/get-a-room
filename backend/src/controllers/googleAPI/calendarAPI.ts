@@ -26,10 +26,12 @@ export const createEvent = async (
     end: string
 ): Promise<schema.EventData> => {
     const startDt: schema.EventDateTime = {
-        dateTime: start
+        dateTime: start,
+        timeZone: 'Etc/UTC'
     };
     const endDt: schema.EventDateTime = {
-        dateTime: end
+        dateTime: end,
+        timeZone: 'Etc/UTC'
     };
 
     const attendeeList: schema.EventAttendee[] = [
@@ -117,12 +119,13 @@ export const freeBusyQuery = async (
 export const getCurrentBookings = async (
     client: OAuth2Client
 ): Promise<schema.EventsData> => {
-    const now = DateTime.now().toUTC().setZone('Europe/Helsinki').toISO();
+    const now = DateTime.now().toUTC().toISO();
 
     const eventsList = await calendar.events.list({
         calendarId: 'primary',
         auth: client,
-        timeMin: now
+        timeMin: now,
+        timeZone: 'Etc/UTC'
     });
 
     return eventsList.data;
@@ -160,7 +163,8 @@ export const updateEndTime = async (
     attendees: schema.EventAttendee[]
 ): Promise<schema.EventData> => {
     const endDt: schema.EventDateTime = {
-        dateTime: endTime
+        dateTime: endTime,
+        timeZone: 'Etc/UTC'
     };
 
     const event = await calendar.events.patch({

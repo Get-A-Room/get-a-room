@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { CircularProgress } from '@mui/material';
-import './BookingView.css';
+import { Typography } from '@mui/material';
 import { getRooms } from '../services/roomService';
 import { getBookings } from '../services/bookingService';
 import { Room, Booking, Preferences } from '../types';
 import CurrentBooking from './CurrentBooking';
 import AvailableRoomList from './AvailableRoomList';
+import CenteredProgress from './util/CenteredProgress';
 
 // Check if rooms are fetched
 function areRoomsFetched(rooms: Room[]) {
@@ -38,23 +38,21 @@ function BookingView(props: BookingViewProps) {
     }, []);
 
     return (
-        <div>
-            <CurrentBooking bookings={bookings} />
-            <div className="BookingView">
-                <header className="BookingView-header">
-                    <h1>Available rooms</h1>
-                </header>
-                {!areRoomsFetched(rooms) ? (
-                    <div className="BookingView-loadingScreen">
-                        <CircularProgress style={{ color: '#F04E30' }} />
-                    </div>
-                ) : (
-                    <AvailableRoomList
-                        rooms={rooms}
-                        setBookings={setBookings}
-                    />
-                )}
-            </div>
+        <div id="booking-view">
+            <CurrentBooking bookings={bookings} setBookings={setBookings} />
+            <Typography py={2} variant="h4" textAlign="center">
+                Available rooms
+            </Typography>
+            {!areRoomsFetched(rooms) ? (
+                <CenteredProgress />
+            ) : (
+                <AvailableRoomList
+                    rooms={rooms}
+                    setRooms={setRooms}
+                    bookings={bookings}
+                    setBookings={setBookings}
+                />
+            )}
         </div>
     );
 }
