@@ -149,7 +149,6 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                         <CardContent style={{ paddingBottom: 0 }}>
                             <Grid
                                 container
-                                spacing={2}
                                 style={{
                                     alignItems: 'stretch',
                                     display: 'flex'
@@ -177,26 +176,40 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Button
-                                        id="extraTime-button"
-                                        data-testid="ExtraTimeButton"
+                                    <Box
                                         style={{
-                                            backgroundColor: '#282c34',
-                                            textTransform: 'none',
-                                            color: 'white',
-                                            fontSize: '16px',
-                                            animation: 'ripple 600ms linear',
-                                            minWidth: '130px',
-                                            minHeight: '50px',
-                                            maxWidth: '130px',
-                                            maxHeight: '50px'
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                            alignItems: 'right'
                                         }}
-                                        onClick={() =>
-                                            handleAddExtraTime(booking, 15)
-                                        }
                                     >
-                                        +15 min
-                                    </Button>
+                                        <CardActions disableSpacing>
+                                            <Button
+                                                id="extraTime-button"
+                                                data-testid="ExtraTimeButton"
+                                                style={{
+                                                    backgroundColor: '#282c34',
+                                                    textTransform: 'none',
+                                                    color: 'white',
+                                                    fontSize: '16px',
+                                                    animation:
+                                                        'ripple 600ms linear',
+                                                    minWidth: '130px',
+                                                    minHeight: '50px',
+                                                    maxWidth: '130px',
+                                                    maxHeight: '50px'
+                                                }}
+                                                onClick={() =>
+                                                    handleAddExtraTime(
+                                                        booking,
+                                                        15
+                                                    )
+                                                }
+                                            >
+                                                +15 min
+                                            </Button>
+                                        </CardActions>
+                                    </Box>
                                 </Grid>
                                 <Grid item xs={6}>
                                     {bookingProcessing === booking.id ? (
@@ -209,29 +222,37 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                     ) : null}
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Grid item>
-                                        <Button
-                                            id="delete-button"
-                                            data-testid="DeleteButton"
-                                            style={{
-                                                backgroundColor: '#282c34',
-                                                textTransform: 'none',
-                                                color: 'white',
-                                                fontSize: '16px',
-                                                animation:
-                                                    'ripple 600ms linear',
-                                                minWidth: '130px',
-                                                minHeight: '50px',
-                                                maxWidth: '130px',
-                                                maxHeight: '50px'
-                                            }}
-                                            onClick={() =>
-                                                handleDeleteBooking(booking)
-                                            }
-                                        >
-                                            Delete
-                                        </Button>
-                                    </Grid>
+                                    <Box
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                            alignItems: 'right'
+                                        }}
+                                    >
+                                        <CardActions disableSpacing>
+                                            <Button
+                                                id="delete-button"
+                                                data-testid="DeleteButton"
+                                                style={{
+                                                    backgroundColor: '#282c34',
+                                                    textTransform: 'none',
+                                                    color: 'white',
+                                                    fontSize: '16px',
+                                                    animation:
+                                                        'ripple 600ms linear',
+                                                    minWidth: '130px',
+                                                    minHeight: '50px',
+                                                    maxWidth: '130px',
+                                                    maxHeight: '50px'
+                                                }}
+                                                onClick={() =>
+                                                    handleDeleteBooking(booking)
+                                                }
+                                            >
+                                                Delete
+                                            </Button>
+                                        </CardActions>
+                                    </Box>
                                 </Grid>
                             </Grid>
                             <Box
