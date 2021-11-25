@@ -1,45 +1,38 @@
-import { createDatabaseUrl, DEV_DB_NAME, PROD_DB_NAME } from './config';
+import { createDatabaseUrl } from './config';
 
 describe('createDatabaseUrl', () => {
     test('Should fail without db user', () => {
         expect(() => {
-            createDatabaseUrl(undefined, 'password', 'dbUrl', false);
+            createDatabaseUrl(undefined, 'getARoomDevDB', 'password', 'dbUrl');
         }).toThrow('user');
     });
 
     test('Should fail without db password', () => {
         expect(() => {
-            createDatabaseUrl('username', undefined, 'dbUrl', false);
+            createDatabaseUrl('username', 'getARoomDevDB', undefined, 'dbUrl');
         }).toThrow('password');
     });
 
     test('Should fail without db url', () => {
         expect(() => {
-            createDatabaseUrl('username', 'password', undefined, false);
+            createDatabaseUrl(
+                'username',
+                'getARoomDevDB',
+                'password',
+                undefined
+            );
         }).toThrow('url');
     });
 
     test('Should create url containing username:password@dbUrl', () => {
         expect(
-            createDatabaseUrl('username', 'password', 'dbUrl', false)
+            createDatabaseUrl('username', 'getARoomDevDB', 'password', 'dbUrl')
         ).toContain('username:password@dbUrl');
     });
 
-    test('Should use development database by default', () => {
-        expect(createDatabaseUrl('username', 'password', 'dbUrl')).toContain(
-            DEV_DB_NAME
-        );
-    });
-
-    test('Should use production database in production environment', () => {
+    test('Should use database that is given as parameter', () => {
         expect(
-            createDatabaseUrl('username', 'password', 'dbUrl', true)
-        ).toContain(PROD_DB_NAME);
-    });
-
-    test('Should use development database in dev environment', () => {
-        expect(
-            createDatabaseUrl('username', 'password', 'dbUrl', false)
-        ).toContain(DEV_DB_NAME);
+            createDatabaseUrl('username', 'getARoomDB', 'password', 'dbUrl')
+        ).toContain('getARoomDB');
     });
 });
