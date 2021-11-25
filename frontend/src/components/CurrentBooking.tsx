@@ -12,7 +12,8 @@ import {
     Button,
     CircularProgress
 } from '@mui/material';
-import { Booking, AddTimeDetails } from '../types';
+import { getRooms } from '../services/roomService';
+import { Room, Booking, AddTimeDetails, Preferences } from '../types';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
 import { updateBooking, deleteBooking } from '../services/bookingService';
 import TimeLeft from './util/TimeLeft';
@@ -52,11 +53,13 @@ function getFeatures(booking: Booking) {
 
 type CurrentBookingProps = {
     bookings: Booking[];
+    setRooms: (rooms: Room[]) => void;
     setBookings: (bookings: Booking[]) => void;
+    preferences?: Preferences;
 };
 
 const CurrentBooking = (props: CurrentBookingProps) => {
-    const { bookings, setBookings } = props;
+    const { bookings, setRooms, setBookings, preferences } = props;
 
     const { createSuccessNotification, createErrorNotification } =
         useCreateNotification();
@@ -69,6 +72,7 @@ const CurrentBooking = (props: CurrentBookingProps) => {
             expandedFeatures === booking.id ? 'false' : booking.id
         );
     };
+
     // Add extra time for the reserved room
     const handleAddExtraTime = (booking: Booking, minutes: number) => {
         let addTimeDetails: AddTimeDetails = {
@@ -103,6 +107,13 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                 setBookingProcessing('false');
                 setBookings(bookings.filter((b) => b.id !== booking.id));
                 createSuccessNotification('Booking deleted succesfully');
+
+                if (preferences) {
+                    const buildingPreference = preferences.building?.id;
+                    getRooms(buildingPreference)
+                        .then(setRooms)
+                        .catch((error) => console.log(error));
+                }
             })
             .catch(() => {
                 setBookingProcessing('false');
