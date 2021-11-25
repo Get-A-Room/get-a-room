@@ -38,15 +38,8 @@ export const getBooking = () => {
             });
 
             next();
-        } catch (err: any) {
-            if (
-                err.response.data.error.code === 410 ||
-                err.response.data.error.code === 404
-            ) {
-                return responses.notFound(req, res);
-            }
-
-            return responses.internalServerError(req, res);
+        } catch (err) {
+            next(err);
         }
     };
 

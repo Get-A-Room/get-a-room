@@ -44,6 +44,10 @@ export const parseToken = () => {
 
             const payload = tokenTools.readToken(TOKEN);
 
+            if (!payload.refreshToken) {
+                return responses.invalidToken(req, res);
+            }
+
             res.locals.token = TOKEN;
             res.locals.sub = payload.sub;
             res.locals.email = payload.email;
@@ -82,6 +86,10 @@ export const validateAccessToken = () => {
             });
 
             const newToken = (await client.getAccessToken()).token;
+
+            if (!newToken) {
+                return responses.invalidToken(req, res);
+            }
 
             // Token had expired
             if (res.locals.accessToken !== newToken) {

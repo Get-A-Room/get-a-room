@@ -96,7 +96,7 @@ export const unpackPayload = () => {
             const payload = ticket.getPayload();
 
             if (payload?.hd !== process.env.HOSTED_DOMAIN) {
-                return res.redirect(`${frontendUrl}/auth/failure?code=400`);
+                return res.redirect(`${frontendUrl}/auth/failure?code=401`);
             }
 
             res.locals.payload = payload;
