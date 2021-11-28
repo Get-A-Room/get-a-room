@@ -19,7 +19,7 @@ export const deleteBooking = () => {
             const bookingId: string = req.params.bookingId;
             const client: OAuth2Client = res.locals.oAuthClient;
 
-            if (!bookingId || bookingId.length !== 26) {
+            if (!bookingId || bookingId?.length !== 26) {
                 return responses.badRequest(req, res);
             }
 
