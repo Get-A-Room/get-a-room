@@ -39,7 +39,12 @@ function BookingView(props: BookingViewProps) {
 
     return (
         <div id="booking-view">
-            <CurrentBooking bookings={bookings} setBookings={setBookings} />
+            <CurrentBooking
+                bookings={bookings}
+                setRooms={setRooms}
+                setBookings={setBookings}
+                preferences={preferences}
+            />
             <Typography py={2} variant="h4" textAlign="center">
                 Available rooms
             </Typography>
