@@ -246,6 +246,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                         >
                                             <Button
                                                 id="book30Min-button"
+                                                data-testid="Book30MinButton"
                                                 style={{
                                                     backgroundColor: '#282c34',
                                                     textTransform: 'none',
@@ -267,6 +268,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                             </Button>
                                             <Button
                                                 id="book60Min-button"
+                                                data-testid="Book60MinButton"
                                                 style={{
                                                     backgroundColor: '#282c34',
                                                     textTransform: 'none',
