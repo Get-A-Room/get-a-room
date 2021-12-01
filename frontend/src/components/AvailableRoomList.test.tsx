@@ -71,7 +71,7 @@ describe('AvailableRoomList', () => {
             'ExpansionButtonAvailableRoomList'
         );
         userEvent.click(expansionButton);
-        await waitFor(() => expect(screen.getByText('15')));
+        await waitFor(() => expect(screen.getByText('TV, Whiteboard')));
     });
 
     it('tests interaction with quick book button', async () => {
