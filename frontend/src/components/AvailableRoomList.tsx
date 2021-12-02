@@ -145,7 +145,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                             sx={{
                                                 fontSize: '18px',
                                                 fontWeight: 'bold',
-                                                ml: 1
+                                                ml: 1.5
                                             }}
                                         >
                                             {getName(room)}
