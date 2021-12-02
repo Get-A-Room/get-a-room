@@ -127,14 +127,13 @@ const AvailableRoomList = (props: BookingListProps) => {
                                     <Box
                                         sx={{
                                             display: 'flex',
-                                            justifyContent: 'left',
-                                            maxHeight: '20px'
+                                            justifyContent: 'left'
                                         }}
                                     >
                                         <Group />
                                         <Typography
                                             sx={{
-                                                fontSize: '16px',
+                                                fontSize: '18px',
                                                 fontWeight: 'bold'
                                             }}
                                         >
@@ -151,7 +150,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                             {getName(room)}
                                         </Typography>
                                     </Box>
-                                    <Box sx={{ paddingTop: 1 }}>
+                                    <Box>
                                         <TimeLeft
                                             endTime={getNextCalendarEvent(room)}
                                             timeLeftText="Free for: "

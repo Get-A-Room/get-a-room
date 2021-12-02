@@ -156,14 +156,13 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                 <Box
                                     sx={{
                                         display: 'flex',
-                                        justifyContent: 'left',
-                                        maxHeight: '20px'
+                                        justifyContent: 'left'
                                     }}
                                 >
                                     <Group />
                                     <Typography
                                         sx={{
-                                            fontSize: '16px',
+                                            fontSize: '18px',
                                             fontWeight: 'bold'
                                         }}
                                     >
@@ -180,7 +179,7 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                         {getBookingRoomName(booking)}
                                     </Typography>
                                 </Box>
-                                <Box sx={{ paddingTop: 1 }}>
+                                <Box>
                                     <TimeLeft
                                         endTime={getEndTime(booking)}
                                         timeLeftText="Time left:"
