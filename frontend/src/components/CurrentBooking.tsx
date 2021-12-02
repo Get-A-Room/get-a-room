@@ -174,7 +174,7 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                         sx={{
                                             fontSize: '18px',
                                             fontWeight: 'bold',
-                                            ml: 1.5
+                                            ml: 1
                                         }}
                                     >
                                         {getBookingRoomName(booking)}
