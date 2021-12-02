@@ -156,10 +156,11 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                 <Box
                                     sx={{
                                         display: 'flex',
-                                        justifyContent: 'left'
+                                        justifyContent: 'left',
+                                        alignItems: 'center'
                                     }}
                                 >
-                                    <Group />
+                                    <Group sx={{ pb: 0.3 }} />
                                     <Typography
                                         sx={{
                                             fontSize: '18px',

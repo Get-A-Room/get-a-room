@@ -127,10 +127,11 @@ const AvailableRoomList = (props: BookingListProps) => {
                                     <Box
                                         sx={{
                                             display: 'flex',
-                                            justifyContent: 'left'
+                                            justifyContent: 'left',
+                                            alignItems: 'center'
                                         }}
                                     >
-                                        <Group />
+                                        <Group sx={{ pb: 0.3 }} />
                                         <Typography
                                             sx={{
                                                 fontSize: '18px',
@@ -144,7 +145,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                             sx={{
                                                 fontSize: '18px',
                                                 fontWeight: 'bold',
-                                                ml: 0.5
+                                                ml: 1
                                             }}
                                         >
                                             {getName(room)}
