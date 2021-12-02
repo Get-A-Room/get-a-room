@@ -5,7 +5,6 @@ import {
     CardActions,
     CardContent,
     Collapse,
-    Grid,
     IconButton,
     List,
     Typography,
@@ -146,121 +145,135 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                             m: 2
                         }}
                     >
-                        <CardContent style={{ paddingBottom: 0 }}>
-                            <Grid
-                                container
-                                style={{
-                                    alignItems: 'stretch',
-                                    display: 'flex'
-                                }}
-                            >
-                                <Grid item xs={6}>
-                                    <Box
-                                        style={{
-                                            textAlign: 'left'
+                        <CardContent
+                            style={{
+                                justifyContent: 'space-between',
+                                display: 'flex',
+                                textAlign: 'left'
+                            }}
+                        >
+                            <Box display="flex" flexDirection="column">
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'left',
+                                        alignItems: 'center'
+                                    }}
+                                >
+                                    <Group sx={{ pb: 0.3 }} />
+                                    <Typography
+                                        sx={{
+                                            fontSize: '18px',
+                                            fontWeight: 'bold'
                                         }}
                                     >
-                                        <Typography
-                                            data-testid="BookingRoomTitle"
+                                        {getCapacity(booking)}
+                                    </Typography>
+                                    <Typography
+                                        data-testid="BookingRoomTitle"
+                                        sx={{
+                                            fontSize: '18px',
+                                            fontWeight: 'bold',
+                                            ml: 1
+                                        }}
+                                    >
+                                        {getBookingRoomName(booking)}
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    <TimeLeft
+                                        endTime={getEndTime(booking)}
+                                        timeLeftText="Time left:"
+                                    />
+                                </Box>
+                                {bookingProcessing === booking.id ? (
+                                    <Box
+                                        display="flex"
+                                        justifyContent="center"
+                                        mt={3}
+                                    >
+                                        <CircularProgress color="primary" />
+                                    </Box>
+                                ) : null}
+                            </Box>
+                            <Box display="flex" flexDirection="column">
+                                <Box
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                        alignItems: 'right'
+                                    }}
+                                >
+                                    <CardActions disableSpacing>
+                                        <Button
+                                            id="extraTime-button"
+                                            data-testid="ExtraTimeButton"
                                             style={{
-                                                fontSize: '18px',
-                                                fontWeight: 'bold'
+                                                backgroundColor: '#282c34',
+                                                textTransform: 'none',
+                                                color: 'white',
+                                                fontSize: '16px',
+                                                animation:
+                                                    'ripple 600ms linear',
+                                                minWidth: '130px',
+                                                minHeight: '50px',
+                                                maxWidth: '130px',
+                                                maxHeight: '50px'
                                             }}
+                                            onClick={() =>
+                                                handleAddExtraTime(booking, 15)
+                                            }
                                         >
-                                            {getBookingRoomName(booking)}
-                                        </Typography>
-                                        <TimeLeft
-                                            endTime={getEndTime(booking)}
-                                            timeLeftText="Time left:"
-                                        />
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Box
-                                        style={{
-                                            display: 'flex',
-                                            justifyContent: 'flex-end',
-                                            alignItems: 'right'
-                                        }}
-                                    >
-                                        <CardActions disableSpacing>
-                                            <Button
-                                                id="extraTime-button"
-                                                data-testid="ExtraTimeButton"
-                                                style={{
-                                                    backgroundColor: '#282c34',
-                                                    textTransform: 'none',
-                                                    color: 'white',
-                                                    fontSize: '16px',
-                                                    animation:
-                                                        'ripple 600ms linear',
-                                                    minWidth: '130px',
-                                                    minHeight: '50px',
-                                                    maxWidth: '130px',
-                                                    maxHeight: '50px'
-                                                }}
-                                                onClick={() =>
-                                                    handleAddExtraTime(
-                                                        booking,
-                                                        15
-                                                    )
-                                                }
-                                            >
-                                                +15 min
-                                            </Button>
-                                        </CardActions>
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    {bookingProcessing === booking.id ? (
-                                        <Box
-                                            display="flex"
-                                            justifyContent="center"
+                                            +15 min
+                                        </Button>
+                                    </CardActions>
+                                </Box>
+                                <Box
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                        alignItems: 'right'
+                                    }}
+                                >
+                                    <CardActions disableSpacing>
+                                        <Button
+                                            id="delete-button"
+                                            data-testid="DeleteButton"
+                                            style={{
+                                                backgroundColor: '#282c34',
+                                                textTransform: 'none',
+                                                color: 'white',
+                                                fontSize: '16px',
+                                                animation:
+                                                    'ripple 600ms linear',
+                                                minWidth: '130px',
+                                                minHeight: '50px',
+                                                maxWidth: '130px',
+                                                maxHeight: '50px'
+                                            }}
+                                            onClick={() =>
+                                                handleDeleteBooking(booking)
+                                            }
                                         >
-                                            <CircularProgress color="primary" />
-                                        </Box>
-                                    ) : null}
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Box
-                                        style={{
-                                            display: 'flex',
-                                            justifyContent: 'flex-end',
-                                            alignItems: 'right'
-                                        }}
-                                    >
-                                        <CardActions disableSpacing>
-                                            <Button
-                                                id="delete-button"
-                                                data-testid="DeleteButton"
-                                                style={{
-                                                    backgroundColor: '#282c34',
-                                                    textTransform: 'none',
-                                                    color: 'white',
-                                                    fontSize: '16px',
-                                                    animation:
-                                                        'ripple 600ms linear',
-                                                    minWidth: '130px',
-                                                    minHeight: '50px',
-                                                    maxWidth: '130px',
-                                                    maxHeight: '50px'
-                                                }}
-                                                onClick={() =>
-                                                    handleDeleteBooking(booking)
-                                                }
-                                            >
-                                                Delete
-                                            </Button>
-                                        </CardActions>
-                                    </Box>
-                                </Grid>
-                            </Grid>
+                                            Delete
+                                        </Button>
+                                    </CardActions>
+                                </Box>
+                            </Box>
+                        </CardContent>
+                        <CardContent
+                            style={{
+                                justifyContent: 'space-between',
+                                flexDirection: 'column',
+                                display: 'flex',
+                                textAlign: 'center'
+                            }}
+                        >
                             <Box
                                 style={{
                                     display: 'flex',
                                     justifyContent: 'center',
-                                    alignItems: 'center',
-                                    paddingBottom: 0
+                                    maxHeight: '10px'
                                 }}
                             >
                                 <CardActions disableSpacing>
@@ -284,41 +297,11 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                 timeout="auto"
                                 unmountOnExit
                             >
-                                <Grid
-                                    container
-                                    spacing={2}
-                                    style={{
-                                        display: 'flex',
-                                        paddingBottom: '1em',
-                                        justifyContent: 'space-around'
-                                    }}
-                                >
-                                    <Grid item>
-                                        <Box
-                                            style={{
-                                                display: 'flex'
-                                            }}
-                                        >
-                                            <Group />
-                                            <Typography
-                                                style={{
-                                                    fontSize: '16px',
-                                                    fontWeight: 'bold'
-                                                }}
-                                            >
-                                                {getCapacity(booking)}
-                                            </Typography>
-                                        </Box>
-                                    </Grid>
-                                    <Grid item>
-                                        <Typography
-                                            style={{ fontSize: '16px' }}
-                                        >
-                                            {' '}
-                                            {getFeatures(booking)}{' '}
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
+                                <Box mt={2}>
+                                    <Typography style={{ fontSize: '16px' }}>
+                                        {getFeatures(booking)}
+                                    </Typography>
+                                </Box>
                             </Collapse>
                         </CardContent>
                     </Card>

@@ -119,30 +119,50 @@ const AvailableRoomList = (props: BookingListProps) => {
                             <CardContent
                                 style={{
                                     justifyContent: 'space-between',
-                                    flexDirection: 'column',
                                     display: 'flex',
                                     textAlign: 'left'
                                 }}
                             >
-                                <Box
-                                    display="flex"
-                                    justifyContent="space-between"
-                                >
-                                    <Box display="flex" flexDirection="column">
+                                <Box display="flex" flexDirection="column">
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            justifyContent: 'left',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <Group sx={{ pb: 0.3 }} />
                                         <Typography
-                                            data-testid="BookingRoomTitle"
-                                            style={{
+                                            sx={{
                                                 fontSize: '18px',
                                                 fontWeight: 'bold'
                                             }}
                                         >
+                                            {getCapacity(room)}
+                                        </Typography>
+                                        <Typography
+                                            data-testid="BookingRoomTitle"
+                                            sx={{
+                                                fontSize: '18px',
+                                                fontWeight: 'bold',
+                                                ml: 1
+                                            }}
+                                        >
                                             {getName(room)}
                                         </Typography>
+                                    </Box>
+                                    <Box>
                                         <TimeLeft
                                             endTime={getNextCalendarEvent(room)}
                                             timeLeftText="Free for: "
                                         />
                                     </Box>
+                                </Box>
+                                <Box
+                                    display="flex"
+                                    justifyContent="space-between"
+                                    flexDirection="row"
+                                >
                                     <CardActions disableSpacing>
                                         {!disableBooking(bookings) ? (
                                             <Button
@@ -193,9 +213,18 @@ const AvailableRoomList = (props: BookingListProps) => {
                                         )}
                                     </CardActions>
                                 </Box>
+                            </CardContent>
+                            <CardContent
+                                style={{
+                                    justifyContent: 'space-between',
+                                    flexDirection: 'column',
+                                    display: 'flex',
+                                    textAlign: 'center'
+                                }}
+                            >
                                 {bookingLoading === room.id ? (
                                     <Box
-                                        py={2}
+                                        pb={2}
                                         display="flex"
                                         justifyContent="center"
                                     >
@@ -217,6 +246,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                         >
                                             <Button
                                                 id="book30Min-button"
+                                                data-testid="Book30MinButton"
                                                 style={{
                                                     backgroundColor: '#282c34',
                                                     textTransform: 'none',
@@ -238,6 +268,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                             </Button>
                                             <Button
                                                 id="book60Min-button"
+                                                data-testid="Book60MinButton"
                                                 style={{
                                                     backgroundColor: '#282c34',
                                                     textTransform: 'none',
@@ -260,67 +291,42 @@ const AvailableRoomList = (props: BookingListProps) => {
                                         </Box>
                                     </Collapse>
                                 ) : null}
-                                <div>
-                                    <Box
-                                        style={{
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            maxHeight: '10px'
-                                        }}
-                                    >
-                                        <CardActions disableSpacing>
-                                            <IconButton
-                                                data-testid="ExpansionButtonAvailableRoomList"
-                                                onClick={() =>
-                                                    handleFeaturesCollapse(room)
-                                                }
-                                                aria-label="Expand"
-                                            >
-                                                {expandedFeatures ===
-                                                room.id ? (
-                                                    <ExpandLess />
-                                                ) : (
-                                                    <ExpandMore />
-                                                )}
-                                            </IconButton>
-                                        </CardActions>
-                                    </Box>
-                                    <Collapse
-                                        in={expandedFeatures === room.id}
-                                        timeout="auto"
-                                        unmountOnExit
-                                    >
-                                        <Box
-                                            style={{
-                                                display: 'flex',
-                                                justifyContent: 'left',
-                                                maxHeight: '20px'
-                                            }}
+                                <Box
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        maxHeight: '10px'
+                                    }}
+                                >
+                                    <CardActions disableSpacing>
+                                        <IconButton
+                                            data-testid="ExpansionButtonAvailableRoomList"
+                                            onClick={() =>
+                                                handleFeaturesCollapse(room)
+                                            }
+                                            aria-label="Expand"
                                         >
-                                            <Group />
-                                            <Typography
-                                                style={{ maxWidth: '2px' }}
-                                            >
-                                                {' '}
-                                            </Typography>
-                                            <Typography
-                                                style={{
-                                                    fontSize: '16px',
-                                                    fontWeight: 'bold'
-                                                }}
-                                            >
-                                                {getCapacity(room)}
-                                            </Typography>
-                                        </Box>
-                                        <Box>
-                                            <Typography
-                                                style={{ fontSize: '16px' }}
-                                            >
-                                                {getFeatures(room)}
-                                            </Typography>
-                                        </Box>
-                                    </Collapse>
-                                </div>
+                                            {expandedFeatures === room.id ? (
+                                                <ExpandLess />
+                                            ) : (
+                                                <ExpandMore />
+                                            )}
+                                        </IconButton>
+                                    </CardActions>
+                                </Box>
+                                <Collapse
+                                    in={expandedFeatures === room.id}
+                                    timeout="auto"
+                                    unmountOnExit
+                                >
+                                    <Box mt={2}>
+                                        <Typography
+                                            style={{ fontSize: '16px' }}
+                                        >
+                                            {getFeatures(room)}
+                                        </Typography>
+                                    </Box>
+                                </Collapse>
                             </CardContent>
                         </Card>
                     ))}
