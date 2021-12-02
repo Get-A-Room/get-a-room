@@ -63,11 +63,25 @@ const AvailableRoomList = (props: BookingListProps) => {
         useCreateNotification();
 
     const [bookingLoading, setBookingLoading] = useState('false');
-    const [expandedFeatures, setExpandedFeatures] = useState('false');
+    const [expandedFeatures, setExpandedFeatures] = useState([] as string[]);
     const [expandedBooking, setExpandedBooking] = useState('false');
 
     const handleFeaturesCollapse = (room: Room) => {
-        setExpandedFeatures(expandedFeatures === room.id ? 'false' : room.id);
+        if (expandedFeatures.includes(room.id)) {
+            // Collapse
+            expandedFeatures.forEach((element: any, index: any) => {
+                if (element === room.id) expandedFeatures.splice(index, 1);
+            });
+            setExpandedFeatures((expandedFeatures: any) => [
+                ...expandedFeatures
+            ]);
+        } else {
+            // Expand
+            setExpandedFeatures((expandedFeatures: any) => [
+                ...expandedFeatures,
+                room.id
+            ]);
+        }
     };
 
     const handleBookingCollapse = (room: Room) => {
@@ -306,7 +320,9 @@ const AvailableRoomList = (props: BookingListProps) => {
                                             }
                                             aria-label="Expand"
                                         >
-                                            {expandedFeatures === room.id ? (
+                                            {expandedFeatures.includes(
+                                                room.id
+                                            ) ? (
                                                 <ExpandLess />
                                             ) : (
                                                 <ExpandMore />
@@ -315,7 +331,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                     </CardActions>
                                 </Box>
                                 <Collapse
-                                    in={expandedFeatures === room.id}
+                                    in={expandedFeatures.includes(room.id)}
                                     timeout="auto"
                                     unmountOnExit
                                 >
