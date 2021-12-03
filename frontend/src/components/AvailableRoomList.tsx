@@ -123,7 +123,16 @@ const AvailableRoomList = (props: BookingListProps) => {
     return (
         <Box id="available-room-list" textAlign="center" pb={8}>
             <FormControlLabel
-                label="Expand room features"
+                label={
+                    <Typography
+                        sx={{
+                            fontSize: '18px',
+                            fontWeight: 'bold'
+                        }}
+                    >
+                        Expand room features
+                    </Typography>
+                }
                 control={<Switch onChange={handleAllFeaturesCollapse} />}
             />
             <List>
