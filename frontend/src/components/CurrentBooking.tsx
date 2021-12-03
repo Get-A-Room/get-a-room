@@ -157,7 +157,8 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                     sx={{
                                         display: 'flex',
                                         justifyContent: 'left',
-                                        alignItems: 'center'
+                                        alignItems: 'center',
+                                        pt: 0.9
                                     }}
                                 >
                                     <Group sx={{ pb: 0.3 }} />
@@ -196,7 +197,7 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                     </Box>
                                 ) : null}
                             </Box>
-                            <Box display="flex" flexDirection="column">
+                            <Box flexDirection="column">
                                 <Box
                                     style={{
                                         display: 'flex',

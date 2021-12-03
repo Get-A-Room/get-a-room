@@ -165,7 +165,8 @@ const AvailableRoomList = (props: BookingListProps) => {
                                         sx={{
                                             display: 'flex',
                                             justifyContent: 'left',
-                                            alignItems: 'center'
+                                            alignItems: 'center',
+                                            pt: 0.9
                                         }}
                                     >
                                         <Group sx={{ pb: 0.3 }} />
@@ -195,11 +196,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                         />
                                     </Box>
                                 </Box>
-                                <Box
-                                    display="flex"
-                                    justifyContent="space-between"
-                                    flexDirection="row"
-                                >
+                                <Box>
                                     <CardActions disableSpacing>
                                         {!disableBooking(bookings) ? (
                                             <Button
