@@ -9,7 +9,9 @@ import {
     IconButton,
     Collapse,
     Box,
-    CircularProgress
+    CircularProgress,
+    Switch,
+    FormControlLabel
 } from '@mui/material';
 import { Group, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { makeBooking } from '../services/bookingService';
@@ -64,6 +66,9 @@ const AvailableRoomList = (props: BookingListProps) => {
 
     const [bookingLoading, setBookingLoading] = useState('false');
     const [expandedFeatures, setExpandedFeatures] = useState([] as string[]);
+    const [expandedFeaturesAll, setExpandedFeaturesAll] = useState(
+        [] as Room[]
+    );
     const [expandedBooking, setExpandedBooking] = useState('false');
 
     const handleFeaturesCollapse = (room: Room) => {
@@ -82,6 +87,11 @@ const AvailableRoomList = (props: BookingListProps) => {
                 room.id
             ]);
         }
+    };
+
+    const handleAllFeaturesCollapse = () => {
+        setExpandedFeaturesAll(expandedFeaturesAll === rooms ? [] : rooms);
+        setExpandedFeatures([]);
     };
 
     const handleBookingCollapse = (room: Room) => {
@@ -112,6 +122,10 @@ const AvailableRoomList = (props: BookingListProps) => {
     };
     return (
         <Box id="available-room-list" textAlign="center" pb={8}>
+            <FormControlLabel
+                label="Expand room features"
+                control={<Switch onChange={handleAllFeaturesCollapse} />}
+            />
             <List>
                 {rooms
                     .sort((a, b) => (a.name < b.name ? -1 : 1))
@@ -305,33 +319,38 @@ const AvailableRoomList = (props: BookingListProps) => {
                                         </Box>
                                     </Collapse>
                                 ) : null}
-                                <Box
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        maxHeight: '10px'
-                                    }}
-                                >
-                                    <CardActions disableSpacing>
-                                        <IconButton
-                                            data-testid="ExpansionButtonAvailableRoomList"
-                                            onClick={() =>
-                                                handleFeaturesCollapse(room)
-                                            }
-                                            aria-label="Expand"
-                                        >
-                                            {expandedFeatures.includes(
-                                                room.id
-                                            ) ? (
-                                                <ExpandLess />
-                                            ) : (
-                                                <ExpandMore />
-                                            )}
-                                        </IconButton>
-                                    </CardActions>
-                                </Box>
+                                {!expandedFeaturesAll.includes(room) ? (
+                                    <Box
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            maxHeight: '10px'
+                                        }}
+                                    >
+                                        <CardActions disableSpacing>
+                                            <IconButton
+                                                data-testid="ExpansionButtonAvailableRoomList"
+                                                onClick={() =>
+                                                    handleFeaturesCollapse(room)
+                                                }
+                                                aria-label="Expand"
+                                            >
+                                                {expandedFeatures.includes(
+                                                    room.id
+                                                ) ? (
+                                                    <ExpandLess />
+                                                ) : (
+                                                    <ExpandMore />
+                                                )}
+                                            </IconButton>
+                                        </CardActions>
+                                    </Box>
+                                ) : null}
                                 <Collapse
-                                    in={expandedFeatures.includes(room.id)}
+                                    in={
+                                        expandedFeatures.includes(room.id) ||
+                                        expandedFeaturesAll.includes(room)
+                                    }
                                     timeout="auto"
                                     unmountOnExit
                                 >
