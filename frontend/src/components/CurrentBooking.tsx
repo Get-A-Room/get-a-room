@@ -34,6 +34,10 @@ function getCapacity(booking: Booking) {
     return booking.room.capacity;
 }
 
+function getNextCalendarEvent(room: Room) {
+    return room.nextCalendarEvent;
+}
+
 function getFeatures(booking: Booking) {
     let featureArray = booking.room.features;
     let featuresDisplay = [];
@@ -185,6 +189,14 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                     <TimeLeft
                                         endTime={getEndTime(booking)}
                                         timeLeftText="Time left:"
+                                    />
+                                </Box>
+                                <Box>
+                                    <TimeLeft
+                                        endTime={getNextCalendarEvent(
+                                            booking.room
+                                        )}
+                                        timeLeftText="Room is booked in: "
                                     />
                                 </Box>
                                 {bookingProcessing === booking.id ? (
