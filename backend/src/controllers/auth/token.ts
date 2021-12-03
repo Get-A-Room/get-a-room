@@ -4,8 +4,6 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 import jwtTokenPayload from '../../types/jwtTokenPayload';
 
-const jwtSecret = process.env.JWT_SECRET as string;
-
 /**
  * Creates a JWT token containing user data and access tokens
  * @returns
@@ -63,7 +61,7 @@ export const updateToken = (
  * @returns Token payload
  */
 export const readToken = (token: string): jwtTokenPayload => {
-    const payload = jwt.verify(token, jwtSecret, {
+    const payload = jwt.verify(token, process.env.JWT_SECRET as string, {
         issuer: process.env.HOSTED_DOMAIN
     }) as JwtPayload;
 
@@ -82,7 +80,7 @@ export const readToken = (token: string): jwtTokenPayload => {
  * @returns JWT token
  */
 export const writeToken = (payload: jwtTokenPayload): string => {
-    const token = jwt.sign(payload, jwtSecret, {
+    const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
         issuer: process.env.HOSTED_DOMAIN,
         expiresIn: '365 days'
     });

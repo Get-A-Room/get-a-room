@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { GaxiosError } from 'gaxios';
-import * as responses from '../utils/responses';
+import * as responses from './responses';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -9,7 +9,7 @@ import * as responses from '../utils/responses';
  * @returns
  */
 export const gaxiosErrorHandler = () => {
-    const middleware = (
+    const middleware = async (
         err: any,
         req: Request,
         res: Response,
@@ -17,7 +17,7 @@ export const gaxiosErrorHandler = () => {
     ) => {
         if (err instanceof GaxiosError) {
             switch (err.message) {
-                case 'Invalid Input: filter':
+                case 'Invalid Input: Filter':
                     return responses.badRequest(req, res);
                 case 'Invalid Credentials':
                     return responses.unauthorized(req, res);

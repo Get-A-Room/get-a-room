@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { getOAuthClient } from '../googleController';
+import { getOAuthClient } from '../../utils/oAuthClient';
 import { OAuth2Client } from 'google-auth-library';
 
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -13,11 +13,47 @@ const scopes = [
 ];
 
 /**
+ * Set 'TOKEN' cookie and redirect to app
+ */
+export const handleAuthCallback = () => {
+    const middleware = async (req: Request, res: Response) => {
+        res.cookie('TOKEN', res.locals.token, {
+            maxAge: 31556952000, // 1 year
+            httpOnly: true
+        });
+
+        res.redirect(`${frontendUrl}/auth/success`);
+    };
+
+    return middleware;
+};
+
+/**
+ * Redirect user to authentication url or clear cookie and redirect to login
+ */
+export const redirectToAuthUrl = () => {
+    const middleware = async (req: Request, res: Response) => {
+        if (res.locals.authUrl) {
+            return res.redirect(res.locals.authUrl);
+        }
+
+        res.clearCookie('TOKEN');
+        return res.redirect(`${frontendUrl}/login`);
+    };
+
+    return middleware;
+};
+
+/**
  * Generate auth URL and add it to res.locals.authUrl
  * @returns
  */
 export const redirectUrl = () => {
-    const middleware = (req: Request, res: Response, next: NextFunction) => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
         try {
             const client = getOAuthClient();
             const url = client.generateAuthUrl({
@@ -49,7 +85,6 @@ export const verifyCode = () => {
     ) => {
         try {
             if (!req.query.code) {
-                console.error(`ERROR - "No code"`);
                 return res.redirect(`${frontendUrl}/auth/failure?code=401`);
             }
 
