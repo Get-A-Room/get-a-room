@@ -233,25 +233,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                                     <ExpandMore />
                                                 )}
                                             </Button>
-                                        ) : (
-                                            <Button
-                                                id="disabledQuickBook-button"
-                                                data-testid="disabledQuickBookButton"
-                                                style={{
-                                                    backgroundColor: '#333842',
-                                                    textTransform: 'none',
-                                                    color: '#A9A9A9',
-                                                    fontSize: '16px',
-                                                    minWidth: '130px',
-                                                    minHeight: '50px',
-                                                    maxWidth: '130px',
-                                                    maxHeight: '50px'
-                                                }}
-                                                disabled={true}
-                                            >
-                                                Quick Book
-                                            </Button>
-                                        )}
+                                        ) : null}
                                     </CardActions>
                                 </Box>
                             </CardContent>
