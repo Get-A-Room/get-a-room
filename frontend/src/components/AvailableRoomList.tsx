@@ -15,12 +15,19 @@ import {
 } from '@mui/material';
 import { Group, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { makeBooking } from '../services/bookingService';
-import TimeLeft from './util/TimeLeft';
+import TimeLeft, { getTimeLeft } from './util/TimeLeft';
 import { Booking, BookingDetails, Room } from '../types';
 import useCreateNotification from '../hooks/useCreateNotification';
 
 function disableBooking(bookings: Booking[]) {
     return bookings.length === 0 ? false : true;
+}
+
+function getBookingTimeLeft(room: Room) {
+    let timeLeft = '';
+    timeLeft = getTimeLeft(getNextCalendarEvent(room));
+    timeLeft = timeLeft.slice(0, -3);
+    return Number(timeLeft);
 }
 
 function getNextCalendarEvent(room: Room) {
@@ -300,28 +307,34 @@ const AvailableRoomList = (props: BookingListProps) => {
                                             >
                                                 30 min
                                             </Button>
-                                            <Button
-                                                id="book60Min-button"
-                                                data-testid="Book60MinButton"
-                                                style={{
-                                                    backgroundColor: '#282c34',
-                                                    textTransform: 'none',
-                                                    color: 'white',
-                                                    fontSize: '16px',
-                                                    animation:
-                                                        'ripple 600ms linear',
-                                                    minWidth: '100px',
-                                                    minHeight: '50px',
-                                                    maxWidth: '120px',
-                                                    maxHeight: '50px'
-                                                }}
-                                                onClick={() => {
-                                                    book(room, 60);
-                                                    handleBookingCollapse(room);
-                                                }}
-                                            >
-                                                60 min
-                                            </Button>
+                                            {isNaN(getBookingTimeLeft(room)) ||
+                                            getBookingTimeLeft(room) >= 60 ? (
+                                                <Button
+                                                    id="book60Min-button"
+                                                    data-testid="Book60MinButton"
+                                                    style={{
+                                                        backgroundColor:
+                                                            '#282c34',
+                                                        textTransform: 'none',
+                                                        color: 'white',
+                                                        fontSize: '16px',
+                                                        animation:
+                                                            'ripple 600ms linear',
+                                                        minWidth: '100px',
+                                                        minHeight: '50px',
+                                                        maxWidth: '120px',
+                                                        maxHeight: '50px'
+                                                    }}
+                                                    onClick={() => {
+                                                        book(room, 60);
+                                                        handleBookingCollapse(
+                                                            room
+                                                        );
+                                                    }}
+                                                >
+                                                    60 min
+                                                </Button>
+                                            ) : null}
                                         </Box>
                                     </Collapse>
                                 ) : null}

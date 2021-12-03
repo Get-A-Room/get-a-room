@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { DateTime, Duration } from 'luxon';
 
-function getTimeLeft(endTime: string) {
+export const getTimeLeft = (endTime: string) => {
     let endOfDay = DateTime.local().endOf('day').toUTC();
     let nextReservationTime = DateTime.fromISO(endTime).toUTC();
 
@@ -23,7 +23,7 @@ function getTimeLeft(endTime: string) {
     return duration.hours === 0
         ? Math.floor(duration.minutes) + ' min'
         : duration.hours + ' h ' + Math.floor(duration.minutes) + ' min';
-}
+};
 
 type TimeLeftProps = {
     endTime: string;
