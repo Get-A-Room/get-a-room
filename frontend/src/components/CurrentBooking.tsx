@@ -34,6 +34,10 @@ function getCapacity(booking: Booking) {
     return booking.room.capacity;
 }
 
+function getNextCalendarEvent(room: Room) {
+    return room.nextCalendarEvent;
+}
+
 function getFeatures(booking: Booking) {
     let featureArray = booking.room.features;
     let featuresDisplay = [];
@@ -157,7 +161,8 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                     sx={{
                                         display: 'flex',
                                         justifyContent: 'left',
-                                        alignItems: 'center'
+                                        alignItems: 'center',
+                                        pt: 0.9
                                     }}
                                 >
                                     <Group sx={{ pb: 0.3 }} />
@@ -186,6 +191,14 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                         timeLeftText="Time left:"
                                     />
                                 </Box>
+                                <Box>
+                                    <TimeLeft
+                                        endTime={getNextCalendarEvent(
+                                            booking.room
+                                        )}
+                                        timeLeftText="Room is booked in: "
+                                    />
+                                </Box>
                                 {bookingProcessing === booking.id ? (
                                     <Box
                                         display="flex"
@@ -196,7 +209,7 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                     </Box>
                                 ) : null}
                             </Box>
-                            <Box display="flex" flexDirection="column">
+                            <Box flexDirection="column">
                                 <Box
                                     style={{
                                         display: 'flex',
