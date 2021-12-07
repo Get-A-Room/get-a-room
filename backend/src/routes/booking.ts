@@ -29,6 +29,7 @@ router.get(
     '/current',
     currentBookingsController.getCurrentBookingsMiddleware(),
     currentBookingsController.simplifyAndFilterCurrentBookingsMiddleware(),
+    currentBookingsController.addNextCalendarEventMiddleware(),
     (req: Request, res: Response) => {
         res.status(200).json(res.locals.currentBookings);
     }

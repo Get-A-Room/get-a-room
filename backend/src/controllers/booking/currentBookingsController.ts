@@ -75,6 +75,58 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
 };
 
 /**
+ * Adds nextCalendarEvent to current kookings
+ * @returns
+ */
+export const addNextCalendarEventMiddleware = () => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const client = res.locals.oAuthClient;
+
+            const currentBookings: CurrentBookingData[] =
+                res.locals.currentBookings;
+
+            // console.log('res.locals.currentBookings res.locals.currentBookings');
+            // console.log(currentBookings);
+            // console.log('res.locals.currentBookings res.locals.currentBookings');
+            const end = DateTime.now().toUTC().endOf('day').toISO();
+
+            // const currentBookingsWithNextCalendarEvent = await currentBookings.map(async (currentBooking) => {
+
+            for (const currentBooking of currentBookings) {
+                console.log(currentBooking);
+                const testi = [{ id: currentBooking.room?.id }];
+
+                if (currentBooking.endTime) {
+                    const result = await calendar.freeBusyQuery(
+                        client,
+                        testi,
+                        currentBooking.endTime,
+                        end
+                    );
+
+                    console.log('currentBookingsWithNextCalendarEvent');
+                    console.log(result);
+                    console.log('currentBookingsWithNextCalendarEvent');
+                }
+            }
+
+            res.locals.currentBookings = currentBookings;
+
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    return middleware;
+};
+
+/**
  * Simlpifies bookings
  * @param simplifiedBookings List of all bookings
  * @returns simplified bookings
