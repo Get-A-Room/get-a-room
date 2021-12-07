@@ -93,8 +93,7 @@ export const addNextCalendarEventMiddleware = () => {
             let end: string;
 
             for (const currentBooking of currentBookings) {
-                console.log(currentBooking);
-                const testi = [{ id: currentBooking.room?.id }];
+                const currentBookingRoomId = [{ id: currentBooking.room?.id }];
 
                 if (req.query.until) {
                     const startDt = DateTime.now().toUTC();
@@ -113,7 +112,7 @@ export const addNextCalendarEventMiddleware = () => {
                 if (currentBooking.endTime) {
                     const result = await calendar.freeBusyQuery(
                         client,
-                        testi,
+                        currentBookingRoomId,
                         currentBooking.endTime,
                         end
                     );
