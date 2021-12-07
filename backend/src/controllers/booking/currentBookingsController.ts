@@ -9,7 +9,7 @@ import * as calendar from '../googleAPI/calendarAPI';
 import * as responses from '../../utils/responses';
 import { OAuth2Client } from 'google-auth-library';
 import { simplifyRoomData } from '../../controllers/roomController';
-import roomData from '../../types/roomData';
+import RoomData from '../../types/roomData';
 
 /**
  * Gets all the users currently active bookings
@@ -112,6 +112,8 @@ export const addNextCalendarEventMiddleware = () => {
                     console.log('currentBookingsWithNextCalendarEvent');
                     console.log(result);
                     console.log('currentBookingsWithNextCalendarEvent');
+                    currentBooking.room.nextCalendarEvent =
+                        result[currentBooking.room.id as string];
                 }
             }
 
@@ -136,22 +138,33 @@ export const simplifyBookings = (
     rooms: schema.CalendarResource[]
 ): CurrentBookingData[] => {
     // Filters away all bookings that aren't running at the moment
-    const roomsSimplified: roomData[] = simplifyRoomData(rooms);
+    const roomsSimplified: RoomData[] = simplifyRoomData(rooms);
 
     const simplifiedBookings = allBookings.map((booking: schema.EventData) => {
         const simpleEvent: CurrentBookingData = {
             id: booking.id,
             startTime: booking.start?.dateTime,
             endTime: booking.end?.dateTime,
-            room: null
+            room: {
+                id: '',
+                name: null,
+                capacity: null,
+                building: null,
+                floor: null,
+                features: null,
+                nextCalendarEvent: null,
+                location: null
+            }
         };
 
         // Finds the room information and includes it inside the simpleEvent
-        const room = roomsSimplified.find((room: roomData) => {
+        const room = roomsSimplified.find((room: RoomData) => {
             return room.location === booking.location;
         });
 
-        simpleEvent.room = room;
+        if (room) {
+            simpleEvent.room = room;
+        }
 
         return simpleEvent;
     });
