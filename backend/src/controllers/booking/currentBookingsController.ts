@@ -90,16 +90,25 @@ export const addNextCalendarEventMiddleware = () => {
             const currentBookings: CurrentBookingData[] =
                 res.locals.currentBookings;
 
-            // console.log('res.locals.currentBookings res.locals.currentBookings');
-            // console.log(currentBookings);
-            // console.log('res.locals.currentBookings res.locals.currentBookings');
-            const end = DateTime.now().toUTC().endOf('day').toISO();
-
-            // const currentBookingsWithNextCalendarEvent = await currentBookings.map(async (currentBooking) => {
+            let end: string;
 
             for (const currentBooking of currentBookings) {
                 console.log(currentBooking);
                 const testi = [{ id: currentBooking.room?.id }];
+
+                if (req.query.until) {
+                    const startDt = DateTime.now().toUTC();
+                    const endDt = DateTime.fromISO(
+                        req.query.until as string
+                    ).toUTC();
+                    end = endDt.toISO();
+
+                    if (endDt <= startDt) {
+                        return responses.badRequest(req, res);
+                    }
+                } else {
+                    end = DateTime.now().toUTC().endOf('day').toISO();
+                }
 
                 if (currentBooking.endTime) {
                     const result = await calendar.freeBusyQuery(
@@ -109,9 +118,6 @@ export const addNextCalendarEventMiddleware = () => {
                         end
                     );
 
-                    console.log('currentBookingsWithNextCalendarEvent');
-                    console.log(result);
-                    console.log('currentBookingsWithNextCalendarEvent');
                     currentBooking.room.nextCalendarEvent =
                         result[currentBooking.room.id as string];
                 }
