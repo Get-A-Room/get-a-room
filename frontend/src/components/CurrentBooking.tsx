@@ -14,7 +14,11 @@ import {
 import { getRooms } from '../services/roomService';
 import { Room, Booking, AddTimeDetails, Preferences } from '../types';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
-import { updateBooking, deleteBooking } from '../services/bookingService';
+import {
+    updateBooking,
+    deleteBooking,
+    getBookings
+} from '../services/bookingService';
 import TimeLeft from './util/TimeLeft';
 import useCreateNotification from '../hooks/useCreateNotification';
 
@@ -33,10 +37,6 @@ function areBookingsFetched(bookings: Booking[]) {
 function getCapacity(booking: Booking) {
     return booking.room.capacity;
 }
-
-//function getNextCalendarEvent(room: Room) {
-//    return room.nextCalendarEvent;
-//}
 
 function getFeatures(booking: Booking) {
     let featureArray = booking.room.features;
@@ -76,6 +76,19 @@ const CurrentBooking = (props: CurrentBookingProps) => {
         );
     };
 
+    // Get the next booking time in the reserved room
+    const getNextCalendarEvent = (booking: Booking) => {
+        let nextBooking = booking.room.nextCalendarEvent;
+
+        if (nextBooking === '-1') {
+            getBookings().then((currentBooking) => {
+                setBookings(currentBooking);
+            });
+        }
+
+        return nextBooking;
+    };
+
     // Add extra time for the reserved room
     const handleAddExtraTime = (booking: Booking, minutes: number) => {
         let addTimeDetails: AddTimeDetails = {
@@ -102,6 +115,7 @@ const CurrentBooking = (props: CurrentBookingProps) => {
             });
     };
 
+    // Delete booking and add the room back to the available rooms list
     const handleDeleteBooking = (booking: Booking) => {
         setBookingProcessing(booking.id);
 
@@ -190,6 +204,20 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                         endTime={getEndTime(booking)}
                                         timeLeftText="Time left:"
                                     />
+                                </Box>
+                                <Box>
+                                    {getNextCalendarEvent(booking) !== '-1' ? (
+                                        <TimeLeft
+                                            endTime={getNextCalendarEvent(
+                                                booking
+                                            )}
+                                            timeLeftText="Room is booked in: "
+                                        />
+                                    ) : (
+                                        <Typography>
+                                            Room is booked in:
+                                        </Typography>
+                                    )}
                                 </Box>
                                 {bookingProcessing === booking.id ? (
                                     <Box
