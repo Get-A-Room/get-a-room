@@ -10,6 +10,7 @@ import { mocked } from 'ts-jest/utils';
 
 jest.mock('../utils/responses');
 jest.mock('./userController');
+
 const mockedGetUserWithSubject = mocked(getUserWithSubject, false);
 const mockedUpdatePreferences = mocked(updatePreferences, false);
 const mockedBadRequest = mocked(badRequest, false);

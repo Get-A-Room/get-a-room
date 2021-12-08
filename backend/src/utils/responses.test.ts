@@ -1,5 +1,6 @@
 // import { Request, Response } from 'express';
 import {
+    noContent,
     badRequest,
     unauthorized,
     invalidToken,
@@ -25,6 +26,20 @@ const mockResponse: any = () => {
 describe('responses', () => {
     let request: any;
     let response: any;
+
+    test('Should return status 204 - No Content', () => {
+        request = mockRequest();
+        response = mockResponse();
+        noContent(request, response);
+
+        expect(response.status).toHaveBeenCalledTimes(1);
+        expect(response.status).toHaveBeenCalledWith(204);
+        expect(response.json).toHaveBeenCalledTimes(1);
+        expect(response.json).toHaveBeenCalledWith({
+            code: 204,
+            message: 'No Content'
+        });
+    });
 
     test('Should return status 400 - Bad Request', () => {
         request = mockRequest();

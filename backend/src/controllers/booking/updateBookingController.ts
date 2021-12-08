@@ -23,6 +23,10 @@ export const addTimeToBooking = () => {
             const eventData: schema.EventData = res.locals.event;
             const timeToAdd: number = req.body.timeToAdd;
 
+            if (!bookingId || bookingId.length !== 26) {
+                return responses.badRequest(req, res);
+            }
+
             // New end time
             const endTime = DateTime.fromISO(eventData.end?.dateTime as string)
                 .plus({ minutes: timeToAdd })
@@ -74,15 +78,14 @@ export const checkRoomIsFree = () => {
             // New end time
             const endTime = DateTime.fromISO(event.end?.dateTime as string)
                 .plus({ minutes: timeToAdd })
-                .toUTC()
-                .toISO();
+                .toUTC();
 
             const freeBusyResult = (
                 await calendar.freeBusyQuery(
                     client,
                     [{ id: roomId }],
                     event.end?.dateTime as string,
-                    endTime
+                    endTime.toISO()
                 )
             )[roomId];
 
@@ -90,9 +93,12 @@ export const checkRoomIsFree = () => {
                 return responses.internalServerError(req, res);
             }
 
-            // freeBusyResult is equal to end time when there are no
-            // reservations between now and end time
-            if (DateTime.fromISO(freeBusyResult).toUTC().toISO() !== endTime) {
+            const diff = DateTime.fromISO(freeBusyResult)
+                .toUTC()
+                .diff(endTime, 'seconds');
+
+            // Allow difference of +- 15 seconds for conflict cases
+            if (Math.abs(diff.seconds) >= 15) {
                 return responses.custom(req, res, 409, 'Conflict');
             }
 

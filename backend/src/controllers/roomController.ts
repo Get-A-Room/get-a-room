@@ -152,7 +152,7 @@ export const removeReservedRooms = () => {
     ) => {
         try {
             if (req.query.showReserved) {
-                next();
+                return next();
             }
 
             const rooms: roomData[] = res.locals.rooms;
@@ -186,41 +186,24 @@ export const removeReservedRooms = () => {
 
 /**
  * Simplify results from Google
- * @param result Results from Google API
+ * @param resources Results from Google API
  * @returns simplified results
  */
 export const simplifyRoomData = (
-    result: schema.CalendarResource[]
+    resources: schema.CalendarResource[]
 ): roomData[] => {
-    return result.map((x: schema.CalendarResource) => {
-        /**
-         * Cleans features of unnecessary information
-         * @param features featureInstances
-         * @returns array of feature names
-         */
-        const cleanFeatures = (features: any): string[] => {
-            if (!features) {
-                return [];
-            }
-
-            return features.map((x: any) => x.feature.name);
-        };
-
-        return {
-            id: x.resourceEmail,
-            name: x.resourceName,
-            capacity: x.capacity,
-            building: x.buildingId,
-            floor: x.floorName,
-            features: cleanFeatures(x.featureInstances),
-            nextCalendarEvent: '-1',
-            location: x.generatedResourceName
-        };
+    return resources.map((x: schema.CalendarResource) => {
+        return simplifySingleRoomData(x);
     });
 };
 
+/**
+ * Simplify results from Google
+ * @param resource Result from Google API
+ * @returns simplified result
+ */
 export const simplifySingleRoomData = (
-    result: schema.CalendarResource
+    resource: schema.CalendarResource
 ): roomData => {
     /**
      * Cleans features of unnecessary information
@@ -228,7 +211,7 @@ export const simplifySingleRoomData = (
      * @returns array of feature names
      */
     const cleanFeatures = (features: any): string[] => {
-        if (!features) {
+        if (!features || features.length === 0) {
             return [];
         }
 
@@ -236,13 +219,13 @@ export const simplifySingleRoomData = (
     };
 
     return {
-        id: result.resourceEmail,
-        name: result.resourceName,
-        capacity: result.capacity,
-        building: result.buildingId,
-        floor: result.floorName,
-        features: cleanFeatures(result.featureInstances),
+        id: resource.resourceEmail,
+        name: resource.resourceName,
+        capacity: resource.capacity,
+        building: resource.buildingId,
+        floor: resource.floorName,
+        features: cleanFeatures(resource.featureInstances),
         nextCalendarEvent: '-1',
-        location: result.generatedResourceName
+        location: resource.generatedResourceName
     };
 };

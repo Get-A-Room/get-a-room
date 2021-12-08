@@ -3,10 +3,7 @@ import React from 'react';
 import ReactDOM, { unmountComponentAtNode } from 'react-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import AvailableRoomList from './AvailableRoomList';
-import NavBar from './NavBar';
-import * as roomService from '../services/roomService';
-//import * as bookingService from '../services/bookingService';
-//import { makeBooking } from '../services/bookingService';
+import { makeBooking } from '../services/bookingService';
 import userEvent from '@testing-library/user-event';
 
 const fakeRooms = [
@@ -27,6 +24,8 @@ jest.mock('../hooks/useCreateNotification', () => () => {
         createErrorNotification: jest.fn()
     };
 });
+
+jest.mock('../services/bookingService');
 
 const fakeBookings = [];
 
@@ -71,7 +70,7 @@ describe('AvailableRoomList', () => {
             'ExpansionButtonAvailableRoomList'
         );
         userEvent.click(expansionButton);
-        await waitFor(() => expect(screen.getByText('15')));
+        await waitFor(() => expect(screen.getByText('TV, Whiteboard')));
     });
 
     it('tests interaction with quick book button', async () => {
@@ -84,5 +83,59 @@ describe('AvailableRoomList', () => {
         userEvent.click(quickBookButton);
         await waitFor(() => expect(screen.getByText('30 min')));
         await waitFor(() => expect(screen.getByText('60 min')));
+    });
+
+    it('books a room for 30 minutes', async () => {
+        (makeBooking as jest.Mock).mockResolvedValueOnce({
+            duration: 30,
+            roomId: fakeRooms[0].id,
+            title: 'Reservation from Get a Room!'
+        });
+
+        render(
+            <AvailableRoomList rooms={fakeRooms} bookings={fakeBookings} />,
+            container
+        );
+
+        const quickBookButton = await screen.findByTestId('QuickBookButton');
+        userEvent.click(quickBookButton);
+
+        const book30MinButton = await screen.findByTestId('Book30MinButton');
+        userEvent.click(book30MinButton);
+
+        await waitFor(() =>
+            expect(makeBooking as jest.Mock).toHaveBeenCalledWith({
+                duration: 30,
+                roomId: fakeRooms[0].id,
+                title: 'Reservation from Get a Room!'
+            })
+        );
+    });
+
+    it('books a room for 60 minutes', async () => {
+        (makeBooking as jest.Mock).mockResolvedValueOnce({
+            duration: 60,
+            roomId: fakeRooms[0].id,
+            title: 'Reservation from Get a Room!'
+        });
+
+        render(
+            <AvailableRoomList rooms={fakeRooms} bookings={fakeBookings} />,
+            container
+        );
+
+        const quickBookButton = await screen.findByTestId('QuickBookButton');
+        userEvent.click(quickBookButton);
+
+        const book60MinButton = await screen.findByTestId('Book60MinButton');
+        userEvent.click(book60MinButton);
+
+        await waitFor(() =>
+            expect(makeBooking as jest.Mock).toHaveBeenCalledWith({
+                duration: 60,
+                roomId: fakeRooms[0].id,
+                title: 'Reservation from Get a Room!'
+            })
+        );
     });
 });

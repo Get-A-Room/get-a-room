@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Typography } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import { getRooms } from '../services/roomService';
 import { getBookings } from '../services/bookingService';
 import { Room, Booking, Preferences } from '../types';
 import CurrentBooking from './CurrentBooking';
 import AvailableRoomList from './AvailableRoomList';
 import CenteredProgress from './util/CenteredProgress';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 // Check if rooms are fetched
 function areRoomsFetched(rooms: Room[]) {
     return Array.isArray(rooms) && rooms.length > 0;
+}
+
+function isActiveBooking(bookings: Booking[]) {
+    return bookings.length > 0;
 }
 
 type BookingViewProps = {
@@ -48,6 +53,29 @@ function BookingView(props: BookingViewProps) {
             <Typography py={2} variant="h4" textAlign="center">
                 Available rooms
             </Typography>
+            {isActiveBooking(bookings) ? (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        py: 2,
+                        px: 3
+                    }}
+                >
+                    <ErrorOutlineIcon />
+                    <Typography
+                        sx={{
+                            fontSize: '18px',
+                            textAlign: 'center',
+                            px: 1
+                        }}
+                    >
+                        You cannot book a new room unless you remove your
+                        current booking
+                    </Typography>
+                </Box>
+            ) : null}
             {!areRoomsFetched(rooms) ? (
                 <CenteredProgress />
             ) : (

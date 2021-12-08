@@ -1,8 +1,8 @@
 import express from 'express';
 import unless from 'express-unless';
-import { getOAuthClient } from './controllers/googleController';
+import { getOAuthClient } from './utils/oAuthClient';
 import * as responses from './utils/responses';
-import * as tokenTools from './controllers/auth/token';
+import { readToken, updateToken } from './controllers/auth/token';
 
 /**
  * Filter for unless
@@ -11,7 +11,7 @@ import * as tokenTools from './controllers/auth/token';
  */
 export const authFilter = (req: express.Request) => {
     const path = req.path;
-    const skipPaths = ['/api/auth', '/api/api-docs', '/api/favicon.ico'];
+    const skipPaths = ['/api/auth', '/api/favicon.ico'];
 
     if (path === '/api') {
         return true;
@@ -30,7 +30,7 @@ export const authFilter = (req: express.Request) => {
  * @returns -
  */
 export const parseToken = () => {
-    const middleware = (
+    const middleware = async (
         req: express.Request,
         res: express.Response,
         next: express.NextFunction
@@ -42,7 +42,7 @@ export const parseToken = () => {
                 return responses.invalidToken(req, res);
             }
 
-            const payload = tokenTools.readToken(TOKEN);
+            const payload = readToken(TOKEN);
 
             if (!payload.refreshToken) {
                 return responses.invalidToken(req, res);
@@ -94,10 +94,7 @@ export const validateAccessToken = () => {
             // Token had expired
             if (res.locals.accessToken !== newToken) {
                 res.locals.accessToken = newToken;
-                const jwt = tokenTools.updateToken(
-                    res.locals.token,
-                    newToken as string
-                );
+                const jwt = updateToken(res.locals.token, newToken as string);
 
                 res.cookie('TOKEN', jwt, {
                     maxAge: 31556952000, // 1 year

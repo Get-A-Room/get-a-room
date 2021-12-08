@@ -2,15 +2,18 @@ import { Request, Response } from 'express';
 import { mocked } from 'ts-jest/utils';
 import { badRequest, custom, internalServerError } from '../../utils/responses';
 import { query } from 'express-validator';
+import { DateTime } from 'luxon';
 import {
     makeBooking,
     validateInput,
     removeDeclinedEvent,
-    checkRoomAccepted
+    checkRoomAccepted,
+    checkRoomIsFree
 } from './makeBookingController';
 import {
     createEvent,
     deleteEvent,
+    freeBusyQuery,
     getEventData
 } from '../googleAPI/calendarAPI';
 
@@ -19,6 +22,7 @@ jest.mock('../googleAPI/calendarAPI');
 
 const mockedCreateEvent = mocked(createEvent, false);
 const mockedDeleteEvent = mocked(deleteEvent, false);
+const mockedFreeBusyQuery = mocked(freeBusyQuery, false);
 const mockedGetEventData = mocked(getEventData, false);
 
 const mockedBadRequest = mocked(badRequest, false);
@@ -169,6 +173,68 @@ describe('makeBookingController', () => {
                 mockResponse
             );
             expect(mockNext).not.toBeCalled();
+        });
+    });
+
+    describe('checkRoomIsFree', () => {
+        beforeEach(() => {
+            mockRequest = {};
+            mockResponse = {
+                locals: {
+                    oAuthClient: 'client',
+                    roomId: 'room',
+                    duration: 60
+                }
+            };
+            mockNext = jest.fn();
+
+            jest.resetAllMocks();
+        });
+
+        test('Should return Internal server error when no query results', async () => {
+            mockedFreeBusyQuery.mockResolvedValueOnce({});
+
+            await checkRoomIsFree()(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNext
+            );
+
+            expect(mockedInternalServerError).toBeCalledTimes(1);
+            expect(mockNext).not.toBeCalled();
+        });
+
+        test('Should return Conflict when there is event overlap', async () => {
+            mockedFreeBusyQuery.mockResolvedValueOnce({
+                room: DateTime.now().toUTC().toISO()
+            });
+
+            await checkRoomIsFree()(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNext
+            );
+
+            expect(mockedCustomResponse).toBeCalledTimes(1);
+            expect(mockedInternalServerError).not.toBeCalled();
+            expect(mockNext).not.toBeCalled();
+        });
+
+        test('Should call next when successful and room is free', async () => {
+            mockedFreeBusyQuery.mockResolvedValueOnce({
+                room: DateTime.now().plus({ minutes: 60 }).toUTC().toISO()
+            });
+
+            await checkRoomIsFree()(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNext
+            );
+
+            expect(mockedCustomResponse).not.toBeCalled();
+            expect(mockedInternalServerError).not.toBeCalled();
+            expect(mockNext).toBeCalledTimes(1);
+            expect(mockNext).toBeCalledWith();
         });
     });
 

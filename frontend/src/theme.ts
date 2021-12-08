@@ -4,7 +4,7 @@ const ORANGE = '#f04e30';
 
 export const theme = createTheme({
     palette: {
-        background: { default: '#e3e3e3' },
+        background: { default: '#f6f5f5' },
         primary: { main: ORANGE }
     },
     typography: {
