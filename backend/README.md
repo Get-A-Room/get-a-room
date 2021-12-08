@@ -2,7 +2,11 @@
 
 ## Setting up the backend for development
 
-Some environment variables must be set, so the backend is able to use the Google SSO/OAuth 2.0 succesfully and also so backend can access the Google WorkSpace. Instructions are inside the file backend/.env.example
+Some environment variables must be set, so the backend is able to use the Google SSO/OAuth 2.0 succesfully and also so backend can access the Google WorkSpace. Instructions on setting up the env variables are inside the file backend/.env.example
+
+Also remember to enable the Google Calendar API and Admin SDK API for the project here:
+https://console.cloud.google.com/marketplace/product/google/calendar-json.googleapis.com
+https://console.cloud.google.com/marketplace/product/google/admin.googleapis.com
 
 ## Database
 

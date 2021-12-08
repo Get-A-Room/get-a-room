@@ -29,7 +29,7 @@ export const checkRoomAccepted = () => {
             // so do request and check its response to see if the room has accepted the event
             // Also the acceptance seems to take some time on Google's end, so we try and wait a
             // few times before giving up (usually it seems to take 300-500ms)
-            for (let i = 0; i < 8; i += 1) {
+            for (let i = 0; i < 16; i += 1) {
                 const eventData = await calendar.getEventData(client, eventId);
                 const attendees = eventData.attendees;
                 res.locals.event = eventData;
@@ -78,15 +78,14 @@ export const checkRoomIsFree = () => {
             const startTime = DateTime.now().toUTC().toISO();
             const endTime = DateTime.now()
                 .plus({ minutes: res.locals.duration })
-                .toUTC()
-                .toISO();
+                .toUTC();
 
             const freeBusyResult = (
                 await calendar.freeBusyQuery(
                     client,
                     [{ id: roomId }],
                     startTime,
-                    endTime
+                    endTime.toISO()
                 )
             )[roomId];
 
@@ -94,9 +93,12 @@ export const checkRoomIsFree = () => {
                 return responses.internalServerError(req, res);
             }
 
-            // freeBusyResult is equal to end time when there are no
-            // reservations between now and end time
-            if (DateTime.fromISO(freeBusyResult).toUTC().toISO() !== endTime) {
+            const diff = DateTime.fromISO(freeBusyResult)
+                .toUTC()
+                .diff(endTime, 'seconds');
+
+            // Allow difference of +- 15 seconds for conflict cases
+            if (Math.abs(diff.seconds) >= 15) {
                 return responses.custom(req, res, 409, 'Conflict');
             }
 

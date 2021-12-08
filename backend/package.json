@@ -9,6 +9,7 @@
     "scripts": {
         "test": "jest",
         "test:ci": "jest --ci",
+        "test:coverage": "jest --coverage",
         "lint": "eslint .",
         "lint:ci": "eslint . --max-warnings 0",
         "build": "tsc --project tsconfig.production.json",
@@ -104,6 +105,9 @@
         "testPathIgnorePatterns": [
             "/node_modules/",
             "/build/"
+        ],
+        "collectCoverageFrom": [
+            "src/**/*.ts"
         ],
         "globals": {
             "ts-jest": {

@@ -4,9 +4,12 @@ import helmet from 'helmet';
 import cors, { CorsOptions } from 'cors';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
-import { authFilter, parseToken, validateAccessToken } from './authMiddleware';
 import mongoose from 'mongoose';
+
+import { authFilter, parseToken, validateAccessToken } from './authMiddleware';
 import { checkEnvVariables } from './utils/checkEnvVariables';
+import { gaxiosErrorHandler } from './utils/gaxiosErrorHandler';
+import { getDatabaseUrl } from './utils/config';
 
 import { router as indexRouter } from './routes/index';
 import { router as authRouter } from './routes/auth';
@@ -14,8 +17,6 @@ import { router as bookingRouter } from './routes/booking';
 import { router as buildingRouter } from './routes/buildings';
 import { router as preferenceRouter } from './routes/preferences';
 import { router as roomRouter } from './routes/rooms';
-import { gaxiosErrorHandler } from './utils/GaxiosErrorHandler';
-import { getDatabaseUrl } from './utils/config';
 
 const app = express();
 const port = 8080;
