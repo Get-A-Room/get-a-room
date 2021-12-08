@@ -30,11 +30,14 @@ function getEndTime(booking: Booking) {
     return booking.endTime;
 }
 
-function getNextBookingTimeLeft(booking: Booking) {
-    let timeLeft = '';
-    timeLeft = getTimeLeft(getNextCalendarEvent(booking.room));
+function getBookingTimeLeft(booking: Booking) {
+    let timeLeft = getTimeLeft(getEndTime(booking));
+    let roomBookedIn = getTimeLeft(getNextCalendarEvent(booking.room));
     timeLeft = timeLeft.slice(0, -3);
-    return Number(timeLeft);
+    roomBookedIn = roomBookedIn.slice(0, -3);
+    let timeLeft_: number = +timeLeft;
+    let roomBookedIn_: number = +roomBookedIn;
+    return roomBookedIn_ - timeLeft_;
 }
 
 function getNextCalendarEvent(room: Room) {
@@ -62,6 +65,7 @@ function getFeatures(booking: Booking) {
             }
         }
     }
+
     return featuresDisplay;
 }
 
@@ -241,8 +245,8 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                 ) : null}
                             </Box>
                             <Box flexDirection="column">
-                                {isNaN(getNextBookingTimeLeft(booking)) ||
-                                getNextBookingTimeLeft(booking) > 15 ? (
+                                {isNaN(getBookingTimeLeft(booking)) ||
+                                getBookingTimeLeft(booking) > 15 ? (
                                     <Box
                                         style={{
                                             display: 'flex',
@@ -311,49 +315,53 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                 </Box>
                             </Box>
                         </CardContent>
-                        <CardContent
-                            style={{
-                                justifyContent: 'space-between',
-                                flexDirection: 'column',
-                                display: 'flex',
-                                textAlign: 'center'
-                            }}
-                        >
-                            <Box
+                        {getFeatures(booking).length > 0 ? (
+                            <CardContent
                                 style={{
+                                    justifyContent: 'space-between',
+                                    flexDirection: 'column',
                                     display: 'flex',
-                                    justifyContent: 'center',
-                                    maxHeight: '10px'
+                                    textAlign: 'center'
                                 }}
                             >
-                                <CardActions disableSpacing>
-                                    <IconButton
-                                        data-testid="ExpansionButton"
-                                        onClick={() =>
-                                            handleFeaturesCollapse(booking)
-                                        }
-                                        aria-label="Expand"
-                                    >
-                                        {expandedFeatures === booking.id ? (
-                                            <ExpandLess />
-                                        ) : (
-                                            <ExpandMore />
-                                        )}
-                                    </IconButton>
-                                </CardActions>
-                            </Box>
-                            <Collapse
-                                in={expandedFeatures === booking.id}
-                                timeout="auto"
-                                unmountOnExit
-                            >
-                                <Box mt={2}>
-                                    <Typography style={{ fontSize: '16px' }}>
-                                        {getFeatures(booking)}
-                                    </Typography>
+                                <Box
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        maxHeight: '10px'
+                                    }}
+                                >
+                                    <CardActions disableSpacing>
+                                        <IconButton
+                                            data-testid="ExpansionButton"
+                                            onClick={() =>
+                                                handleFeaturesCollapse(booking)
+                                            }
+                                            aria-label="Expand"
+                                        >
+                                            {expandedFeatures === booking.id ? (
+                                                <ExpandLess />
+                                            ) : (
+                                                <ExpandMore />
+                                            )}
+                                        </IconButton>
+                                    </CardActions>
                                 </Box>
-                            </Collapse>
-                        </CardContent>
+                                <Collapse
+                                    in={expandedFeatures === booking.id}
+                                    timeout="auto"
+                                    unmountOnExit
+                                >
+                                    <Box mt={2}>
+                                        <Typography
+                                            style={{ fontSize: '16px' }}
+                                        >
+                                            {getFeatures(booking)}
+                                        </Typography>
+                                    </Box>
+                                </Collapse>
+                            </CardContent>
+                        ) : null}
                     </Card>
                 ))}
             </List>
