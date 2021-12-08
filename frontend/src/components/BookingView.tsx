@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Typography, Box } from '@mui/material';
+import { DateTime } from 'luxon';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+
 import { getRooms } from '../services/roomService';
 import { getBookings } from '../services/bookingService';
 import { Room, Booking, Preferences } from '../types';
 import CurrentBooking from './CurrentBooking';
 import AvailableRoomList from './AvailableRoomList';
 import CenteredProgress from './util/CenteredProgress';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+
+const UPDATE_FREQUENCY = 30000;
 
 // Check if rooms are fetched
 function areRoomsFetched(rooms: Room[]) {
@@ -26,8 +30,9 @@ function BookingView(props: BookingViewProps) {
 
     const [rooms, setRooms] = useState<Room[]>([]);
     const [bookings, setBookings] = useState<Booking[]>([]);
+    const [currentTime, setCurrentTime] = useState<DateTime>();
 
-    useEffect(() => {
+    const updateRooms = useCallback(() => {
         if (preferences) {
             const buildingPreference = preferences.building?.id;
             getRooms(buildingPreference)
@@ -36,19 +41,44 @@ function BookingView(props: BookingViewProps) {
         }
     }, [preferences]);
 
-    useEffect(() => {
+    const updateBookings = useCallback(() => {
         getBookings()
             .then(setBookings)
             .catch((error) => console.log(error));
     }, []);
 
+    const updateData = useCallback(() => {
+        updateRooms();
+        updateBookings();
+        setCurrentTime(DateTime.now());
+    }, [updateRooms, updateBookings]);
+
+    // Update data periodically
+    useEffect(() => {
+        // Do first update immediately
+        updateData();
+        const intervalId = setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                updateData();
+            }
+        }, UPDATE_FREQUENCY);
+        return () => clearInterval(intervalId);
+    }, [updateData]);
+
+    // Update data on window focus, hope it works on all platforms
+    useEffect(() => {
+        window.addEventListener('focus', updateData);
+        return () => {
+            window.removeEventListener('focus', updateData);
+        };
+    }, [updateData]);
+
     return (
         <div id="booking-view">
             <CurrentBooking
                 bookings={bookings}
-                setRooms={setRooms}
+                updateRooms={updateRooms}
                 setBookings={setBookings}
-                preferences={preferences}
             />
             <Typography py={2} variant="h4" textAlign="center">
                 Available rooms
