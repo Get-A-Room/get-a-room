@@ -19,7 +19,7 @@ import {
     deleteBooking,
     getBookings
 } from '../services/bookingService';
-import TimeLeft from './util/TimeLeft';
+import TimeLeft, { getTimeLeft } from './util/TimeLeft';
 import useCreateNotification from '../hooks/useCreateNotification';
 
 function getBookingRoomName(booking: Booking) {
@@ -28,6 +28,17 @@ function getBookingRoomName(booking: Booking) {
 
 function getEndTime(booking: Booking) {
     return booking.endTime;
+}
+
+function getNextBookingTimeLeft(booking: Booking) {
+    let timeLeft = '';
+    timeLeft = getTimeLeft(getNextCalendarEvent(booking.room));
+    timeLeft = timeLeft.slice(0, -3);
+    return Number(timeLeft);
+}
+
+function getNextCalendarEvent(room: Room) {
+    return room.nextCalendarEvent;
 }
 
 function areBookingsFetched(bookings: Booking[]) {
@@ -230,37 +241,43 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                 ) : null}
                             </Box>
                             <Box flexDirection="column">
-                                <Box
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                        alignItems: 'right'
-                                    }}
-                                >
-                                    <CardActions disableSpacing>
-                                        <Button
-                                            id="extraTime-button"
-                                            data-testid="ExtraTimeButton"
-                                            style={{
-                                                backgroundColor: '#282c34',
-                                                textTransform: 'none',
-                                                color: 'white',
-                                                fontSize: '16px',
-                                                animation:
-                                                    'ripple 600ms linear',
-                                                minWidth: '130px',
-                                                minHeight: '50px',
-                                                maxWidth: '130px',
-                                                maxHeight: '50px'
-                                            }}
-                                            onClick={() =>
-                                                handleAddExtraTime(booking, 15)
-                                            }
-                                        >
-                                            +15 min
-                                        </Button>
-                                    </CardActions>
-                                </Box>
+                                {isNaN(getNextBookingTimeLeft(booking)) ||
+                                getNextBookingTimeLeft(booking) > 15 ? (
+                                    <Box
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                            alignItems: 'right'
+                                        }}
+                                    >
+                                        <CardActions disableSpacing>
+                                            <Button
+                                                id="extraTime-button"
+                                                data-testid="ExtraTimeButton"
+                                                style={{
+                                                    backgroundColor: '#282c34',
+                                                    textTransform: 'none',
+                                                    color: 'white',
+                                                    fontSize: '16px',
+                                                    animation:
+                                                        'ripple 600ms linear',
+                                                    minWidth: '130px',
+                                                    minHeight: '50px',
+                                                    maxWidth: '130px',
+                                                    maxHeight: '50px'
+                                                }}
+                                                onClick={() =>
+                                                    handleAddExtraTime(
+                                                        booking,
+                                                        15
+                                                    )
+                                                }
+                                            >
+                                                +15 min
+                                            </Button>
+                                        </CardActions>
+                                    </Box>
+                                ) : null}
                                 <Box
                                     style={{
                                         display: 'flex',
