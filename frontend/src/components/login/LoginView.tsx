@@ -11,7 +11,7 @@ const LoginView = () => {
                         Get a Room!
                     </Typography>
                     <Typography variant="subtitle1">
-                        Conference rooms on the fly
+                        Meeting rooms on the fly
                     </Typography>
                 </Box>
                 <Box textAlign="center">
