@@ -9,6 +9,7 @@ const GoogleLogin = () => {
     return (
         <ButtonBase
             onClick={login}
+            disableRipple={true}
             sx={{
                 '&:hover': {
                     filter: 'brightness(90%)'
