@@ -10,9 +10,9 @@ import { ButtonBase, Paper } from '@mui/material';
 
 const GoogleLogin = () => {
     return (
-        <ButtonBase disableRipple={true} sx={{ py: 0, width: '60%' }}>
-            <Paper elevation={8}>
-                <GoogleLogo />
+        <ButtonBase disableRipple={true}>
+            <Paper elevation={5} sx={{ p: '1px', pb: 0 }}>
+                <GoogleLogo height="4rem" width="16rem" />
             </Paper>
         </ButtonBase>
     );

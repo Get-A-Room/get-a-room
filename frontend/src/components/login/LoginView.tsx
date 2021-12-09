@@ -22,7 +22,6 @@ const LoginView = () => {
                         title="Vincit logo"
                     />
                 </Box>
-                <Divider variant="middle" />
                 <Box textAlign="center">
                     <GoogleLogin />
                 </Box>
