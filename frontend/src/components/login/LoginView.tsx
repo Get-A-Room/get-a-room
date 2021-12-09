@@ -1,6 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material';
 import GoogleLogin from './GoogleLogin';
-import { ReactComponent as DuckLogo } from './img/duck.svg';
+import { ReactComponent as DuckLogo } from './duck.svg';
 
 const LoginView = () => {
     return (

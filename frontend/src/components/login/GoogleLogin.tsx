@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ReactComponent as GoogleSvg } from './img/google-signin-buttons/normal.svg';
+import { ReactComponent as GoogleSvg } from './google-login-button.svg';
 
 import { login } from '../../services/authService';
 import { ButtonBase, Paper } from '@mui/material';
