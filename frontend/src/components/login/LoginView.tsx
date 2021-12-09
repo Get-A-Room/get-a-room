@@ -1,7 +1,6 @@
-import { Box, Divider, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import GoogleLogin from './GoogleLogin';
 import { ReactComponent as DuckLogo } from './img/duck.svg';
-// import { Google } from '@mui/icons-material';
 
 const LoginView = () => {
     return (
@@ -30,5 +29,4 @@ const LoginView = () => {
     );
 };
 
-// position="sticky" bottom="0" top="auto"
 export default LoginView;
