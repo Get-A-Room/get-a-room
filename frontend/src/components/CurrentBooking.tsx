@@ -226,12 +226,10 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                             endTime={getNextCalendarEvent(
                                                 booking
                                             )}
-                                            timeLeftText="Room is booked in: "
+                                            timeLeftText="Available for: "
                                         />
                                     ) : (
-                                        <Typography>
-                                            Room is booked in:
-                                        </Typography>
+                                        <Typography>Available for:</Typography>
                                     )}
                                 </Box>
                                 {bookingProcessing === booking.id ? (
