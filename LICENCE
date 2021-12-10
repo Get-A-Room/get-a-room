@@ -1,31 +1,57 @@
 The MIT License (MIT)
 
 Copyright (c) 2021 Brentini, Sara; Grönholm, Martti; Hiltunen, Joonas; Lunnikivi, Vivian; Pirhonen, Mikko; Prehti, Joona; Koski, Jere.
-Copyright (c) 2013-present, Facebook, Inc.
 Copyright (c) Facebook, Inc. and its affiliates.
-Copyright (c) 2017 Kent C. Dodds
-Copyright (c) 2020 Giorgio Polvara
-Copyright (c) Microsoft Corporation.
-Copyright © James Long and contributors
-Copyright (c) 2017, 2018, 2019, 2020, 2021 Simon Lydell and contributors
-Copyright (c) 2016 Andrey Okonetchnikov
+Copyright (c) 2013-present, Facebook, Inc.
+Copyright JS Foundation and other contributors <https://js.foundation/>
+Copyright 2019 JS Foundation and other contributors
+Copyright OpenJS Foundation and other contributors, <www.openjsf.org>
+Copyright (c) 2019 TypeScript ESLint and other contributors
 Copyright (c) 2021 typicode
-Copyright (c) 2014 Call-Em-All
+Copyright (c) 2016 Andrey Okonetchnikov
+Copyright © James Long and contributors
+Copyright (c) 2014-present Matt Zabriskie
+Copyright (c) © 2018-2020 Hossein Dehnokhalaji
+Copyright (c) React Training 2015-2019
+Copyright(c) Remix Software 2020-2021
 Copyright (c) Emotion team and other contributors
 Copyright (c) 2020 Lotus
-Copyright 2020 Google LLC
+Copyright (c) 2014 Call-Em-All
+Copyright (c) 2017 Kent C. Dodds
+Copyright (c) 2020 Giorgio Polvara
+Copyright (c) 2013 Troy Goode <troygoode@gmail.com>
 Copyright (c) 2009-2014 TJ Holowaychuk <tj@vision-media.ca>
+Copyright (c) 2014 TJ Holowaychuk <tj@vision-media.ca>
 Copyright (c) 2013-2014 Roman Shtylman <shtylman+expressjs@gmail.com>
 Copyright (c) 2014-2015 Douglas Christopher Wilson <doug@somethingdoug.com>
-Copyright (c) 2012-2021 Evan Hahn, Adam Baldwin
-Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>
 Copyright (c) 2014-2017 Douglas Christopher Wilson <doug@somethingdoug.com>
-Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>
-Copyright (c) 2014-2015 Douglas Christopher Wilson <doug@somethingdoug.com>
-Copyright (c) 2014 Blake Embrey (hello@blakeembrey.com)
-Copyright (c) 2010 - present, Remy Sharp, https://remysharp.com <remy@remysharp.com>
-Copyright (c) 2010-2013 LearnBoost dev@learnboost.com 
+Copyright (c) 2015 Douglas Christopher Wilson <doug@somethingdoug.com>
+Copyright (c) 2014 José F. Romaniello
+Copyright (c) 2010 Chris O'Hara <cohara87@gmail.com>
+Copyright (c) 2012-2021 Evan Hahn, Adam Baldwin
+Copyright (c) 2015 Auth0, Inc. <support@auth0.com> (http://auth0.com)
+Copyright (c) 2010-2013 LearnBoost dev@learnboost.com
 Copyright (c) 2013-2021 Automattic
+Copyright (c) 2014 Jonathan Ong <me@jongleberry.com>
+Copyright (c) 2014 Blake Embrey (hello@blakeembrey.com)
+Copyright (c) 2017, 2018, 2019, 2020, 2021 Simon Lydell and contributors
+Copyright (c) 2015 Toru Nagashima
+Copyright (c) 2010 - present, Remy Sharp, https://remysharp.com <remy@remysharp.com>
+Copyright (c) 2016-2018 ts-jest
+Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors <http://underscorejs.org/>
+Copyright (c) Contributors https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/jest/index.d.ts
+Copyright (c) Contributors https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/luxon/index.d.ts
+Copyright (c) Contributors https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/index.d.ts
+Copyright (c) Contributors https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react/index.d.ts
+Copyright (c) Contributors https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react-dom/index.d.ts
+Copyright (c) Contributors https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react-router-dom/index.d.ts
+Copyright (c) Contributors https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/cookie-parser/index.d.ts
+Copyright (c) Contributors https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/cors/index.d.ts
+Copyright (c) Contributors https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/express/index.d.ts
+Copyright (c) Contributors https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/express-unless/index.d.ts
+Copyright (c) Contributors https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/jsonwebtoken/index.d.ts
+Copyright (c) Contributors https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/lodash/index.d.ts
+Copyright (c) Contributors https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/morgan/index.d.ts
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -44,3 +70,51 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+====
+
+Apache License 2.0
+
+Copyright Typescript
+Copyright Google
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+====
+
+BSD 2-Clause License
+
+Copyright JS Foundation and other contributors, https://js.foundation
+Copyright (c) 2015, Scott Motte
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

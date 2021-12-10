@@ -18,11 +18,5 @@
         "husky": "^7.0.2",
         "lint-staged": "^11.1.2",
         "prettier": "^2.4.1"
-    },
-    "dependencies": {
-        "@material-ui/core": "^4.12.3",
-        "@material-ui/icons": "^4.11.2",
-        "@mui/styles": "^5.0.1",
-        "axios": "^0.22.0"
     }
 }
