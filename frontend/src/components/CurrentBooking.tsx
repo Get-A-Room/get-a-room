@@ -19,7 +19,7 @@ import {
     deleteBooking,
     getBookings
 } from '../services/bookingService';
-import TimeLeft from './util/TimeLeft';
+import TimeLeft, { getTimeLeft } from './util/TimeLeft';
 import useCreateNotification from '../hooks/useCreateNotification';
 
 function getBookingRoomName(booking: Booking) {
@@ -28,6 +28,20 @@ function getBookingRoomName(booking: Booking) {
 
 function getEndTime(booking: Booking) {
     return booking.endTime;
+}
+
+function getBookingTimeLeft(booking: Booking) {
+    let timeLeft = getTimeLeft(getEndTime(booking));
+    let roomBookedIn = getTimeLeft(getNextCalendarEvent(booking.room));
+    timeLeft = timeLeft.slice(0, -3);
+    roomBookedIn = roomBookedIn.slice(0, -3);
+    let timeLeft_: number = +timeLeft;
+    let roomBookedIn_: number = +roomBookedIn;
+    return roomBookedIn_ - timeLeft_;
+}
+
+function getNextCalendarEvent(room: Room) {
+    return room.nextCalendarEvent;
 }
 
 function areBookingsFetched(bookings: Booking[]) {
@@ -51,6 +65,7 @@ function getFeatures(booking: Booking) {
             }
         }
     }
+
     return featuresDisplay;
 }
 
@@ -211,12 +226,10 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                             endTime={getNextCalendarEvent(
                                                 booking
                                             )}
-                                            timeLeftText="Room is booked in: "
+                                            timeLeftText="Available for: "
                                         />
                                     ) : (
-                                        <Typography>
-                                            Room is booked in:
-                                        </Typography>
+                                        <Typography>Available for:</Typography>
                                     )}
                                 </Box>
                                 {bookingProcessing === booking.id ? (
@@ -230,37 +243,43 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                 ) : null}
                             </Box>
                             <Box flexDirection="column">
-                                <Box
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                        alignItems: 'right'
-                                    }}
-                                >
-                                    <CardActions disableSpacing>
-                                        <Button
-                                            id="extraTime-button"
-                                            data-testid="ExtraTimeButton"
-                                            style={{
-                                                backgroundColor: '#282c34',
-                                                textTransform: 'none',
-                                                color: 'white',
-                                                fontSize: '16px',
-                                                animation:
-                                                    'ripple 600ms linear',
-                                                minWidth: '130px',
-                                                minHeight: '50px',
-                                                maxWidth: '130px',
-                                                maxHeight: '50px'
-                                            }}
-                                            onClick={() =>
-                                                handleAddExtraTime(booking, 15)
-                                            }
-                                        >
-                                            +15 min
-                                        </Button>
-                                    </CardActions>
-                                </Box>
+                                {isNaN(getBookingTimeLeft(booking)) ||
+                                getBookingTimeLeft(booking) > 15 ? (
+                                    <Box
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                            alignItems: 'right'
+                                        }}
+                                    >
+                                        <CardActions disableSpacing>
+                                            <Button
+                                                id="extraTime-button"
+                                                data-testid="ExtraTimeButton"
+                                                style={{
+                                                    backgroundColor: '#282c34',
+                                                    textTransform: 'none',
+                                                    color: 'white',
+                                                    fontSize: '16px',
+                                                    animation:
+                                                        'ripple 600ms linear',
+                                                    minWidth: '130px',
+                                                    minHeight: '50px',
+                                                    maxWidth: '130px',
+                                                    maxHeight: '50px'
+                                                }}
+                                                onClick={() =>
+                                                    handleAddExtraTime(
+                                                        booking,
+                                                        15
+                                                    )
+                                                }
+                                            >
+                                                +15 min
+                                            </Button>
+                                        </CardActions>
+                                    </Box>
+                                ) : null}
                                 <Box
                                     style={{
                                         display: 'flex',
@@ -294,49 +313,53 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                 </Box>
                             </Box>
                         </CardContent>
-                        <CardContent
-                            style={{
-                                justifyContent: 'space-between',
-                                flexDirection: 'column',
-                                display: 'flex',
-                                textAlign: 'center'
-                            }}
-                        >
-                            <Box
+                        {getFeatures(booking).length > 0 ? (
+                            <CardContent
                                 style={{
+                                    justifyContent: 'space-between',
+                                    flexDirection: 'column',
                                     display: 'flex',
-                                    justifyContent: 'center',
-                                    maxHeight: '10px'
+                                    textAlign: 'center'
                                 }}
                             >
-                                <CardActions disableSpacing>
-                                    <IconButton
-                                        data-testid="ExpansionButton"
-                                        onClick={() =>
-                                            handleFeaturesCollapse(booking)
-                                        }
-                                        aria-label="Expand"
-                                    >
-                                        {expandedFeatures === booking.id ? (
-                                            <ExpandLess />
-                                        ) : (
-                                            <ExpandMore />
-                                        )}
-                                    </IconButton>
-                                </CardActions>
-                            </Box>
-                            <Collapse
-                                in={expandedFeatures === booking.id}
-                                timeout="auto"
-                                unmountOnExit
-                            >
-                                <Box mt={2}>
-                                    <Typography style={{ fontSize: '16px' }}>
-                                        {getFeatures(booking)}
-                                    </Typography>
+                                <Box
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        maxHeight: '10px'
+                                    }}
+                                >
+                                    <CardActions disableSpacing>
+                                        <IconButton
+                                            data-testid="ExpansionButton"
+                                            onClick={() =>
+                                                handleFeaturesCollapse(booking)
+                                            }
+                                            aria-label="Expand"
+                                        >
+                                            {expandedFeatures === booking.id ? (
+                                                <ExpandLess />
+                                            ) : (
+                                                <ExpandMore />
+                                            )}
+                                        </IconButton>
+                                    </CardActions>
                                 </Box>
-                            </Collapse>
-                        </CardContent>
+                                <Collapse
+                                    in={expandedFeatures === booking.id}
+                                    timeout="auto"
+                                    unmountOnExit
+                                >
+                                    <Box mt={2}>
+                                        <Typography
+                                            style={{ fontSize: '16px' }}
+                                        >
+                                            {getFeatures(booking)}
+                                        </Typography>
+                                    </Box>
+                                </Collapse>
+                            </CardContent>
+                        ) : null}
                     </Card>
                 ))}
             </List>

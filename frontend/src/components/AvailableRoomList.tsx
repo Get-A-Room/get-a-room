@@ -24,8 +24,7 @@ function disableBooking(bookings: Booking[]) {
 }
 
 function getBookingTimeLeft(room: Room) {
-    let timeLeft = '';
-    timeLeft = getTimeLeft(getNextCalendarEvent(room));
+    let timeLeft = getTimeLeft(getNextCalendarEvent(room));
     timeLeft = timeLeft.slice(0, -3);
     return Number(timeLeft);
 }
@@ -320,7 +319,8 @@ const AvailableRoomList = (props: BookingListProps) => {
                                         </Box>
                                     </Collapse>
                                 ) : null}
-                                {!expandedFeaturesAll.includes(room) ? (
+                                {getFeatures(room).length > 0 &&
+                                !expandedFeaturesAll.includes(room) ? (
                                     <Box
                                         style={{
                                             display: 'flex',
