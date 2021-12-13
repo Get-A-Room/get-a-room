@@ -202,7 +202,7 @@ jobs:
     backend-deploy-staging:
         name: Deploy backend to staging
         if: github.ref == 'refs/heads/change-gcloud-cli-auth'
-        needs: backend-test
+        # needs: backend-test
         runs-on: ubuntu-latest
 
         defaults:
