@@ -11,5 +11,8 @@ export const theme = createTheme({
         h3: { color: ORANGE },
         h4: { color: ORANGE, fontWeight: 'bold' },
         h5: { color: ORANGE, fontWeight: 'bold' }
+    },
+    zIndex: {
+        snackbar: 1
     }
 });
