@@ -64,7 +64,7 @@ jobs:
 
     frontend-deploy-staging:
         name: Deploy frontend to staging
-        if: github.ref == 'refs/heads/change-gcloud-cli-auth'
+        if: github.ref == 'refs/heads/dev'
         needs: frontend-test
         runs-on: ubuntu-latest
 
@@ -207,7 +207,7 @@ jobs:
 
     backend-deploy-staging:
         name: Deploy backend to staging
-        if: github.ref == 'refs/heads/change-gcloud-cli-auth'
+        if: github.ref == 'refs/heads/dev'
         needs: backend-test
         runs-on: ubuntu-latest
 
