@@ -4,6 +4,7 @@ export type CurrentBookingData = {
     id: string | null | undefined;
     startTime: string | null | undefined;
     endTime: string | null | undefined;
+    organizerEmail: string | null | undefined;
     room: RoomData;
 };
 

@@ -62,8 +62,10 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
 
             const simplifiedBookings = simplifyBookings(allBookings, rooms);
 
-            res.locals.currentBookings =
-                filterCurrentBookings(simplifiedBookings);
+            res.locals.currentBookings = filterCurrentBookings(
+                simplifiedBookings,
+                res.locals.email
+            );
 
             next();
         } catch (err) {
@@ -150,6 +152,7 @@ export const simplifyBookings = (
             id: booking.id,
             startTime: booking.start?.dateTime,
             endTime: booking.end?.dateTime,
+            organizerEmail: booking?.organizer?.email,
             room: {
                 id: '',
                 name: null,
@@ -183,7 +186,8 @@ export const simplifyBookings = (
  * @returns filtered bookings
  */
 export const filterCurrentBookings = (
-    simplifiedBookings: CurrentBookingData[]
+    simplifiedBookings: CurrentBookingData[],
+    organizerEmail: string
 ): CurrentBookingData[] => {
     const now: string = getNowDateTime();
 
@@ -196,6 +200,11 @@ export const filterCurrentBookings = (
 
             // Checks that the event has a room or other resource
             if (_.isEmpty(booking.room)) {
+                return false;
+            }
+
+            // Checks if the user is the events organizer because only those events should be shown in bookings
+            if (booking.organizerEmail !== organizerEmail) {
                 return false;
             }
 
