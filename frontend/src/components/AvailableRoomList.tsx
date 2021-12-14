@@ -24,8 +24,7 @@ function disableBooking(bookings: Booking[]) {
 }
 
 function getBookingTimeLeft(room: Room) {
-    let timeLeft = '';
-    timeLeft = getTimeLeft(getNextCalendarEvent(room));
+    let timeLeft = getTimeLeft(getNextCalendarEvent(room));
     timeLeft = timeLeft.slice(0, -3);
     return Number(timeLeft);
 }
@@ -74,7 +73,7 @@ const AvailableRoomList = (props: BookingListProps) => {
     const [bookingLoading, setBookingLoading] = useState('false');
     const [expandedFeatures, setExpandedFeatures] = useState([] as string[]);
     const [expandedFeaturesAll, setExpandedFeaturesAll] = useState(
-        [] as Room[]
+        false as boolean
     );
     const [expandedBooking, setExpandedBooking] = useState('false');
 
@@ -97,7 +96,7 @@ const AvailableRoomList = (props: BookingListProps) => {
     };
 
     const handleAllFeaturesCollapse = () => {
-        setExpandedFeaturesAll(expandedFeaturesAll === rooms ? [] : rooms);
+        setExpandedFeaturesAll(!expandedFeaturesAll);
         setExpandedFeatures([]);
     };
 
@@ -320,7 +319,8 @@ const AvailableRoomList = (props: BookingListProps) => {
                                         </Box>
                                     </Collapse>
                                 ) : null}
-                                {!expandedFeaturesAll.includes(room) ? (
+                                {getFeatures(room).length > 0 &&
+                                !expandedFeaturesAll ? (
                                     <Box
                                         style={{
                                             display: 'flex',
@@ -350,7 +350,7 @@ const AvailableRoomList = (props: BookingListProps) => {
                                 <Collapse
                                     in={
                                         expandedFeatures.includes(room.id) ||
-                                        expandedFeaturesAll.includes(room)
+                                        expandedFeaturesAll
                                     }
                                     timeout="auto"
                                     unmountOnExit

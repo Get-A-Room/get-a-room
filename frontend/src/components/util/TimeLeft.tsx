@@ -34,7 +34,7 @@ const TimeLeft = (props: TimeLeftProps) => {
 
     return (
         <Box>
-            <Typography data-testid="TimeLeftTest" fontStyle="italic">
+            <Typography data-testid="TimeLeftTest">
                 {timeLeftText} {getTimeLeft(endTime)}
             </Typography>
         </Box>

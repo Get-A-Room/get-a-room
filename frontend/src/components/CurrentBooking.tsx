@@ -13,8 +13,12 @@ import {
 } from '@mui/material';
 import { Booking, AddTimeDetails } from '../types';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
-import { updateBooking, deleteBooking } from '../services/bookingService';
-import TimeLeft from './util/TimeLeft';
+import {
+    updateBooking,
+    deleteBooking,
+    getBookings
+} from '../services/bookingService';
+import TimeLeft, { getTimeLeft } from './util/TimeLeft';
 import useCreateNotification from '../hooks/useCreateNotification';
 
 function getBookingRoomName(booking: Booking) {
@@ -25,6 +29,44 @@ function getEndTime(booking: Booking) {
     return booking.endTime;
 }
 
+function convertH2M(time: string) {
+    time = time.replace(' h ', ':');
+    let timeParts = time.split(':');
+    return Number(timeParts[0]) * 60 + Number(timeParts[1]);
+}
+
+function getBookingTimeLeft(booking: Booking) {
+    let timeLeft = getTimeLeft(getEndTime(booking));
+    let availableFor = getTimeLeft(getNextCalendarEvent(booking.room));
+
+    // Slice min string away
+    timeLeft = timeLeft.slice(0, -3);
+    availableFor = availableFor.slice(0, -3);
+
+    let timeLeftMin: number;
+    let availableForMin: number;
+
+    // Convert to h:mm or mm
+    if (timeLeft.includes(' h ')) {
+        timeLeftMin = convertH2M(timeLeft);
+    } else {
+        timeLeftMin = +timeLeft;
+    }
+
+    // Convert to h:mm or mm
+    if (availableFor.includes(' h ')) {
+        availableForMin = convertH2M(availableFor);
+    } else {
+        availableForMin = +availableFor;
+    }
+
+    return availableForMin - timeLeftMin;
+}
+
+function getNextCalendarEvent(room: Room) {
+    return room.nextCalendarEvent;
+}
+
 function areBookingsFetched(bookings: Booking[]) {
     return Array.isArray(bookings) && bookings.length > 0;
 }
@@ -32,10 +74,6 @@ function areBookingsFetched(bookings: Booking[]) {
 function getCapacity(booking: Booking) {
     return booking.room.capacity;
 }
-
-//function getNextCalendarEvent(room: Room) {
-//    return room.nextCalendarEvent;
-//}
 
 function getFeatures(booking: Booking) {
     let featureArray = booking.room.features;
@@ -50,6 +88,7 @@ function getFeatures(booking: Booking) {
             }
         }
     }
+
     return featuresDisplay;
 }
 
@@ -72,6 +111,19 @@ const CurrentBooking = (props: CurrentBookingProps) => {
         setExpandedFeatures(
             expandedFeatures === booking.id ? 'false' : booking.id
         );
+    };
+
+    // Get the next booking time in the reserved room
+    const getNextCalendarEvent = (booking: Booking) => {
+        let nextBooking = booking.room.nextCalendarEvent;
+
+        if (nextBooking === '-1') {
+            getBookings().then((currentBooking) => {
+                setBookings(currentBooking);
+            });
+        }
+
+        return nextBooking;
     };
 
     // Add extra time for the reserved room
@@ -100,6 +152,7 @@ const CurrentBooking = (props: CurrentBookingProps) => {
             });
     };
 
+    // Delete booking and add the room back to the available rooms list
     const handleDeleteBooking = (booking: Booking) => {
         setBookingProcessing(booking.id);
 
@@ -184,6 +237,18 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                         timeLeftText="Time left:"
                                     />
                                 </Box>
+                                <Box>
+                                    {getNextCalendarEvent(booking) !== '-1' ? (
+                                        <TimeLeft
+                                            endTime={getNextCalendarEvent(
+                                                booking
+                                            )}
+                                            timeLeftText="Available for: "
+                                        />
+                                    ) : (
+                                        <Typography>Available for:</Typography>
+                                    )}
+                                </Box>
                                 {bookingProcessing === booking.id ? (
                                     <Box
                                         display="flex"
@@ -195,37 +260,43 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                 ) : null}
                             </Box>
                             <Box flexDirection="column">
-                                <Box
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                        alignItems: 'right'
-                                    }}
-                                >
-                                    <CardActions disableSpacing>
-                                        <Button
-                                            id="extraTime-button"
-                                            data-testid="ExtraTimeButton"
-                                            style={{
-                                                backgroundColor: '#282c34',
-                                                textTransform: 'none',
-                                                color: 'white',
-                                                fontSize: '16px',
-                                                animation:
-                                                    'ripple 600ms linear',
-                                                minWidth: '130px',
-                                                minHeight: '50px',
-                                                maxWidth: '130px',
-                                                maxHeight: '50px'
-                                            }}
-                                            onClick={() =>
-                                                handleAddExtraTime(booking, 15)
-                                            }
-                                        >
-                                            +15 min
-                                        </Button>
-                                    </CardActions>
-                                </Box>
+                                {isNaN(getBookingTimeLeft(booking)) ||
+                                getBookingTimeLeft(booking) > 15 ? (
+                                    <Box
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                            alignItems: 'right'
+                                        }}
+                                    >
+                                        <CardActions disableSpacing>
+                                            <Button
+                                                id="extraTime-button"
+                                                data-testid="ExtraTimeButton"
+                                                style={{
+                                                    backgroundColor: '#282c34',
+                                                    textTransform: 'none',
+                                                    color: 'white',
+                                                    fontSize: '16px',
+                                                    animation:
+                                                        'ripple 600ms linear',
+                                                    minWidth: '130px',
+                                                    minHeight: '50px',
+                                                    maxWidth: '130px',
+                                                    maxHeight: '50px'
+                                                }}
+                                                onClick={() =>
+                                                    handleAddExtraTime(
+                                                        booking,
+                                                        15
+                                                    )
+                                                }
+                                            >
+                                                +15 min
+                                            </Button>
+                                        </CardActions>
+                                    </Box>
+                                ) : null}
                                 <Box
                                     style={{
                                         display: 'flex',
@@ -259,49 +330,53 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                 </Box>
                             </Box>
                         </CardContent>
-                        <CardContent
-                            style={{
-                                justifyContent: 'space-between',
-                                flexDirection: 'column',
-                                display: 'flex',
-                                textAlign: 'center'
-                            }}
-                        >
-                            <Box
+                        {getFeatures(booking).length > 0 ? (
+                            <CardContent
                                 style={{
+                                    justifyContent: 'space-between',
+                                    flexDirection: 'column',
                                     display: 'flex',
-                                    justifyContent: 'center',
-                                    maxHeight: '10px'
+                                    textAlign: 'center'
                                 }}
                             >
-                                <CardActions disableSpacing>
-                                    <IconButton
-                                        data-testid="ExpansionButton"
-                                        onClick={() =>
-                                            handleFeaturesCollapse(booking)
-                                        }
-                                        aria-label="Expand"
-                                    >
-                                        {expandedFeatures === booking.id ? (
-                                            <ExpandLess />
-                                        ) : (
-                                            <ExpandMore />
-                                        )}
-                                    </IconButton>
-                                </CardActions>
-                            </Box>
-                            <Collapse
-                                in={expandedFeatures === booking.id}
-                                timeout="auto"
-                                unmountOnExit
-                            >
-                                <Box mt={2}>
-                                    <Typography style={{ fontSize: '16px' }}>
-                                        {getFeatures(booking)}
-                                    </Typography>
+                                <Box
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        maxHeight: '10px'
+                                    }}
+                                >
+                                    <CardActions disableSpacing>
+                                        <IconButton
+                                            data-testid="ExpansionButton"
+                                            onClick={() =>
+                                                handleFeaturesCollapse(booking)
+                                            }
+                                            aria-label="Expand"
+                                        >
+                                            {expandedFeatures === booking.id ? (
+                                                <ExpandLess />
+                                            ) : (
+                                                <ExpandMore />
+                                            )}
+                                        </IconButton>
+                                    </CardActions>
                                 </Box>
-                            </Collapse>
-                        </CardContent>
+                                <Collapse
+                                    in={expandedFeatures === booking.id}
+                                    timeout="auto"
+                                    unmountOnExit
+                                >
+                                    <Box mt={2}>
+                                        <Typography
+                                            style={{ fontSize: '16px' }}
+                                        >
+                                            {getFeatures(booking)}
+                                        </Typography>
+                                    </Box>
+                                </Collapse>
+                            </CardContent>
+                        ) : null}
                     </Card>
                 ))}
             </List>

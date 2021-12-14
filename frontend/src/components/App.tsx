@@ -4,7 +4,7 @@ import { history } from '../services/axiosConfigurer';
 import { theme } from '../theme';
 import { SnackbarProvider } from 'notistack';
 import MainView from './MainView';
-import LoginView from './LoginView';
+import LoginView from './login/LoginView';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 
 const App = () => {
