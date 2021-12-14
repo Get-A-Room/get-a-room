@@ -11,7 +11,7 @@ import {
     Button,
     CircularProgress
 } from '@mui/material';
-import { Booking, AddTimeDetails } from '../types';
+import { Booking, AddTimeDetails, Room } from '../types';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
 import {
     updateBooking,
