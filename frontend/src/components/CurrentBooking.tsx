@@ -30,14 +30,39 @@ function getEndTime(booking: Booking) {
     return booking.endTime;
 }
 
+function convertH2M(time: string) {
+    let timeParts = time.split(':');
+    return Number(timeParts[0]) * 60 + Number(timeParts[1]);
+}
+
 function getBookingTimeLeft(booking: Booking) {
     let timeLeft = getTimeLeft(getEndTime(booking));
-    let roomBookedIn = getTimeLeft(getNextCalendarEvent(booking.room));
+    let availableFor = getTimeLeft(getNextCalendarEvent(booking.room));
+
+    // Slice min string away
     timeLeft = timeLeft.slice(0, -3);
-    roomBookedIn = roomBookedIn.slice(0, -3);
-    let timeLeft_: number = +timeLeft;
-    let roomBookedIn_: number = +roomBookedIn;
-    return roomBookedIn_ - timeLeft_;
+    availableFor = availableFor.slice(0, -3);
+
+    let timeLeft_: number;
+    let availableFor_: number;
+
+    // Convert to h:mm or mm
+    if (timeLeft.includes(' h ')) {
+        timeLeft = timeLeft.replace(' h ', ':');
+        timeLeft_ = convertH2M(timeLeft);
+    } else {
+        timeLeft_ = +timeLeft;
+    }
+
+    // Convert to h:mm or mm
+    if (availableFor.includes(' h ')) {
+        availableFor = availableFor.replace(' h ', ':');
+        availableFor_ = convertH2M(availableFor);
+    } else {
+        availableFor_ = +availableFor;
+    }
+
+    return availableFor_ - timeLeft_;
 }
 
 function getNextCalendarEvent(room: Room) {
