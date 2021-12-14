@@ -30,7 +30,6 @@ function BookingView(props: BookingViewProps) {
 
     const [rooms, setRooms] = useState<Room[]>([]);
     const [bookings, setBookings] = useState<Booking[]>([]);
-    const [currentTime, setCurrentTime] = useState<DateTime>();
 
     const updateRooms = useCallback(() => {
         if (preferences) {
@@ -50,7 +49,6 @@ function BookingView(props: BookingViewProps) {
     const updateData = useCallback(() => {
         updateRooms();
         updateBookings();
-        setCurrentTime(DateTime.now());
     }, [updateRooms, updateBookings]);
 
     // Update data periodically
