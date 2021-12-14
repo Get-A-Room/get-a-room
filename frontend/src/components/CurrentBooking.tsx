@@ -31,6 +31,7 @@ function getEndTime(booking: Booking) {
 }
 
 function convertH2M(time: string) {
+    time = time.replace(' h ', ':');
     let timeParts = time.split(':');
     return Number(timeParts[0]) * 60 + Number(timeParts[1]);
 }
@@ -48,7 +49,6 @@ function getBookingTimeLeft(booking: Booking) {
 
     // Convert to h:mm or mm
     if (timeLeft.includes(' h ')) {
-        timeLeft = timeLeft.replace(' h ', ':');
         timeLeftMin = convertH2M(timeLeft);
     } else {
         timeLeftMin = +timeLeft;
@@ -56,7 +56,6 @@ function getBookingTimeLeft(booking: Booking) {
 
     // Convert to h:mm or mm
     if (availableFor.includes(' h ')) {
-        availableFor = availableFor.replace(' h ', ':');
         availableForMin = convertH2M(availableFor);
     } else {
         availableForMin = +availableFor;
