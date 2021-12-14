@@ -96,7 +96,7 @@ const AvailableRoomList = (props: BookingListProps) => {
     };
 
     const handleAllFeaturesCollapse = () => {
-        setExpandedFeaturesAll(expandedFeaturesAll === true ? false : true);
+        setExpandedFeaturesAll(!expandedFeaturesAll);
         setExpandedFeatures([]);
     };
 
