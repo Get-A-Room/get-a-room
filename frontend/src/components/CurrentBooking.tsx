@@ -43,26 +43,26 @@ function getBookingTimeLeft(booking: Booking) {
     timeLeft = timeLeft.slice(0, -3);
     availableFor = availableFor.slice(0, -3);
 
-    let timeLeft_: number;
-    let availableFor_: number;
+    let timeLeftMin: number;
+    let availableForMin: number;
 
     // Convert to h:mm or mm
     if (timeLeft.includes(' h ')) {
         timeLeft = timeLeft.replace(' h ', ':');
-        timeLeft_ = convertH2M(timeLeft);
+        timeLeftMin = convertH2M(timeLeft);
     } else {
-        timeLeft_ = +timeLeft;
+        timeLeftMin = +timeLeft;
     }
 
     // Convert to h:mm or mm
     if (availableFor.includes(' h ')) {
         availableFor = availableFor.replace(' h ', ':');
-        availableFor_ = convertH2M(availableFor);
+        availableForMin = convertH2M(availableFor);
     } else {
-        availableFor_ = +availableFor;
+        availableForMin = +availableFor;
     }
 
-    return availableFor_ - timeLeft_;
+    return availableForMin - timeLeftMin;
 }
 
 function getNextCalendarEvent(room: Room) {
