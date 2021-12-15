@@ -11,8 +11,7 @@ import {
     Button,
     CircularProgress
 } from '@mui/material';
-import { getRooms } from '../services/roomService';
-import { Room, Booking, AddTimeDetails, Preferences } from '../types';
+import { Booking, AddTimeDetails, Room } from '../types';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
 import {
     updateBooking,
@@ -95,13 +94,12 @@ function getFeatures(booking: Booking) {
 
 type CurrentBookingProps = {
     bookings: Booking[];
-    setRooms: (rooms: Room[]) => void;
     setBookings: (bookings: Booking[]) => void;
-    preferences?: Preferences;
+    updateRooms: () => void;
 };
 
 const CurrentBooking = (props: CurrentBookingProps) => {
-    const { bookings, setRooms, setBookings, preferences } = props;
+    const { bookings, setBookings, updateRooms } = props;
 
     const { createSuccessNotification, createErrorNotification } =
         useCreateNotification();
@@ -164,12 +162,7 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                 setBookings(bookings.filter((b) => b.id !== booking.id));
                 createSuccessNotification('Booking deleted succesfully');
 
-                if (preferences) {
-                    const buildingPreference = preferences.building?.id;
-                    getRooms(buildingPreference)
-                        .then(setRooms)
-                        .catch((error) => console.log(error));
-                }
+                updateRooms();
             })
             .catch(() => {
                 setBookingProcessing('false');
