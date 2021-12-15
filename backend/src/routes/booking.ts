@@ -1,11 +1,12 @@
 import express, { Request, Response } from 'express';
-import { body, query } from 'express-validator';
+import { body, query, validationResult } from 'express-validator';
 import { deleteBooking } from '../controllers/booking/deleteBookingController';
 import { getBooking } from '../controllers/booking/getBookingController';
 import { simplifyEventData } from '../controllers/booking/bookingUtils';
 import * as currentBookingsController from '../controllers/booking/currentBookingsController';
 import * as makeBookingController from '../controllers/booking/makeBookingController';
 import * as updateBookingController from '../controllers/booking/updateBookingController';
+import * as responses from '../utils/responses';
 
 export const router = express.Router();
 
@@ -27,8 +28,16 @@ router.post(
 // Get the status of the current booking of the user
 router.get(
     '/current',
+    query('until').trim().escape().isISO8601().optional({ nullable: true }),
+    (req, res, next) => {
+        if (!validationResult(req).isEmpty()) {
+            return responses.badRequest(req, res);
+        }
+        next();
+    },
     currentBookingsController.getCurrentBookingsMiddleware(),
     currentBookingsController.simplifyAndFilterCurrentBookingsMiddleware(),
+    currentBookingsController.addNextCalendarEventMiddleware(),
     (req: Request, res: Response) => {
         res.status(200).json(res.locals.currentBookings);
     }

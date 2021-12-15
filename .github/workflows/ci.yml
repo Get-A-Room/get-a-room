@@ -84,13 +84,16 @@ jobs:
                   name: frontend-build
                   path: frontend/.docker/.docker-staging/build
 
-            # Prepares the GCloud CLI with your project ID and private key
             - name: Setup gcloud CLI
-              uses: google-github-actions/setup-gcloud@master
+              uses: google-github-actions/auth@v0
               with:
-                  version: '290.0.1'
-                  service_account_key: ${{ secrets.GCR_SA_KEY }}
-                  project_id: ${{ secrets.GCR_PROJECT }}
+                  credentials_json: ${{ secrets.GCR_SA_KEY }}
+
+            - name: Set up Cloud SDK
+              uses: google-github-actions/setup-gcloud@v0.3.0
+
+            - name: Use gcloud CLI
+              run: gcloud info
 
             # Pushes the .docker/.docker-staging directory to Google Cloud Build to build the Docker image and save it to Google Cloud Registry
             - name: Build & Push React frontend to Container registry
@@ -132,13 +135,16 @@ jobs:
                   name: frontend-build
                   path: frontend/.docker/.docker-prod/build
 
-            # Prepares the GCloud CLI with your project ID and private key
             - name: Setup gcloud CLI
-              uses: google-github-actions/setup-gcloud@master
+              uses: google-github-actions/auth@v0
               with:
-                  version: '290.0.1'
-                  service_account_key: ${{ secrets.GCR_SA_KEY_PRODUCTION }}
-                  project_id: ${{ secrets.GCR_PROJECT_PRODUCTION }}
+                  credentials_json: ${{ secrets.GCR_SA_KEY_PRODUCTION }}
+
+            - name: Set up Cloud SDK
+              uses: google-github-actions/setup-gcloud@v0.3.0
+
+            - name: Use gcloud CLI
+              run: gcloud info
 
             # Pushes the .docker/.docker-prod directory to Google Cloud Build to build the Docker image and save it to Google Cloud Registry
             - name: Build & Push React frontend to Container registry
@@ -214,13 +220,16 @@ jobs:
             - name: Checkout Repo
               uses: actions/checkout@main
 
-            # Prepares the GCloud CLI with your project ID and private key
             - name: Setup gcloud CLI
-              uses: google-github-actions/setup-gcloud@master
+              uses: google-github-actions/auth@v0
               with:
-                  version: '290.0.1'
-                  service_account_key: ${{ secrets.GCR_SA_KEY }}
-                  project_id: ${{ secrets.GCR_PROJECT }}
+                  credentials_json: ${{ secrets.GCR_SA_KEY }}
+
+            - name: Set up Cloud SDK
+              uses: google-github-actions/setup-gcloud@v0.3.0
+
+            - name: Use gcloud CLI
+              run: gcloud info
 
             # Pushes the Nodejs codes to Google Cloud Build to build the Docker image and save it to Google Cloud Registry
             - name: Build and push Node backend to Container registry
@@ -254,13 +263,16 @@ jobs:
             - name: Checkout Repo
               uses: actions/checkout@main
 
-            # Prepares the GCloud CLI with your project ID and private key
             - name: Setup gcloud CLI
-              uses: google-github-actions/setup-gcloud@master
+              uses: google-github-actions/auth@v0
               with:
-                  version: '290.0.1'
-                  service_account_key: ${{ secrets.GCR_SA_KEY_PRODUCTION }}
-                  project_id: ${{ secrets.GCR_PROJECT_PRODUCTION }}
+                  credentials_json: ${{ secrets.GCR_SA_KEY_PRODUCTION }}
+
+            - name: Set up Cloud SDK
+              uses: google-github-actions/setup-gcloud@v0.3.0
+
+            - name: Use gcloud CLI
+              run: gcloud info
 
             # Pushes the Nodejs codes to Google Cloud Build to build the Docker image and save it to Google Cloud Registry
             - name: Build and push Node backend to Container registry

@@ -26,7 +26,7 @@ const fakeBooking = [
             name: 'Amor',
             capacity: 4,
             features: ['Jabra', 'TV', 'Webcam'],
-            nextCalendarEvent: '2021-10-21T17:32:28Z'
+            nextCalendarEvent: '2021-10-21T19:52:28Z'
         }
     }
 ];
