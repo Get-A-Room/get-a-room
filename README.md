@@ -1,6 +1,6 @@
 # Get A Room!
 
-![alt text](https://github.com/keulacorp/get-a-room/blob/dev/ui-images/login_2021-12-16_18-41-56.jpg | height=100)
+![alt text](https://github.com/keulacorp/get-a-room/blob/dev/ui-images/login_2021-12-16_18-41-56.jpg | width=100)
 
 ## Project structure
 
