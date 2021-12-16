@@ -13,6 +13,7 @@ node_modules
 
 # IDE
 /.vscode
+.idea
 
 # misc
 .DS_Store
