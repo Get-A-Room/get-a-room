@@ -4,6 +4,8 @@
   <img src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/login_2021-12-16_18-41-56.jpg" data-canonical-src="https://github.com/keulacorp/get-a-room/blob/dev/ui-     images/login_2021-12-16_18-41-56.jpg" width="200" height="400" />
 
   <img src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/rooms_list_expanded_2021-12-16_18-41-54.jpg" data-canonical-src="https://github.com/keulacorp/get-a-   room/blob/dev/ui-images/rooms_list_expanded_2021-12-16_18-41-54.jpg" width="200" height="400" />
+  
+  <img src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/bookings_2021-12-16_18-42-01.jpg" data-canonical-src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/bookings_2021-12-16_18-42-01.jpg" width="200" height="400" />
 </p>
 ## Project structure
 
