@@ -9,6 +9,8 @@
   
   <img src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/bookings_2021-12-16_18-42-01.jpg" data-canonical-src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/bookings_2021-12-16_18-42-01.jpg" width="200" height="400" />
 </p>
+
+
 ## Project structure
 
 The project is divided into frontend and backend folders which contain the corresponding npm projects and README.md:s. Remember to also check those README.md:s for development environment instructions etc.
