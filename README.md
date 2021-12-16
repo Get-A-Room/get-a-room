@@ -10,6 +10,7 @@
   <img src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/bookings_2021-12-16_18-42-01.jpg" data-canonical-src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/bookings_2021-12-16_18-42-01.jpg" width="200" height="400" />
 </p>
 
+More images in directory ui-images!
 
 ## Project structure
 
