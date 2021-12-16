@@ -1,16 +1,17 @@
 # Get A Room!
 
 <p float="left">
-  <img src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/login_2021-12-16_18-41-56.jpg" data-canonical-src="https://github.com/keulacorp/get-a-room/blob/dev/ui-     images/login_2021-12-16_18-41-56.jpg" width="200" height="400" />
 
-  <img src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/rooms_list_expanded_2021-12-16_18-41-54.jpg" data-canonical-src="https://github.com/keulacorp/get-a-   room/blob/dev/ui-images/rooms_list_expanded_2021-12-16_18-41-54.jpg" width="200" height="400" />
+  <img src="ui-and-architecture-images/login_2021-12-16_18-41-56.jpg" width=24% height=auto />
+
+  <img src="ui-and-architecture-images/rooms_list_expanded_2021-12-16_18-41-54.jpg" width=24% height=auto />
   
-  <img src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/quick_booking_2021-12-16_18-41-52.jpg" data-canonical-src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/quick_booking_2021-12-16_18-41-52.jpg" width="200" height="400" />
+  <img src="ui-and-architecture-images/quick_booking_2021-12-16_18-41-52.jpg" width=24% height=auto />
   
-  <img src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/bookings_2021-12-16_18-42-01.jpg" data-canonical-src="https://github.com/keulacorp/get-a-room/blob/dev/ui-images/bookings_2021-12-16_18-42-01.jpg" width="200" height="400" />
+  <img src="ui-and-architecture-images/bookings_2021-12-16_18-42-01.jpg" width=24% height=auto />
 </p>
 
-More images in directory ui-images!
+More images in directory ui-and-architecture-images!
 
 ## Project structure
 
