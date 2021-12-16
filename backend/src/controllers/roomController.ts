@@ -69,7 +69,6 @@ export const fetchAvailability = () => {
 
             let start: string, end: string;
 
-            // TODO: What should happen when the difference between start and end is small
             if (req.query.until) {
                 const startDt = DateTime.now().toUTC();
                 const endDt = DateTime.fromISO(
