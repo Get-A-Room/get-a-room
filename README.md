@@ -1,5 +1,18 @@
 # Get A Room!
 
+<p float="left">
+
+  <img src="documentation/ui-and-architecture-images/login_2021-12-16_18-41-56.jpg" width=24% height=auto />
+
+  <img src="documentation/ui-and-architecture-images/rooms_list_expanded_2021-12-16_18-41-54.jpg" width=24% height=auto />
+  
+  <img src="documentation/ui-and-architecture-images/quick_booking_2021-12-16_18-41-52.jpg" width=24% height=auto />
+  
+  <img src="documentation/ui-and-architecture-images/bookings_2021-12-16_18-42-01.jpg" width=24% height=auto />
+</p>
+
+More images in directory documentation/ui-and-architecture-images!
+
 ## Project structure
 
 The project is divided into frontend and backend folders which contain the corresponding npm projects and README.md:s. Remember to also check those README.md:s for development environment instructions etc.
