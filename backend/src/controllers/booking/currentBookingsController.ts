@@ -8,13 +8,14 @@ import * as admin from '../googleAPI/adminAPI';
 import * as calendar from '../googleAPI/calendarAPI';
 import * as responses from '../../utils/responses';
 import { OAuth2Client } from 'google-auth-library';
-import { simplifyRoomData } from '../../controllers/roomController';
+import { simplifyRoomData } from '../roomController';
 import RoomData from '../../types/roomData';
 
 /**
  * Gets all the users currently active bookings
  * @returns
  */
+
 export const getCurrentBookingsMiddleware = () => {
     const middleware = async (
         req: Request,
@@ -77,7 +78,7 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
 };
 
 /**
- * Adds nextCalendarEvent to current kookings
+ * Adds nextCalendarEvent to current bookings
  * @returns
  */
 export const addNextCalendarEventMiddleware = () => {
@@ -137,8 +138,9 @@ export const addNextCalendarEventMiddleware = () => {
 
 /**
  * Simlpifies bookings
- * @param simplifiedBookings List of all bookings
  * @returns simplified bookings
+ * @param allBookings
+ * @param rooms
  */
 export const simplifyBookings = (
     allBookings: schema.Event[],
@@ -153,6 +155,7 @@ export const simplifyBookings = (
             startTime: booking.start?.dateTime,
             endTime: booking.end?.dateTime,
             organizerEmail: booking?.organizer?.email,
+            creatorEmail: booking?.creator?.email,
             room: {
                 id: '',
                 name: null,
@@ -183,11 +186,12 @@ export const simplifyBookings = (
 /**
  * Filters away every booking that is not currently running
  * @param simplifiedBookings List of simplified bookings
+ * @param userEmail email of the user
  * @returns filtered bookings
  */
 export const filterCurrentBookings = (
     simplifiedBookings: CurrentBookingData[],
-    organizerEmail: string
+    userEmail: string
 ): CurrentBookingData[] => {
     const now: string = getNowDateTime();
 
@@ -199,16 +203,23 @@ export const filterCurrentBookings = (
             }
 
             // Checks that the event has a room or other resource
-            if (_.isEmpty(booking.room)) {
+            if (
+                _.isEmpty(booking.room) ||
+                booking.room.id === '' ||
+                booking.room.name === ''
+            ) {
                 return false;
             }
 
-            // Checks if the user is the events organizer because only those events should be shown in bookings
-            if (booking.organizerEmail !== organizerEmail) {
+            // Checks if the user is the events organizer and/or creator, because only those events should be shown in bookings
+            if (
+                booking.organizerEmail === userEmail ||
+                booking.creatorEmail === userEmail
+            ) {
+                return booking.startTime <= now && booking.endTime >= now;
+            } else {
                 return false;
             }
-
-            return booking.startTime <= now && booking.endTime >= now;
         });
 
     return onlyCurrentlyRunningBookings;
