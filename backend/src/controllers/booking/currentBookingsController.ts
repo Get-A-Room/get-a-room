@@ -199,11 +199,15 @@ export const filterCurrentBookings = (
         }
 
         // Checks that the event has a room or other resource
-        if (_.isEmpty(booking.room)) {
+        if (
+            _.isEmpty(booking.room) ||
+            booking.room.id === '' ||
+            booking.room.name === ''
+        ) {
             return false;
         }
 
-        // Checks if the user is the events organizer because only those events should be shown in bookings
+        // Checks if the user is the events organizer and/or creator, because only those events should be shown in bookings
         if (booking.organizerEmail !== organizerEmail) {
             return false;
         }
