@@ -149,7 +149,7 @@ export const simplifyBookings = (
     // Filters away all bookings that aren't running at the moment
     const roomsSimplified: RoomData[] = simplifyRoomData(rooms);
 
-    return allBookings.map((booking: schema.EventData) => {
+    const simplifiedBookings = allBookings.map((booking: schema.EventData) => {
         const simpleEvent: CurrentBookingData = {
             id: booking.id,
             startTime: booking.start?.dateTime,
@@ -179,6 +179,8 @@ export const simplifyBookings = (
 
         return simpleEvent;
     });
+
+    return simplifiedBookings;
 };
 
 /**
@@ -194,30 +196,33 @@ export const filterCurrentBookings = (
     const now: string = getNowDateTime();
 
     // Filters away all bookings that aren't running at the moment
-    return simplifiedBookings.filter((booking: CurrentBookingData) => {
-        if (!booking.startTime || !booking.endTime) {
-            return false;
-        }
+    const onlyCurrentlyRunningBookings: CurrentBookingData[] =
+        simplifiedBookings.filter((booking: CurrentBookingData) => {
+            if (!booking.startTime || !booking.endTime) {
+                return false;
+            }
 
-        // Checks that the event has a room or other resource
-        if (
-            _.isEmpty(booking.room) ||
-            booking.room.id === '' ||
-            booking.room.name === ''
-        ) {
-            return false;
-        }
+            // Checks that the event has a room or other resource
+            if (
+                _.isEmpty(booking.room) ||
+                booking.room.id === '' ||
+                booking.room.name === ''
+            ) {
+                return false;
+            }
 
-        // Checks if the user is the events organizer and/or creator, because only those events should be shown in bookings
-        if (
-            booking.organizerEmail === userEmail ||
-            booking.creatorEmail === userEmail
-        ) {
-            return booking.startTime <= now && booking.endTime >= now;
-        } else {
-            return false;
-        }
-    });
+            // Checks if the user is the events organizer and/or creator, because only those events should be shown in bookings
+            if (
+                booking.organizerEmail === userEmail ||
+                booking.creatorEmail === userEmail
+            ) {
+                return booking.startTime <= now && booking.endTime >= now;
+            } else {
+                return false;
+            }
+        });
+
+    return onlyCurrentlyRunningBookings;
 };
 
 export const getNowDateTime = (): string => {
