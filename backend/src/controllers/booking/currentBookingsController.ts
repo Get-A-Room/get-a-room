@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import _ from 'lodash';
 
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import CurrentBookingData from '../../types/currentBookingData';
 import * as schema from '../../utils/googleSchema';
 import * as admin from '../googleAPI/adminAPI';
@@ -78,7 +78,7 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
 };
 
 /**
- * Adds nextCalendarEvent to current bookings, so the start time of the next booking can be calculated
+ * Adds nextCalendarEvent to current bookings
  * @returns
  */
 export const addNextCalendarEventMiddleware = () => {
