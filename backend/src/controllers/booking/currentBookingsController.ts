@@ -155,6 +155,7 @@ export const simplifyBookings = (
             startTime: booking.start?.dateTime,
             endTime: booking.end?.dateTime,
             organizerEmail: booking?.organizer?.email,
+            creatorEmail: booking?.creator?.email,
             room: {
                 id: '',
                 name: null,
@@ -183,12 +184,12 @@ export const simplifyBookings = (
 /**
  * Filters away every booking that is not currently running
  * @param simplifiedBookings List of simplified bookings
- * @param organizerEmail email of the user that is the organizer of the event (not the creator)
+ * @param userEmail email of the user
  * @returns filtered bookings
  */
 export const filterCurrentBookings = (
     simplifiedBookings: CurrentBookingData[],
-    organizerEmail: string
+    userEmail: string
 ): CurrentBookingData[] => {
     const now: string = getNowDateTime();
 
@@ -208,11 +209,14 @@ export const filterCurrentBookings = (
         }
 
         // Checks if the user is the events organizer and/or creator, because only those events should be shown in bookings
-        if (booking.organizerEmail !== organizerEmail) {
+        if (
+            booking.organizerEmail === userEmail ||
+            booking.creatorEmail === userEmail
+        ) {
+            return booking.startTime <= now && booking.endTime >= now;
+        } else {
             return false;
         }
-
-        return booking.startTime <= now && booking.endTime >= now;
     });
 };
 
