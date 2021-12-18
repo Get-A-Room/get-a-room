@@ -1,21 +1,20 @@
 import { DateTime } from 'luxon';
 import _ from 'lodash';
 
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import CurrentBookingData from '../../types/currentBookingData';
 import * as schema from '../../utils/googleSchema';
 import * as admin from '../googleAPI/adminAPI';
 import * as calendar from '../googleAPI/calendarAPI';
 import * as responses from '../../utils/responses';
 import { OAuth2Client } from 'google-auth-library';
-import { simplifyRoomData } from '../roomController';
+import { simplifyRoomData } from '../../controllers/roomController';
 import RoomData from '../../types/roomData';
 
 /**
  * Gets all the users currently active bookings
  * @returns
  */
-
 export const getCurrentBookingsMiddleware = () => {
     const middleware = async (
         req: Request,
@@ -78,7 +77,7 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
 };
 
 /**
- * Adds nextCalendarEvent to current bookings, so the start time of the next booking can be calculated
+ * Adds nextCalendarEvent to current kookings
  * @returns
  */
 export const addNextCalendarEventMiddleware = () => {
@@ -138,9 +137,8 @@ export const addNextCalendarEventMiddleware = () => {
 
 /**
  * Simlpifies bookings
+ * @param simplifiedBookings List of all bookings
  * @returns simplified bookings
- * @param allBookings
- * @param rooms
  */
 export const simplifyBookings = (
     allBookings: schema.Event[],
@@ -149,7 +147,7 @@ export const simplifyBookings = (
     // Filters away all bookings that aren't running at the moment
     const roomsSimplified: RoomData[] = simplifyRoomData(rooms);
 
-    return allBookings.map((booking: schema.EventData) => {
+    const simplifiedBookings = allBookings.map((booking: schema.EventData) => {
         const simpleEvent: CurrentBookingData = {
             id: booking.id,
             startTime: booking.start?.dateTime,
@@ -178,12 +176,13 @@ export const simplifyBookings = (
 
         return simpleEvent;
     });
+
+    return simplifiedBookings;
 };
 
 /**
  * Filters away every booking that is not currently running
  * @param simplifiedBookings List of simplified bookings
- * @param organizerEmail email of the user that is the organizer of the event (not the creator)
  * @returns filtered bookings
  */
 export const filterCurrentBookings = (
@@ -193,23 +192,26 @@ export const filterCurrentBookings = (
     const now: string = getNowDateTime();
 
     // Filters away all bookings that aren't running at the moment
-    return simplifiedBookings.filter((booking: CurrentBookingData) => {
-        if (!booking.startTime || !booking.endTime) {
-            return false;
-        }
+    const onlyCurrentlyRunningBookings: CurrentBookingData[] =
+        simplifiedBookings.filter((booking: CurrentBookingData) => {
+            if (!booking.startTime || !booking.endTime) {
+                return false;
+            }
 
-        // Checks that the event has a room or other resource
-        if (_.isEmpty(booking.room)) {
-            return false;
-        }
+            // Checks that the event has a room or other resource
+            if (_.isEmpty(booking.room)) {
+                return false;
+            }
 
-        // Checks if the user is the events organizer because only those events should be shown in bookings
-        if (booking.organizerEmail !== organizerEmail) {
-            return false;
-        }
+            // Checks if the user is the events organizer because only those events should be shown in bookings
+            if (booking.organizerEmail !== organizerEmail) {
+                return false;
+            }
 
-        return booking.startTime <= now && booking.endTime >= now;
-    });
+            return booking.startTime <= now && booking.endTime >= now;
+        });
+
+    return onlyCurrentlyRunningBookings;
 };
 
 export const getNowDateTime = (): string => {
