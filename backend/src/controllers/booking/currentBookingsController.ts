@@ -219,14 +219,14 @@ export const filterCurrentBookings = (
             console.log(`creator email: ${booking.creatorEmail}`);
             console.log(`organizer email: ${booking.organizerEmail}`);
             console.log(`user email: ${userEmail}`);
-            if (
-                booking.organizerEmail === userEmail
-                // || booking.creatorEmail === userEmail
-            ) {
-                return booking.startTime <= now && booking.endTime >= now;
-            } else {
-                return false;
-            }
+            // if (
+            //     booking.organizerEmail === userEmail
+            //     || booking.creatorEmail === userEmail
+            // ) {
+            return booking.startTime <= now && booking.endTime >= now;
+            // } else {
+            //     return false;
+            // }
         });
 
     return onlyCurrentlyRunningBookings;
