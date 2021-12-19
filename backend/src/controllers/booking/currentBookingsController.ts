@@ -64,8 +64,8 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
             const simplifiedBookings = simplifyBookings(allBookings, rooms);
 
             res.locals.currentBookings = filterCurrentBookings(
-                simplifiedBookings
-                // res.locals.email
+                simplifiedBookings,
+                res.locals.email
             );
 
             next();
@@ -150,6 +150,8 @@ export const simplifyBookings = (
     const roomsSimplified: RoomData[] = simplifyRoomData(rooms);
 
     const simplifiedBookings = allBookings.map((booking: schema.EventData) => {
+        console.log('Google booking:');
+        console.log(booking);
         const simpleEvent: CurrentBookingData = {
             id: booking.id,
             startTime: booking.start?.dateTime,
@@ -190,14 +192,16 @@ export const simplifyBookings = (
  * @returns filtered bookings
  */
 export const filterCurrentBookings = (
-    simplifiedBookings: CurrentBookingData[]
-    // userEmail: string
+    simplifiedBookings: CurrentBookingData[],
+    userEmail: string
 ): CurrentBookingData[] => {
     const now: string = getNowDateTime();
 
     // Filters away all bookings that aren't running at the moment
     const onlyCurrentlyRunningBookings: CurrentBookingData[] =
         simplifiedBookings.filter((booking: CurrentBookingData) => {
+            console.log('Simplified booking:');
+            console.log(booking);
             if (!booking.startTime || !booking.endTime) {
                 return false;
             }
@@ -212,9 +216,12 @@ export const filterCurrentBookings = (
             }
 
             // Checks if the user is the events organizer and/or creator, because only those events should be shown in bookings
+            console.log(`creator email: ${booking.creatorEmail}`);
+            console.log(`organizer email: ${booking.organizerEmail}`);
+            console.log(`user email: ${userEmail}`);
             // if (
-            //     booking.organizerEmail === userEmail ||
-            //     booking.creatorEmail === userEmail
+            //     booking.organizerEmail === userEmail
+            //     || booking.creatorEmail === userEmail
             // ) {
             return booking.startTime <= now && booking.endTime >= now;
             // } else {
