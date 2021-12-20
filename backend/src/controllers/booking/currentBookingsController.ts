@@ -78,65 +78,6 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
 };
 
 /**
- * Adds nextCalendarEvent to current bookings
- * @returns
- */
-export const addNextCalendarEventMiddleware = () => {
-    const middleware = async (
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
-        try {
-            const client = res.locals.oAuthClient;
-
-            const currentBookings: CurrentBookingData[] =
-                res.locals.currentBookings;
-
-            let end: string;
-
-            for (const currentBooking of currentBookings) {
-                const currentBookingRoomId = [{ id: currentBooking.room?.id }];
-
-                if (req.query.until) {
-                    const startDt = DateTime.now().toUTC();
-                    const endDt = DateTime.fromISO(
-                        req.query.until as string
-                    ).toUTC();
-                    end = endDt.toISO();
-
-                    if (endDt <= startDt) {
-                        return responses.badRequest(req, res);
-                    }
-                } else {
-                    end = DateTime.now().toUTC().endOf('day').toISO();
-                }
-
-                if (currentBooking.endTime) {
-                    const result = await calendar.freeBusyQuery(
-                        client,
-                        currentBookingRoomId,
-                        currentBooking.endTime,
-                        end
-                    );
-
-                    currentBooking.room.nextCalendarEvent =
-                        result[currentBooking.room.id as string];
-                }
-            }
-
-            res.locals.currentBookings = currentBookings;
-
-            next();
-        } catch (err) {
-            next(err);
-        }
-    };
-
-    return middleware;
-};
-
-/**
  * Simlpifies bookings
  * @returns simplified bookings
  * @param allBookings
@@ -150,14 +91,11 @@ export const simplifyBookings = (
     const roomsSimplified: RoomData[] = simplifyRoomData(rooms);
 
     const simplifiedBookings = allBookings.map((booking: schema.EventData) => {
-        console.log('Google booking:');
-        console.log(booking);
         const simpleEvent: CurrentBookingData = {
             id: booking.id,
             startTime: booking.start?.dateTime,
             endTime: booking.end?.dateTime,
             organizerEmail: booking?.organizer?.email,
-            creatorEmail: booking?.creator?.email,
             room: {
                 id: '',
                 name: null,
@@ -200,8 +138,6 @@ export const filterCurrentBookings = (
     // Filters away all bookings that aren't running at the moment
     const onlyCurrentlyRunningBookings: CurrentBookingData[] =
         simplifiedBookings.filter((booking: CurrentBookingData) => {
-            console.log('Simplified booking:');
-            console.log(booking);
             if (!booking.startTime || !booking.endTime) {
                 return false;
             }
@@ -215,18 +151,11 @@ export const filterCurrentBookings = (
                 return false;
             }
 
-            // Checks if the user is the events organizer and/or creator, because only those events should be shown in bookings
-            console.log(`creator email: ${booking.creatorEmail}`);
-            console.log(`organizer email: ${booking.organizerEmail}`);
-            console.log(`user email: ${userEmail}`);
-            // if (
-            //     booking.organizerEmail === userEmail
-            //     || booking.creatorEmail === userEmail
-            // ) {
+            if (booking.organizerEmail !== userEmail) {
+                return false;
+            }
+
             return booking.startTime <= now && booking.endTime >= now;
-            // } else {
-            //     return false;
-            // }
         });
 
     return onlyCurrentlyRunningBookings;
