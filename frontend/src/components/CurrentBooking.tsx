@@ -11,10 +11,14 @@ import {
     Button,
     CircularProgress
 } from '@mui/material';
-import { Booking, AddTimeDetails } from '../types';
+import { Booking, AddTimeDetails, Room } from '../types';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
-import { updateBooking, deleteBooking } from '../services/bookingService';
-import TimeLeft from './util/TimeLeft';
+import {
+    updateBooking,
+    deleteBooking,
+    getBookings
+} from '../services/bookingService';
+import TimeLeft, { getTimeLeft } from './util/TimeLeft';
 import useCreateNotification from '../hooks/useCreateNotification';
 
 function getBookingRoomName(booking: Booking) {
@@ -23,6 +27,44 @@ function getBookingRoomName(booking: Booking) {
 
 function getEndTime(booking: Booking) {
     return booking.endTime;
+}
+
+function convertH2M(time: string) {
+    time = time.replace(' h ', ':');
+    let timeParts = time.split(':');
+    return Number(timeParts[0]) * 60 + Number(timeParts[1]);
+}
+
+function getBookingTimeLeft(booking: Booking) {
+    let timeLeft = getTimeLeft(getEndTime(booking));
+    let availableFor = getTimeLeft(getNextCalendarEvent(booking.room));
+
+    // Slice min string away
+    timeLeft = timeLeft.slice(0, -3);
+    availableFor = availableFor.slice(0, -3);
+
+    let timeLeftMin: number;
+    let availableForMin: number;
+
+    // Convert to h:mm or mm
+    if (timeLeft.includes(' h ')) {
+        timeLeftMin = convertH2M(timeLeft);
+    } else {
+        timeLeftMin = +timeLeft;
+    }
+
+    // Convert to h:mm or mm
+    if (availableFor.includes(' h ')) {
+        availableForMin = convertH2M(availableFor);
+    } else {
+        availableForMin = +availableFor;
+    }
+
+    return availableForMin - timeLeftMin;
+}
+
+function getNextCalendarEvent(room: Room) {
+    return room.nextCalendarEvent;
 }
 
 function areBookingsFetched(bookings: Booking[]) {
@@ -69,6 +111,19 @@ const CurrentBooking = (props: CurrentBookingProps) => {
         setExpandedFeatures(
             expandedFeatures === booking.id ? 'false' : booking.id
         );
+    };
+
+    // Get the next booking time in the reserved room
+    const getNextCalendarEvent = (booking: Booking) => {
+        let nextBooking = booking.room.nextCalendarEvent;
+
+        if (nextBooking === '-1') {
+            getBookings().then((currentBooking) => {
+                setBookings(currentBooking);
+            });
+        }
+
+        return nextBooking;
     };
 
     // Add extra time for the reserved room
@@ -182,6 +237,18 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                         timeLeftText="Time left:"
                                     />
                                 </Box>
+                                <Box>
+                                    {getNextCalendarEvent(booking) !== '-1' ? (
+                                        <TimeLeft
+                                            endTime={getNextCalendarEvent(
+                                                booking
+                                            )}
+                                            timeLeftText="Available for: "
+                                        />
+                                    ) : (
+                                        <Typography>Available for:</Typography>
+                                    )}
+                                </Box>
                                 {bookingProcessing === booking.id ? (
                                     <Box
                                         display="flex"
@@ -193,37 +260,43 @@ const CurrentBooking = (props: CurrentBookingProps) => {
                                 ) : null}
                             </Box>
                             <Box flexDirection="column">
-                                <Box
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                        alignItems: 'right'
-                                    }}
-                                >
-                                    <CardActions disableSpacing>
-                                        <Button
-                                            id="extraTime-button"
-                                            data-testid="ExtraTimeButton"
-                                            style={{
-                                                backgroundColor: '#282c34',
-                                                textTransform: 'none',
-                                                color: 'white',
-                                                fontSize: '16px',
-                                                animation:
-                                                    'ripple 600ms linear',
-                                                minWidth: '130px',
-                                                minHeight: '50px',
-                                                maxWidth: '130px',
-                                                maxHeight: '50px'
-                                            }}
-                                            onClick={() =>
-                                                handleAddExtraTime(booking, 15)
-                                            }
-                                        >
-                                            +15 min
-                                        </Button>
-                                    </CardActions>
-                                </Box>
+                                {isNaN(getBookingTimeLeft(booking)) ||
+                                getBookingTimeLeft(booking) > 15 ? (
+                                    <Box
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                            alignItems: 'right'
+                                        }}
+                                    >
+                                        <CardActions disableSpacing>
+                                            <Button
+                                                id="extraTime-button"
+                                                data-testid="ExtraTimeButton"
+                                                style={{
+                                                    backgroundColor: '#282c34',
+                                                    textTransform: 'none',
+                                                    color: 'white',
+                                                    fontSize: '16px',
+                                                    animation:
+                                                        'ripple 600ms linear',
+                                                    minWidth: '130px',
+                                                    minHeight: '50px',
+                                                    maxWidth: '130px',
+                                                    maxHeight: '50px'
+                                                }}
+                                                onClick={() =>
+                                                    handleAddExtraTime(
+                                                        booking,
+                                                        15
+                                                    )
+                                                }
+                                            >
+                                                +15 min
+                                            </Button>
+                                        </CardActions>
+                                    </Box>
+                                ) : null}
                                 <Box
                                     style={{
                                         display: 'flex',
