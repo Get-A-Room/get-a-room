@@ -78,6 +78,65 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
 };
 
 /**
+ * Adds nextCalendarEvent to current bookings
+ * @returns
+ */
+export const addNextCalendarEventMiddleware = () => {
+    const middleware = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const client = res.locals.oAuthClient;
+
+            const currentBookings: CurrentBookingData[] =
+                res.locals.currentBookings;
+
+            let end: string;
+
+            for (const currentBooking of currentBookings) {
+                const currentBookingRoomId = [{ id: currentBooking.room?.id }];
+
+                if (req.query.until) {
+                    const startDt = DateTime.now().toUTC();
+                    const endDt = DateTime.fromISO(
+                        req.query.until as string
+                    ).toUTC();
+                    end = endDt.toISO();
+
+                    if (endDt <= startDt) {
+                        return responses.badRequest(req, res);
+                    }
+                } else {
+                    end = DateTime.now().toUTC().endOf('day').toISO();
+                }
+
+                if (currentBooking.endTime) {
+                    const result = await calendar.freeBusyQuery(
+                        client,
+                        currentBookingRoomId,
+                        currentBooking.endTime,
+                        end
+                    );
+
+                    currentBooking.room.nextCalendarEvent =
+                        result[currentBooking.room.id as string];
+                }
+            }
+
+            res.locals.currentBookings = currentBookings;
+
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    return middleware;
+};
+
+/**
  * Simlpifies bookings
  * @returns simplified bookings
  * @param allBookings
@@ -92,12 +151,6 @@ export const simplifyBookings = (
 
     const simplifiedBookings = allBookings.map((booking: schema.EventData) => {
         // TODO: Remove me
-        if (booking.summary === 'Reservation from Get a Room!') {
-            console.log('Google booking:');
-            console.log(booking);
-            console.log('Rooms:');
-            console.log(roomsSimplified);
-        }
         const simpleEvent: CurrentBookingData = {
             id: booking.id,
             startTime: booking.start?.dateTime,
@@ -161,7 +214,6 @@ export const filterCurrentBookings = (
             if (booking.organizerEmail !== userEmail) {
                 return false;
             }
-
             return booking.startTime <= now && booking.endTime >= now;
         });
 
