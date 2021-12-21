@@ -96,7 +96,7 @@ export const simplifyBookings = (
             console.log('Google booking:');
             console.log(booking);
             console.log('Rooms:');
-            console.log(rooms);
+            console.log(roomsSimplified);
         }
         const simpleEvent: CurrentBookingData = {
             id: booking.id,
