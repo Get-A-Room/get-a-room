@@ -92,10 +92,11 @@ type CurrentBookingProps = {
     bookings: Booking[];
     setBookings: (bookings: Booking[]) => void;
     updateRooms: () => void;
+    updateBookings: () => void;
 };
 
 const CurrentBooking = (props: CurrentBookingProps) => {
-    const { bookings, setBookings, updateRooms } = props;
+    const { bookings, setBookings, updateRooms, updateBookings } = props;
 
     const { createSuccessNotification, createErrorNotification } =
         useCreateNotification();
@@ -126,11 +127,7 @@ const CurrentBooking = (props: CurrentBookingProps) => {
             .then((updatedBooking) => {
                 setBookingProcessing('false');
                 // replace updated booking
-                setBookings(
-                    bookings.map((b) =>
-                        b.id === booking.id ? updatedBooking : b
-                    )
-                );
+                updateBookings();
                 createSuccessNotification('Time added to booking');
                 window.scrollTo(0, 0);
             })

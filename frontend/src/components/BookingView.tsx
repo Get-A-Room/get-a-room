@@ -75,6 +75,7 @@ function BookingView(props: BookingViewProps) {
             <CurrentBooking
                 bookings={bookings}
                 updateRooms={updateRooms}
+                updateBookings={updateBookings}
                 setBookings={setBookings}
             />
             <Typography py={2} variant="h4" textAlign="center">
