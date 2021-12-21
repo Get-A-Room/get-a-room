@@ -13,11 +13,7 @@ import {
 } from '@mui/material';
 import { Booking, AddTimeDetails, Room } from '../types';
 import { ExpandLess, ExpandMore, Group } from '@mui/icons-material';
-import {
-    updateBooking,
-    deleteBooking,
-    getBookings
-} from '../services/bookingService';
+import { updateBooking, deleteBooking } from '../services/bookingService';
 import TimeLeft, { getTimeLeft } from './util/TimeLeft';
 import useCreateNotification from '../hooks/useCreateNotification';
 
@@ -96,10 +92,11 @@ type CurrentBookingProps = {
     bookings: Booking[];
     setBookings: (bookings: Booking[]) => void;
     updateRooms: () => void;
+    updateBookings: () => void;
 };
 
 const CurrentBooking = (props: CurrentBookingProps) => {
-    const { bookings, setBookings, updateRooms } = props;
+    const { bookings, setBookings, updateRooms, updateBookings } = props;
 
     const { createSuccessNotification, createErrorNotification } =
         useCreateNotification();
@@ -115,15 +112,7 @@ const CurrentBooking = (props: CurrentBookingProps) => {
 
     // Get the next booking time in the reserved room
     const getNextCalendarEvent = (booking: Booking) => {
-        let nextBooking = booking.room.nextCalendarEvent;
-
-        if (nextBooking === '-1') {
-            getBookings().then((currentBooking) => {
-                setBookings(currentBooking);
-            });
-        }
-
-        return nextBooking;
+        return booking.room.nextCalendarEvent;
     };
 
     // Add extra time for the reserved room
@@ -138,11 +127,7 @@ const CurrentBooking = (props: CurrentBookingProps) => {
             .then((updatedBooking) => {
                 setBookingProcessing('false');
                 // replace updated booking
-                setBookings(
-                    bookings.map((b) =>
-                        b.id === booking.id ? updatedBooking : b
-                    )
-                );
+                updateBookings();
                 createSuccessNotification('Time added to booking');
                 window.scrollTo(0, 0);
             })

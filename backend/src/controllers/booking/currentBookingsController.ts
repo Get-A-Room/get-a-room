@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import _ from 'lodash';
 
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import CurrentBookingData from '../../types/currentBookingData';
 import * as schema from '../../utils/googleSchema';
 import * as admin from '../googleAPI/adminAPI';
@@ -78,7 +78,7 @@ export const simplifyAndFilterCurrentBookingsMiddleware = () => {
 };
 
 /**
- * Adds nextCalendarEvent to current bookings, so the start time of the next booking can be calculated
+ * Adds nextCalendarEvent to current bookings
  * @returns
  */
 export const addNextCalendarEventMiddleware = () => {
@@ -149,7 +149,8 @@ export const simplifyBookings = (
     // Filters away all bookings that aren't running at the moment
     const roomsSimplified: RoomData[] = simplifyRoomData(rooms);
 
-    return allBookings.map((booking: schema.EventData) => {
+    const simplifiedBookings = allBookings.map((booking: schema.EventData) => {
+        // TODO: Remove me
         const simpleEvent: CurrentBookingData = {
             id: booking.id,
             startTime: booking.start?.dateTime,
@@ -178,38 +179,45 @@ export const simplifyBookings = (
 
         return simpleEvent;
     });
+
+    return simplifiedBookings;
 };
 
 /**
  * Filters away every booking that is not currently running
  * @param simplifiedBookings List of simplified bookings
- * @param organizerEmail email of the user that is the organizer of the event (not the creator)
+ * @param userEmail email of the user
  * @returns filtered bookings
  */
 export const filterCurrentBookings = (
     simplifiedBookings: CurrentBookingData[],
-    organizerEmail: string
+    userEmail: string
 ): CurrentBookingData[] => {
     const now: string = getNowDateTime();
 
     // Filters away all bookings that aren't running at the moment
-    return simplifiedBookings.filter((booking: CurrentBookingData) => {
-        if (!booking.startTime || !booking.endTime) {
-            return false;
-        }
+    const onlyCurrentlyRunningBookings: CurrentBookingData[] =
+        simplifiedBookings.filter((booking: CurrentBookingData) => {
+            if (!booking.startTime || !booking.endTime) {
+                return false;
+            }
 
-        // Checks that the event has a room or other resource
-        if (_.isEmpty(booking.room)) {
-            return false;
-        }
+            // Checks that the event has a room or other resource
+            if (
+                _.isEmpty(booking.room) ||
+                booking.room.id === '' ||
+                booking.room.name === ''
+            ) {
+                return false;
+            }
 
-        // Checks if the user is the events organizer because only those events should be shown in bookings
-        if (booking.organizerEmail !== organizerEmail) {
-            return false;
-        }
+            if (booking.organizerEmail !== userEmail) {
+                return false;
+            }
+            return booking.startTime <= now && booking.endTime >= now;
+        });
 
-        return booking.startTime <= now && booking.endTime >= now;
-    });
+    return onlyCurrentlyRunningBookings;
 };
 
 export const getNowDateTime = (): string => {
