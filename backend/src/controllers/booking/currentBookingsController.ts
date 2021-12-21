@@ -91,6 +91,13 @@ export const simplifyBookings = (
     const roomsSimplified: RoomData[] = simplifyRoomData(rooms);
 
     const simplifiedBookings = allBookings.map((booking: schema.EventData) => {
+        // TODO: Remove me
+        if (booking.summary === 'Reservation from Get a Room!') {
+            console.log('Google booking:');
+            console.log(booking);
+            console.log('Rooms:');
+            console.log(roomsSimplified);
+        }
         const simpleEvent: CurrentBookingData = {
             id: booking.id,
             startTime: booking.start?.dateTime,

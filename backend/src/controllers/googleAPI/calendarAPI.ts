@@ -119,12 +119,13 @@ export const freeBusyQuery = async (
 export const getCurrentBookings = async (
     client: OAuth2Client
 ): Promise<schema.EventsData> => {
-    const now = DateTime.now().toUTC().toISO();
+    const now = DateTime.now().toUTC();
 
     const eventsList = await calendar.events.list({
         calendarId: 'primary',
         auth: client,
-        timeMin: now,
+        timeMin: now.minus({ days: 1 }).toISO(),
+        timeMax: now.plus({ days: 2 }).toISO(),
         timeZone: 'Etc/UTC'
     });
 
