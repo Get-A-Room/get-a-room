@@ -59,13 +59,12 @@ function getFeatures(room: Room) {
 
 type BookingListProps = {
     rooms: Room[];
-    setRooms: (rooms: Room[]) => void;
     bookings: Booking[];
-    setBookings: (bookings: Booking[]) => void;
+    updateData: () => void;
 };
 
 const AvailableRoomList = (props: BookingListProps) => {
-    const { rooms, setRooms, bookings, setBookings } = props;
+    const { rooms, bookings, updateData } = props;
 
     const { createSuccessNotification, createErrorNotification } =
         useCreateNotification();
@@ -115,8 +114,7 @@ const AvailableRoomList = (props: BookingListProps) => {
 
         makeBooking(bookingDetails)
             .then((madeBooking) => {
-                setBookings([...bookings, madeBooking]);
-                setRooms(rooms.filter((r) => r.id !== room.id));
+                updateData();
                 createSuccessNotification('Booking was succesful');
                 setBookingLoading('false');
                 document.getElementById('main-view-content')?.scrollTo(0, 0);
