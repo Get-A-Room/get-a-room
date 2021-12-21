@@ -156,7 +156,6 @@ export const simplifyBookings = (
             startTime: booking.start?.dateTime,
             endTime: booking.end?.dateTime,
             organizerEmail: booking?.organizer?.email,
-            creatorEmail: booking?.creator?.email,
             room: {
                 id: '',
                 name: null,

@@ -5,7 +5,6 @@ export type CurrentBookingData = {
     startTime: string | null | undefined;
     endTime: string | null | undefined;
     organizerEmail: string | null | undefined;
-    creatorEmail: string | null | undefined;
     room: RoomData;
 };
 
